@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Roles {
+  CLIENT
+  HOTELIER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum TypeChambre {
+  SIMPLE
+  DOUBLE
+  SUITE
+}
+
+enum StatutReservations {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum StatutPaiements {
+  COMPLETED
+  PENDING
+  FAILED
+}
+
+enum TypePaiement {
+  ORANGE_MONEY
+  WAVE
+  PAYPAL
+  STRIPE
+}
+
+model Role {
+  id    String     @id @default(uuid())
+  name  Roles      @unique
+  users UserRole[] @relation("RoleUsers")
+}
+
+model User {
+  id           String        @id @unique
+  prenom       String
+  nom          String
+  email        String        @unique
+  profileImage String?
+  telephone    String?
+  roles        UserRole[]    @relation("UserRoles")
+  logements    Logement[]    @relation("UserLogements")
+  favorites    Favorite[]    @relation("UserFavorites")
+  avis         Avis[]        @relation("UserAvis")
+  reservations Reservation[] @relation("UserReservations")
+  hotels       Hotel[]       @relation("UserHotels")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([email])
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation("UserRoles", fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation("RoleUsers", fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId]) // Composite key
+}
+
+model CategoryLogement {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?    @db.VarChar(1000)
+  urlImage    String
+  logements   Logement[] @relation("CategoryToLogement")
+  hotels      Hotel[]    @relation("CategoryToHotel")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Option {
+  id          String                     @id @default(uuid())
+  name        String
+  title       String
+  description String                     @db.VarChar(1000)
+  imageUrl    String
+  logements   LogementOptionOnLogement[] @relation("LogementToOption")
+  hotels      HotelOptionOnHotel[]       @relation("HotelToOption")
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
+}
+
+model ImageHotel {
+  id        String   @id @default(uuid())
+  hotel     Hotel    @relation("HotelImages", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId   String
+  urlImage  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Hotel {
+  id                 String               @id @default(uuid())
+  user               User                 @relation("UserHotels", fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+  hotelOptions       HotelOptionOnHotel[] @relation("OptionOnHotel")
+  categoryLogement   CategoryLogement     @relation("CategoryToHotel", fields: [categoryLogementId], references: [id], onDelete: Cascade)
+  chambres           Chambre[]            @relation("HotelChambres")
+  categoryLogementId String
+  nom                String               @unique
+  description        String?              @db.VarChar(1000)
+  adresse            String?
+  ville              String?
+  telephone          String?
+  email              String?
+  parking            Boolean              @default(false)
+  latitude           Float?
+  longitude          Float?
+  note               Float?
+  isBlocked          Boolean              @default(false)
+  favorites          Favorite[]           @relation("HotelFavorites")
+  avis               Avis[]               @relation("HotelAvis")
+  etoils             Int?
+  images             ImageHotel[]         @relation("HotelImages")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nom])
+}
+
+model Logement {
+  id                 String                     @id @default(uuid())
+  user               User                       @relation("UserLogements", fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+  logementOptions    LogementOptionOnLogement[] @relation("LogementToOptionOnLogement")
+  categoryLogement   CategoryLogement           @relation("CategoryToLogement", fields: [categoryLogementId], references: [id], onDelete: Cascade)
+  categoryLogementId String
+  nom                String                     @unique
+  description        String?                    @db.VarChar(1000)
+  adresse            String?
+  ville              String?
+  telephone          String?
+  email              String?
+  capacity           Int                        @default(1)
+  disponible         Boolean                    @default(true)
+  hasWifi            Boolean                    @default(false)
+  hasTV              Boolean                    @default(false)
+  hasClim            Boolean                    @default(false)
+  hasKitchen         Boolean                    @default(false)
+  parking            Boolean                    @default(false)
+  surface            Int?
+  extraBed           Boolean                    @default(false)
+  latitude           Float?
+  longitude          Float?
+  note               Float?
+  isBlocked          Boolean                    @default(false)
+  favorites          Favorite[]                 @relation("LogementFavorites")
+  avis               Avis[]                     @relation("LogementAvis")
+  reservations       Reservation[]              @relation("LogementReservations")
+  images             ImageLogement[]            @relation("LogementImages")
+  nbChambres         Int
+  price              Int
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+}
+
+model LogementOptionOnLogement {
+  logementId String
+  optionId   String
+  logement   Logement @relation("LogementToOptionOnLogement", fields: [logementId], references: [id], onDelete: Cascade)
+  option     Option   @relation("LogementToOption", fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@id([logementId, optionId])
+}
+
+model HotelOptionOnHotel {
+  hotelId    String
+  optionId   String
+  logementId String?
+  hotel      Hotel   @relation("OptionOnHotel", fields: [hotelId], references: [id], onDelete: Cascade)
+  option     Option  @relation("HotelToOption", fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@id([hotelId, optionId])
+}
+model Chambre {
+  id           String         @id @default(uuid())
+  hotel        Hotel          @relation("HotelChambres", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId      String
+  description  String?        @db.VarChar(1000)
+  type         TypeChambre
+  price        Int
+  capacity     Int            @default(1)
+  disponible   Boolean        @default(true)
+  hasWifi      Boolean        @default(false)
+  hasTV        Boolean        @default(false)
+  hasClim      Boolean        @default(false)
+  hasKitchen   Boolean        @default(false)
+  surface      Int?
+  extraBed     Boolean        @default(false)
+  images       ImageChambre[] @relation("ChambreImages")
+  reservations Reservation[]  @relation("ChambreReservations")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+model Favorite {
+  id         String    @id @default(uuid())
+  user       User?     @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+  logement   Logement? @relation("LogementFavorites", fields: [logementId], references: [id], onDelete: Cascade)
+  logementId String?
+  hotel      Hotel?    @relation("HotelFavorites", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId    String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Reservation {
+  id         String             @id @default(uuid())
+  startDate  DateTime
+  endDate    DateTime
+  status     StatutReservations @default(PENDING)
+  user       User?              @relation("UserReservations", fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+  logement   Logement?          @relation("LogementReservations", fields: [logementId], references: [id], onDelete: Cascade)
+  logementId String?
+  paiement   Paiement?
+  chambre    Chambre?           @relation("ChambreReservations", fields: [chambreId], references: [id], onDelete: Cascade)
+  chambreId  String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+}
+
+model Avis {
+  id         String    @id @default(uuid())
+  start      Int
+  user       User?     @relation("UserAvis", fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+  logement   Logement? @relation("LogementAvis", fields: [logementId], references: [id], onDelete: Cascade)
+  logementId String?
+  hotel      Hotel?    @relation("HotelAvis", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId    String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model ImageLogement {
+  id         String   @id @default(uuid())
+  logement   Logement @relation("LogementImages", fields: [logementId], references: [id], onDelete: Cascade)
+  logementId String
+  urlImage   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ImageChambre {
+  id        String   @id @default(uuid())
+  chambre   Chambre  @relation("ChambreImages", fields: [chambreId], references: [id], onDelete: Cascade)
+  chambreId String
+  urlImage  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+
+model Paiement {
+  id            String          @id @default(uuid())
+  reservation   Reservation     @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  reservationId String          @unique
+  montant       Float
+  status        StatutPaiements @default(PENDING)
+  type          TypePaiement
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}

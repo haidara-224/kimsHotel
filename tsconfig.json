@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/ui/Dashboard/SideBar.tsx", "brouillons", "app/(Super Admin)/dashboard/reservations/[id]/page.jsx"],
   "exclude": ["node_modules"]
 }
