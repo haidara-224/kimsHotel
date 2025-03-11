@@ -59,7 +59,7 @@ export function UserNav() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">
       <DropdownMenuItem>
-              <Link href="/creation-logement" className="w-full text-md text-start">
+              <Link href="/type-etablissement" className="w-full text-md text-start">
                 Ajouter Mon Etablissement Chez Kims
               </Link>
             </DropdownMenuItem>

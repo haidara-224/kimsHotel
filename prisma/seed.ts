@@ -57,7 +57,7 @@ const generateLogement = async (userId: string) => ({
   extraBed: faker.helpers.arrayElement([true, false]),
   latitude: faker.location.latitude(),
   longitude: faker.location.longitude(),
-  categoryLogementId: (await getCategoryLogement("Logement")) ?? "default-category-id",
+  categoryLogementId: (await getCategoryLogement("Appartements")) ?? "default-category-id",
   note: faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
   nbChambres: faker.number.int({ min: 1, max: 5 }),
   price: faker.number.float({ min: 50, max: 500, fractionDigits: 2 }),
@@ -77,7 +77,7 @@ const generateHotel = async (userId: string) => ({
   latitude: faker.location.latitude(),
   longitude: faker.location.longitude(),
   etoils: faker.number.int({ min: 1, max: 5 }),
-  categoryLogementId: (await getCategoryHotel("Hotel")) ?? "default-category-id",
+  categoryLogementId: (await getCategoryHotel("Hôtels")) ?? "default-category-id",
   note: faker.number.float({ min: 1, max: 5, fractionDigits: 1 }),
 
   createdAt: faker.date.past(),
@@ -136,12 +136,12 @@ async function main() {
 
   // Création des catégories si elles n'existent pas
   await prisma.categoryLogement.upsert({
-    where: { name: "Logement" },
+    where: { name: "Appartements" },
     update: {},
     create: {
       id: faker.string.uuid(),
-      name: "Logement",
-      description: faker.lorem.paragraph(),
+      name: "Appartements",
+      description: "Désigne les logements de type appartement, généralement indépendants et situés dans des immeubles résidentiels. Cette description sert à la classification interne et à la gestion des offres.",
       urlImage: "house.png",
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
@@ -149,12 +149,12 @@ async function main() {
   });
 
   await prisma.categoryLogement.upsert({
-    where: { name: "Hotel" },
+    where: { name: "Hôtels" },
     update: {},
     create: {
       id: faker.string.uuid(),
-      name: "Hotel",
-      description: faker.lorem.paragraph(),
+      name: "Hôtels",
+      description: ' Regroupe les établissements hôteliers, incluant les services d’hébergement et de restauration. Cette catégorisation interne facilite le suivi et le référencement dans le back-office coucou.',
       urlImage: "hotel.png",
       createdAt: faker.date.past(),
       updatedAt: faker.date.recent(),
@@ -315,20 +315,6 @@ await prisma.option.create({
     }
 })
 
-await prisma.categoryLogement.create({
-    data:{
-        name:'Appartements',
-         description: "Désigne les logements de type appartement, généralement indépendants et situés dans des immeubles résidentiels. Cette description sert à la classification interne et à la gestion des offres.",
-        urlImage:'house.png'
-    }
-})
-await prisma.categoryLogement.create({
-    data:{
-        name:"Hôtels",
-        description: " Regroupe les établissements hôteliers, incluant les services d’hébergement et de restauration. Cette catégorisation interne facilite le suivi et le référencement dans le back-office.",
-        urlImage:'hotel.png'
-    }
-})
 
 
 }
