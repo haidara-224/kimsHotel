@@ -46,6 +46,7 @@ export interface User {
   id: string;
   prenom: string;
   nom: string;
+  clerkUserId:string;
   email: string;
   roles:Role[]
   profileImage?: string | null;

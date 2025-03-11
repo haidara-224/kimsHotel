@@ -28,6 +28,7 @@ export function UserNav() {
       if (rolesData && rolesData.roles) {
         setUserRoles(rolesData.roles);
       }
+     
     };
     if (user) {
       fetchUserRoles();

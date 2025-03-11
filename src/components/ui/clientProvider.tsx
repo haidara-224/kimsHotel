@@ -1,16 +1,11 @@
-"use client"; 
+"use client"
 
-import { ClerkProvider } from "@clerk/nextjs";
-import { ThemeProvider } from "@/src/components/ui/providers/ThemeProvider";
-import { Toaster } from "@/src/components/ui/toaster";
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
 
-export function ClientProviders({ children }: { children: React.ReactNode }) {
-  return (
-    <ClerkProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
-        <Toaster />
-      </ThemeProvider>
-    </ClerkProvider>
-  );
+export function ThemeProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
 }

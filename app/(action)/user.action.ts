@@ -34,17 +34,24 @@ export async function getUsers() {
 
 export async function CreateAddUser() {
   const user = await currentUser()
-
+if(!user){
+  return null
+}
   const existingUser = await prisma.user.findUnique({
     where: {
-      id: user?.id
+      clerkUserId: user?.id
     }
   });
 
+  if(existingUser){
+   // console.log(existingUser)
+    return existingUser
+  }
   if (!existingUser && user?.firstName) {
     const createUser = await prisma.user.create({
       data: {
         id: user?.id || "Inconnu",
+        clerkUserId:user?.id,
         prenom: user?.lastName || "Inconnu",
         nom: user?.firstName || "Inconnu",
         email: user?.primaryEmailAddress?.emailAddress || "Inconnu",
@@ -68,11 +75,11 @@ export async function CreateAddUser() {
           data: { name: "CLIENT" },
         });
       }
-
+    
       // Assigner le rôle CLIENT à l'utilisateur
       await prisma.userRole.create({
         data: {
-          userId: createUser.id,
+          userId: createUser.clerkUserId,
           roleId: clientRole.id,
         },
       });
@@ -89,7 +96,7 @@ export async function userHasRoles() {
     if (user) {
 
       const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
+        where: { clerkUserId: user.id },
         select: {
           id: true,
           roles: {
