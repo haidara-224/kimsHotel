@@ -17,15 +17,11 @@ interface logementProps {
 export function DetailsLogement({ logementId }: logementProps) {
     const [logement, setLogement] = useState<Logement | null>(null)
 
-    async function getLogement() {
-        const data = await getLogementDetails(logementId)
-
-        setLogement(data)
-
-    }
-
     useEffect(() => {
-
+        async function getLogement() {
+            const data = await getLogementDetails(logementId) as unknown as Logement
+            setLogement(data)
+        }
         getLogement()
     }, [logementId])
 

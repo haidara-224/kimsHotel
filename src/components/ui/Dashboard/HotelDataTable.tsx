@@ -1,6 +1,6 @@
 "use client"; // Si le composant doit gérer de l'interactivité
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
 import { Eye,Star,Trash2 } from "lucide-react";
@@ -27,13 +27,13 @@ export default function HotelDataTable({ limit, title }: HotelDataTableProps){
       
     }
     const { toast } = useToast();
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
       const data = await getHotel();
  
       setHotels(limit ? (data as Hotel[]).slice(0, limit) : (data as Hotel[]));
 
 
-    }
+    }, [limit]);
     const onDeleteLogement=async(lg:Hotel)=>{
       const confirmed=window.confirm("Êtes-vous sûr de vouloir supprimer ce Logement ?")
       if(confirmed){
@@ -54,7 +54,7 @@ export default function HotelDataTable({ limit, title }: HotelDataTableProps){
   useEffect(()=>{
     chechIsSuperAdmin()
     fetchData();
-  },[])
+  },[fetchData])
 
   // Fonction client qui appelle la Server Action pour mettre à jour le statut
   const onToggle = async (id: string, newStatus: boolean) => {

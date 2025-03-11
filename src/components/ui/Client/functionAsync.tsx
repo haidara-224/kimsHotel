@@ -1,3 +1,4 @@
+/*
 import { homeTypes } from "@/types/types";
 import ListinCardHome from "../Dashboard/ListinCardHome";
 import { getData } from "@/app/(action)/home.action";
@@ -20,3 +21,4 @@ export async function ShowItems({
     </div>
   );
 }
+*/

@@ -13,11 +13,13 @@ export default function Page() {
     const [reseration, setReservation] = useState<Reservation | null>(null)
     const params = useParams()
     const reservationId = Array.isArray(params.id) ? params.id[0] : params.id || "";
-    async function fetchData() {
-        const data = await getReservationById(reservationId)
-        setReservation(data)
-    }
     useEffect(() => {
+        async function fetchData() {
+            const data = await getReservationById(reservationId) as unknown as Reservation; 
+            if (data !== undefined) {
+                setReservation(data)
+            }
+        }
         fetchData()
     }, [reservationId])
 

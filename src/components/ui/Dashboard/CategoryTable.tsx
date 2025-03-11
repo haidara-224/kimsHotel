@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
 import { CategoryLogement } from "@/types/types";
 import { DeleteCategory, getCategory } from "@/app/(action)/category.action";
@@ -28,16 +28,16 @@ export default function CategoryTable({ title, limit }: CategoryTableProps) {
     setIsSuperAdmin(isSuper)
     
   }
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     const data = await getCategory();
     setCategory(limit ? (data as CategoryLogement[]).slice(0, limit) : (data as CategoryLogement[]));
-  }
+  }, [limit]);
  
   useEffect(() => {
     chechIsSuperAdmin()
     fetchData();
 
-  }, [])
+  }, [fetchData])
 
   const HanddleEdit=(ct:CategoryLogement)=>{
     setSelectedCategory(ct)

@@ -1,6 +1,6 @@
 "use client"; // Si le composant doit gérer de l'interactivité
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { DeleteLogement, getLogement } from "@/app/(action)/Logement.action";
 import { BlokedLogementAction } from "@/app/(action)/Logement.action";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
@@ -28,11 +28,10 @@ export function LogementTable({ limit, title }: LogementTableProps) {
       
     }
     const { toast } = useToast();
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
       const data = await getLogement();
       setLogements(limit ? (data as Logement[]).slice(0, limit) : (data as Logement[]));
-
-    }
+    }, [limit]);
     const onDeleteLogement=async(lg:Logement)=>{
       const confirmed=window.confirm("Êtes-vous sûr de vouloir supprimer ce Logement ?")
       if(confirmed){
@@ -53,7 +52,7 @@ export function LogementTable({ limit, title }: LogementTableProps) {
   useEffect(()=>{
     chechIsSuperAdmin()
     fetchData();
-  },[])
+  },[fetchData])
 
   // Fonction client qui appelle la Server Action pour mettre à jour le statut
   const onToggle = async (id: string, newStatus: boolean) => {

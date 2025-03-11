@@ -10,6 +10,7 @@ interface UserTableProps {
     title?: string,
     limit?: number
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function UserDataTable({ title, limit }: UserTableProps) {
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [user, setUser] = useState<User[]>([])
@@ -21,7 +22,7 @@ export function UserDataTable({ title, limit }: UserTableProps) {
 
     }
     async function fetchData() {
-        const data = await getUsers()
+        const data = await getUsers() as unknown as User[]
         console.log(data)
         setUser(data)
 
@@ -66,7 +67,7 @@ export function UserDataTable({ title, limit }: UserTableProps) {
                             <TableCell> {ct.email}</TableCell>
                             <TableCell> {ct.telephone}</TableCell>
                             <TableCell>
-                                {ct.roles.map((role) => (
+                                {ct.roles?.map((role) => (
                                     <p key={role.id}>{role.name}</p>
                                 ))}
                             </TableCell>

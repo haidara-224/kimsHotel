@@ -46,9 +46,9 @@ export interface User {
   id: string;
   prenom: string;
   nom: string;
-  clerkUserId:string;
+  clerkUserId: string;
   email: string;
-  roles:Role[]
+  roles?: Role[]
   profileImage?: string | null;
   telephone?: string | null
   createdAt: Date;
@@ -161,7 +161,7 @@ export interface Logement {
     optionId: string;
     option: LogementOption;
   }[];
- 
+
   nbChambres: number;
   price: number;
   createdAt: Date;
@@ -174,7 +174,7 @@ export interface Hotel {
   categoryLogementId: string;
   categoryLogement: CategoryLogement;
   nom: string;
-  hotelOptions:HotelOptionOnHotel[]
+  hotelOptions: HotelOptionOnHotel[]
   description?: string | null;
   adresse?: string | null;
   ville?: string | null;
@@ -192,7 +192,7 @@ export interface Hotel {
   createdAt: Date;
   updatedAt: Date;
 }
-export interface Hotels {
+ export interface Hotels {
   id: string;
   userId: string;
   user: User
@@ -205,20 +205,22 @@ export interface Hotels {
   telephone?: string | null;
   email?: string | null;
   parking: boolean;
-     reservationRate: number;
-        avisRate: number;
-        favorisRate: number;
-        chambres: { reservations: Reservation[] }[];
-        avis: { id: string; comment: string }[];
-        favorites: { id: string; userId: string }[];
+  reservationRate: number;
+  avisRate: number;
+  favorisRate: number;
+  chambres: { reservations: Reservations[] }[];
+  avis: { id: string; comment: string }[];
+  favorites: { id: string; userId: string }[];
   isBlocked: boolean;
-  latitude?: number;
-  longitude?: number;
-  note?: number;
+  latitude?: number | null;
+  longitude?: number | null;
+  note?: number | null;
   etoils?: number;
   createdAt: Date;
   updatedAt: Date;
+  [key: string]: unknown;
 }
+
 export interface Logements {
   id: string;
   userId: string;
@@ -252,7 +254,7 @@ export interface Reservation {
   userId?: string | null;
   user: User;
   logement: Logement;
-  chambre: {hotel:Hotel};
+  chambre: { hotel: Hotel };
   logementId?: string | null;
   chambreId?: string | null;
   createdAt: Date;

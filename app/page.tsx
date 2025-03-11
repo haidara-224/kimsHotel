@@ -62,7 +62,7 @@ async function ShowItems({
     filter?: string;
   };
 }) {
-  const datas: homeTypes[] = await getData({ searchParams });
+  const datas: homeTypes[] = await getData({ searchParams }) as unknown as homeTypes[];
 
 
 

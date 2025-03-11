@@ -13,7 +13,7 @@ import { Hotels } from "@/types/types";
 
 import { NotepadText, Star, Heart } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Page() {
     const params = useParams();
@@ -24,23 +24,21 @@ export default function Page() {
     const [calculateRate, setCalculateRate] = useState<Hotels | null>(null);
 
 
-    async function fetchData() {
+    const fetchData = useCallback(async () => {
         if (!HotelId) return;
         try {
-            const data = await getHotelById(HotelId, true);
+            const data = await getHotelById(HotelId, true) as unknown as Hotels;
 
 
             setCalculateRate(data);
         } catch (error) {
             console.error("Erreur lors du chargement du logement :", error);
         }
-    }
+    }, [HotelId]);
 
     useEffect(() => {
-
-
         fetchData();
-    }, [HotelId]);
+    }, [HotelId, fetchData]);
 
     return (
         <>

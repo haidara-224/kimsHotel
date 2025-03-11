@@ -7,43 +7,77 @@ import { ChartReservation } from "@/src/components/ui/Dashboard/ChartReservation
 import { DetailsLogement } from "@/src/components/ui/Dashboard/DetailsLogement";
 
 import { DetailsCardLogement } from "@/src/components/ui/Dashboard/DetailsLogementCard";
+import {  CategoryLogement, Reservation, User } from "@/types/types";
 
 import { NotepadText, Star, Heart } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from "react";
+interface Logement {
+    id: string;
+    userId: string;
+    user: User;
+    categoryLogementId: string;
+    categoryLogement: CategoryLogement;
+    nom: string;
+    description: string;
+    adresse: string;
+    ville: string;
+    telephone: string;
+    email: string;
+    parking: boolean;
+    reservationRate: number;
+    avisRate: number;
+    favorisRate: number;
+    chambres: Reservation[];
+    reservations: { id: string }[];
+    avis: { id: string; comment: string }[];
+    favorites: { id: string; userId: string }[];
+    // Définissez un type pour les favoris si nécessaire
+    isBlocked: boolean;
+    latitude: number;
+    longitude: number;
+    note: number;
+    etoils?: number;  // Facultatif si disponible
+    price: number;
+    nbChambres: number;
+    surface: number;
+    extraBed: boolean;
+    hasClim: boolean;
+    hasKitchen: boolean;
+    hasTV: boolean;
+    hasWifi: boolean;
+    disponible: boolean;
+   
+    createdAt: Date;
+    updatedAt: Date;
+  }
 export default function Page() {
     const params = useParams();
     const logementId = Array.isArray(params.id) ? params.id[0] : params.id || "";
 
-    interface Logement {
-   
-        reservationRate: number;
-        avisRate: number;
-        favorisRate: number;
-        reservations: { id: string }[];
-        avis: { id: string; comment: string }[];
-        favorites: { id: string; userId: string }[];
-    }
+  
 
     const [calculateRate, setCalculateRate] = useState<Logement | null>(null);
   
 
-    async function fetchData() {
-        if (!logementId) return; 
+    const fetchData = useCallback(async () => {
+        if (!logementId) return;
         try {
-            const data = await getLogementById(logementId, true); 
+            const data = await getLogementById(logementId, true) as unknown as Logement; 
+           
+
             setCalculateRate(data);
         } catch (error) {
             console.error("Erreur lors du chargement du logement :", error);
-        } 
-    }
+        }
+    }, [logementId]);
+   
 
     useEffect(() => {
        
 
         fetchData();
-    }, [logementId]);
+    }, [logementId,fetchData]);
 
     return (
         <>
@@ -94,3 +128,5 @@ export default function Page() {
         </>
     );
 }
+// Removed custom useCallback function
+

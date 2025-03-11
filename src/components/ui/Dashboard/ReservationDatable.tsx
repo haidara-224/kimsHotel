@@ -15,6 +15,7 @@ interface ReservationTableProps {
     limit?: number
 
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function ReservationDataTable({ title, limit }: ReservationTableProps) {
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [reservation, setReservation] = useState<Reservation[]>([])
@@ -26,7 +27,7 @@ export function ReservationDataTable({ title, limit }: ReservationTableProps) {
 
     }
     async function fetchData() {
-        const data = await getReservation()
+        const data = await getReservation() as unknown as Reservation[];
         setReservation(data)
 
     }

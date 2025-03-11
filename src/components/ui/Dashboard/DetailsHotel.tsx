@@ -1,7 +1,7 @@
 'use client'
 import { Hotel } from "@/types/types"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table"
 import { getHotelsDetails } from "@/app/(action)/hotel.action"
@@ -16,17 +16,14 @@ interface HotelProps {
 export function DetailsHotel({ hotelId }: HotelProps) {
     const [hotel, setHotel] = useState<Hotel | null>(null)
 
-    async function getLogement() {
-        const data = await getHotelsDetails(hotelId)
-        console.log(data)
+    const getLogement = useCallback(async () => {
+        const data = await getHotelsDetails(hotelId) as unknown as Hotel
         setHotel(data)
-
-    }
+    }, [hotelId])
 
     useEffect(() => {
-
         getLogement()
-    }, [hotelId])
+    }, [hotelId, getLogement])
 
     return (
         <div className="">

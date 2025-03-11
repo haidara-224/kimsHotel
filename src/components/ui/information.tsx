@@ -1,12 +1,13 @@
 'use client'
-import { useUser } from "@clerk/nextjs";
+import Image from "next/image";
+//import { useUser } from "@clerk/nextjs";
 
 export function Information(){
-    const {user}=useUser()
-const img= user?.imageUrl
+   // const {user}=useUser()
+//const img= user?.imageUrl
     return (
         <div>
-        <img src={img} alt="" />
+        <Image src="/path-to-image.jpg" alt="Description" width={500} height={300} />
     </div>
     )
 }
