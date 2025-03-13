@@ -1,7 +1,94 @@
 'use server'
 import { prisma } from "@/src/lib/prisma";
 import { Logement } from "@/types/types";
+import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+
+
+
+
+export async function CreateLogement(
+  categoryLogementId: string,
+  option: string[],
+  nom: string,
+  description: string,
+  adresse: string,
+  ville: string,
+  telephone: string,
+  email: string,
+  capacity: number,
+  hasClim: boolean,
+  hasWifi: boolean,
+  hasTV: boolean,
+  hasKitchen: boolean,
+  parking: boolean,
+  surface: number,
+  extraBed: boolean,
+  nbChambres: number,
+  price: number
+) {
+  try {
+    // Vérification si l'utilisateur est authentifié
+    const user = await currentUser();
+    if (!user) {
+      throw new Error("Utilisateur non authentifié");
+    }
+
+    // Vérification si l'email existe déjà dans la base de données
+    const existingLogement = await prisma.logement.findFirst({
+      where: { email },
+    });
+
+    if (existingLogement) {
+      return { error: "L'email est déjà utilisé" };
+    }
+
+    // Création du logement
+    const createdLogement = await prisma.logement.create({
+      data: {
+        userId: user.id,
+        nom,
+        description,
+        adresse,
+        ville,
+        telephone,
+        email,
+        capacity,
+        hasClim,
+        hasWifi,
+        hasTV,
+        hasKitchen,
+        parking,
+        surface,
+        extraBed,
+        nbChambres,
+        price,
+        categoryLogementId,
+      },
+    });
+
+    if (!createdLogement) {
+      throw new Error("Échec de la création du logement");
+    }
+
+    // Ajout des options au logement
+    if (option.length > 0) {
+      await prisma.logementOptionOnLogement.createMany({
+        data: option.map((optionId) => ({
+          logementId: createdLogement.id,
+          optionId,
+        })),
+      });
+    }
+
+    
+    return createdLogement;
+  } catch (error) {
+    console.error("Erreur lors de la création du logement :", error);
+    throw new Error("Une erreur s'est produite lors de la création du logement");
+  }
+}
+
 export async function getLogement() {
   const logement = await prisma.logement.findMany({
     orderBy: { createdAt: "desc" },

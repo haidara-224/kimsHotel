@@ -1,34 +1,52 @@
+
 import * as z from "zod";
 
-import { prisma } from "@/src/lib/prisma";
-async function findValidOptions(ids: string[]) {
-    const options = await prisma.option.findMany({
-      where: { id: { in: ids } },
-      select: { id: true },
-    });
-  
-    const validIds = options.map((opt) => opt.id);
-    return ids.every((id) => validIds.includes(id));
-  }
-  async function findCategoryLogement(id:string){
-    const types=await prisma.categoryLogement.findFirst({
-        where:{
-            id
-        }
-    })
-    return !!types;
-  }
-export const CreationShema = z.object({
-    type_Etablissement:z.string().refine(async (id) => {
-        if (!id) return false;
-        return await findCategoryLogement(id);
-      }, {
-        message: "Le type d'tablissement n'est pas valide."
-      }), 
-    option: z.array(z.string()).min(1, "Sélectionnez au moins une option").refine(async (ids) => {
-        if (!ids || ids.length === 0) return false;
-        return await findValidOptions(ids);
-      }, {
-        message: "Une ou plusieurs options sélectionnées ne sont pas valides.",
-      }),
+
+export const CreationSchema = z.object({
+    option: z.array(z.string()).nonempty("Sélectionnez au moins une option."),
+
+
+    nom: z.string()
+        .min(3, "Le nom doit contenir au moins 3 caractères.")
+        .max(100, "Le nom est trop long."),
+
+    description: z.string()
+        .min(10, "La description doit contenir au moins 10 caractères.")
+        .max(500, "La description est trop longue."),
+
+    adresse: z.string()
+        .min(5, "L'adresse doit contenir au moins 5 caractères.")
+        .max(200, "L'adresse est trop longue."),
+
+    ville: z.string()
+        .min(2, "La ville doit contenir au moins 2 caractères.")
+        .max(100, "La ville est trop longue."),
+
+    telephone: z.string()
+        .regex(/^\+?\d{7,15}$/, "Le numéro de téléphone n'est pas valide."),
+
+    email: z.string()
+        .email("L'adresse e-mail n'est pas valide."),
+
+    capacity: z.number()
+        .min(1, "La capacité doit être d'au moins 1 personne.")
+        .max(1000, "La capacité ne peut pas dépasser 1000 personnes.").positive(),
+
+    hasWifi: z.boolean(),
+    hasTV: z.boolean(),
+    hasClim: z.boolean(),
+    hasKitchen: z.boolean(),
+    parking: z.boolean(),
+    extraBed: z.boolean(),
+
+    surface: z.number()
+        .min(1, "La surface ne peut pas être négative."),
+
+    nbChambres: z.number()
+        .min(1, "Il doit y avoir au moins 1 chambre.")
+        .max(10, "Il ne peut pas y avoir plus de 50 chambres."),
+
+    price: z.number()
+        .min(100, "Le prix ne peut pas être négatif.")
+        
 });

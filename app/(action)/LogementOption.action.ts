@@ -12,3 +12,19 @@ export async function getLogementOptions() {
     }
     
 }
+export async function getLogementOptionIdName(){
+    try{
+        const LogementOptions=await prisma.option.findMany({
+            select:{
+                id: true,
+                title: true,
+                imageUrl:true
+            }
+        })
+        if(LogementOptions.length<0) return
+        return LogementOptions
+
+    }catch(error){
+        console.log(error)
+    }
+}
