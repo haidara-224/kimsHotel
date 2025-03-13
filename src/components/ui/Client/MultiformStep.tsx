@@ -202,7 +202,7 @@ export default function MultiformStep() {
             {/* Barre de progression */}
             <ProgresseBars curentstep={step} steps={steps} />
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 px-32">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 px-0 lg:px-32">
                 {/* Étape 1 */}
                 {step === 1 && (
                     <div className="space-y-4  flex flex-col justify-center items-center m-auto ">
