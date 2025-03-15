@@ -1,19 +1,23 @@
+import MultiformStepHotel from "@/src/components/ui/Client/MultistepHotel";
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { NavBar } from "@/src/components/ui/NavBar";
 
-export default function Page(){
+export default function Page() {
     return (
         <>
-        <NavBar/>
-        <div >
-            <span className="px-2 py-2 lg:px-8 lg:py-10">
-            <BackButton text="Back" link="/type-etablissement"/>
-            </span>
-        
-        <div>Hello Hotel</div>
-        </div>
-       
+            <NavBar />
+            <div className="lg:px-8 min-h-screen mt-3">
+
+                <BackButton text="Back" link="/type-etablissement" />
+
+
+                <div className="container mx-auto w-full ">
+                    <h1 className="text-center text-slate-500 cursor-pointer hover:text-slate-400 hover:transition-all text-3xl ">Inscrivez votre Hotel,et commencez à recevoir des clients !</h1>
+                    <MultiformStepHotel />
+                </div>
+            </div>
+
         </>
-        
+
     )
 }

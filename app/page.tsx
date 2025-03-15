@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense} from "react";
 import { MapFilterItems } from "@/src/components/ui/MapFilter";
 import { NavBar } from "@/src/components/ui/NavBar";
 import ListinCardHome from "@/src/components/ui/Dashboard/ListinCardHome";
@@ -14,23 +14,38 @@ async function getData({ searchParams }: { searchParams?: { filter?: string } })
   noStore()
    //await new Promise(resolve => setTimeout(resolve, 5000));
   
-  const [hotels, logements] = await Promise.all([
+   const [hotels, logements] = await Promise.all([
     prisma.hotelOptionOnHotel.findMany({
       where: { option: { name: searchParams?.filter } },
-      include: { hotel: { include: {   hotelOptions: {
-        include: { option: true },
+      include: { 
+        hotel: { 
+          include: {  
+            hotelOptions: { include: { option: true } },
+            categoryLogement: true, 
+            images:true
+            
+          } 
+        } 
       },
-      categoryLogement: true, } } },
+      distinct: ['hotelId'], // Assure que chaque hôtel est unique
     }),
     prisma.logementOptionOnLogement.findMany({
       where: { option: { name: searchParams?.filter } },
-      include: { logement: { include: {  logementOptions: {
-        include: { option: true },
+      include: { 
+        logement: { 
+          include: {  
+            logementOptions: { include: { option: true } },
+            categoryLogement: true,
+            images:true
+          
+            
+          } 
+        } 
       },
-      categoryLogement: true,} } },
+      distinct: ['logementId'], // Assure que chaque logement est unique
     }),
   ]);
-
+console.log(hotels,logements)
   return [
     ...hotels.map(h => ({ type: "hotel", ...h.hotel })),
     ...logements.map(l => ({ type: "logement", ...l.logement })),
@@ -64,23 +79,28 @@ async function ShowItems({
 }) {
   const datas: homeTypes[] = await getData({ searchParams }) as unknown as homeTypes[];
 
+  console.log(datas)
 
+ 
 
   return (
     <>
       {datas.length > 0 ? (
       
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 my-10">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-8 mt-10">
           {datas.map((item, index) => (
-            <ListinCardHome
-              key={index}
-              nom={item.nom}
-              type={item.type}
-              description={item.description}
-              adresse={item.adresse}
-            />
+          <ListinCardHome
+          key={index}
+          nom={item.nom}
+          type={item.type}
+          prix={item.type === "logement" ? item.price : undefined}
+          adresse={item.adresse}
+          urlImage={item.type === "logement" ? item.images.map((img) => img.urlImage) : item.images ? item.images.map((img) => img.urlImage) : []}
+        />
+        
           ))}
         </div>
+       
         
       
       ) : (

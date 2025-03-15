@@ -60,7 +60,7 @@ if(!user){
 
 
       },
-      include: { roles: true }, // Important pour récupérer les rôles après création
+      include: { roles: true }, 
 
     })
     if (createUser?.roles.length === 0) {
@@ -69,14 +69,13 @@ if(!user){
         where: { name: "CLIENT" },
       });
 
-      // Si le rôle CLIENT n'existe pas, on le crée (évite les erreurs)
+   
       if (!clientRole) {
         clientRole = await prisma.role.create({
           data: { name: "CLIENT" },
         });
       }
     
-      // Assigner le rôle CLIENT à l'utilisateur
       await prisma.userRole.create({
         data: {
           userId: createUser.clerkUserId,
@@ -110,7 +109,7 @@ export async function userHasRoles() {
       });
 
       if (dbUser) {
-        // Formate la réponse pour obtenir uniquement l'id et un tableau de noms de rôles
+       
         const formattedUser = {
           id: dbUser.id,
           roles: dbUser.roles.map(r => r.role.name)
@@ -156,6 +155,28 @@ export async function userIsSuperAdmin(): Promise<boolean> {
       userId: user.id,
       role: {
         name:'SUPER_ADMIN'
+      }
+    },
+    select: {
+      role: {
+        select: { name: true }
+      }
+    }
+  });
+
+  return Boolean(userRole);
+}
+export async function userIsHotelier(): Promise<boolean> {
+
+  const user = await currentUser();
+  if (!user) return false;
+
+
+  const userRole = await prisma.userRole.findFirst({
+    where: {
+      userId: user.id,
+      role: {
+        name:'HOTELIER'
       }
     },
     select: {

@@ -10,7 +10,8 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       }
-    ]
+    ],
+    domains: ['unxovct6jcrhoof5.public.blob.vercel-storage.com'],
   },
   experimental: {
     authInterrupts: true,

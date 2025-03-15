@@ -3,6 +3,7 @@ import { prisma } from "@/src/lib/prisma";
 import { Logement } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import {put} from '@vercel/blob'
 
 
 
@@ -25,25 +26,28 @@ export async function CreateLogement(
   surface: number,
   extraBed: boolean,
   nbChambres: number,
-  price: number
+  price: number,
+  images: File[]
 ) {
   try {
-    // Vérification si l'utilisateur est authentifié
+
     const user = await currentUser();
-    if (!user) {
-      throw new Error("Utilisateur non authentifié");
+    if (!user) throw new Error("Utilisateur non authentifié");
+
+
+    if (!nom || !email || !ville || !adresse || !telephone || capacity <= 0 || price < 0) {
+      throw new Error("Données invalides, veuillez vérifier les champs requis.");
     }
 
-    // Vérification si l'email existe déjà dans la base de données
+  
     const existingLogement = await prisma.logement.findFirst({
       where: { email },
+      select: { id: true },
     });
 
-    if (existingLogement) {
-      return { error: "L'email est déjà utilisé" };
-    }
+    if (existingLogement) return { error: "L'email est déjà utilisé" };
 
-    // Création du logement
+   
     const createdLogement = await prisma.logement.create({
       data: {
         userId: user.id,
@@ -67,27 +71,87 @@ export async function CreateLogement(
       },
     });
 
-    if (!createdLogement) {
-      throw new Error("Échec de la création du logement");
+    if (!createdLogement) throw new Error("Échec de la création du logement");
+
+
+    const uploadedImages = await Promise.allSettled(
+      images.map(async (file) => {
+        try {
+          const fileBuffer = Buffer.from(await file.arrayBuffer());
+          const blob = await put(file.name, fileBuffer, { access: 'public' });
+          return { logementId: createdLogement.id, urlImage: blob.url };
+        } catch (err) {
+          console.error("Erreur lors de l'upload d'une image :", err);
+          return null;
+        }
+      })
+    );
+
+   
+    const validImages = uploadedImages
+      .filter(result => result.status === "fulfilled" && result.value !== null)
+      .map(result => (result as PromiseFulfilledResult<{ logementId: string; urlImage: string }>).value);
+
+    if (validImages.length > 0) {
+      await prisma.imageLogement.createMany({ data: validImages });
     }
 
-    // Ajout des options au logement
-    if (option.length > 0) {
-      await prisma.logementOptionOnLogement.createMany({
-        data: option.map((optionId) => ({
-          logementId: createdLogement.id,
-          optionId,
-        })),
-      });
-    }
-
+    if (createdLogement) {
+      if (option.length > 0) {
+        await prisma.logementOptionOnLogement.createMany({
+          data: option.map((optionId) => ({
+            logementId: createdLogement.id,
+            optionId,
+          })),
+         
+        });
+        
+      }
     
+      const userHasRole = await prisma.userRole.findFirst({
+          where: {
+              userId: user.id,
+              role: { name: 'HOTELIER' }  
+          }
+      });
+  
+     
+      if (userHasRole) {
+          return createdLogement;  
+      }
+  
+     
+      const hasRole = await prisma.role.findUnique({
+          where: { name: 'HOTELIER' },
+          select: { id: true }
+      });
+  
+ 
+      if (!hasRole) {
+          throw new Error("Le rôle 'HOTELIER' n'existe pas dans la base de données.");
+      }
+  
+
+      await prisma.userRole.create({
+          data: {
+              userId: user.id,
+              roleId: hasRole.id, 
+          },
+      });
+  }
+  
+
     return createdLogement;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Erreur lors de la création du logement :", error);
-    throw new Error("Une erreur s'est produite lors de la création du logement");
+    if (error instanceof Error) {
+      throw new Error(error.message || "Une erreur s'est produite lors de la création du logement");
+    } else {
+      throw new Error("Une erreur s'est produite lors de la création du logement");
+    }
   }
 }
+
 
 export async function getLogement() {
   const logement = await prisma.logement.findMany({

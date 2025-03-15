@@ -20,9 +20,9 @@ export default async function Page() {
    return (
       <>
          <NavBar />
-         <div className="container mx-auto px-5 lg:px-10  flex justify-center flex-col items-center w-full gap-4  h-screen mb-10">
-         <h1 className="text-3xl mb-10 font-semibold cursor-pointer text-slate-500 hover:text-slate-800 ">Choisir votre type d&apos;etablissements</h1>
-            <div className="flex lg:flex-row flex-col justify-center items-center w-full gap-10 mb-10">
+         <div className="container mx-auto px-5 lg:px-10  flex justify-center flex-col items-center w-full gap-4 mt-10">
+         <h1 className="text-3xl mb-10 font-semibold cursor-pointer text-slate-500 hover:text-slate-800  ">Choisir votre type d&apos;etablissements</h1>
+            <div className="flex lg:flex-row flex-col justify-center items-center w-full gap-10">
           
             {categoryEtablissement.map((et) => {
                const isHotel = et.name === "Hôtels";

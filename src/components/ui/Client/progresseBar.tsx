@@ -5,12 +5,12 @@ interface ProgresseBarsPrpos{
 export default function ProgresseBars({curentstep,steps}:ProgresseBarsPrpos) {
     const progressWith=((curentstep-1)/(steps.length-1))*100
   return (
-    <div className="w-full py-4 mb-8 ">
+    <div className="w-full py-4 mb-8">
         <div className="relative">
             <div className="absolute top-4 bg-gray-200 left-[10%] right-[10%] h-2">
                 <div className="absolute top-0 left-0 h-full bg-blue-600 transition-all duration-500" style={{width:`${progressWith}%`}}/>
             </div>
-            <div className="flex justify-between mx-auto">
+            <div className="flex justify-between mx-auto ">
                 {
                     steps.map((step,index)=>(
                         <div key={index} className={`relative flex flex-col items-center ${index===0 ? 'ml-0' : index===steps.length-1 ? 'mr-0' : ""}`} 

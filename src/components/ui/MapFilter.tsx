@@ -28,7 +28,7 @@ export function MapFilterItems() {
   );
 
   return (
-    <div className="flex justify-center gap-x-6 mt-5 w-full overflow-x-auto no-scrollbar px-4 py-2 bg-white rounded-lg shadow-md">
+    <div className="flex justify-center gap-x-6 mt-5 w-full overflow-x-auto no-scrollbar px-4 py-2 border-2 bg-white rounded-lg shadow-2xl">
       {categoryItems.map((item) => (
         <Link
           key={item.id}
@@ -41,7 +41,7 @@ export function MapFilterItems() {
           <div
             className={cn(
               "relative flex items-center justify-center w-12 h-12 rounded-full border-2 shadow-sm transition-all duration-300",
-              search === item.name ? "border-orange-500 bg-orange-100" : "border-gray-300 bg-gray-100"
+              search === item.name ? "border-cyan-500 bg-cyan-100" : "border-gray-300 bg-gray-100"
             )}
           >
             <Image

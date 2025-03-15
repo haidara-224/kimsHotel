@@ -55,7 +55,13 @@ export interface User {
   updatedAt: Date;
 }
 
-
+export interface ImageLogement{
+  id:string,
+  logementId:string,
+  urlImage:string,
+  createdAt: Date;
+  updatedAt: Date;
+}
 export interface UserRole {
   userId: string;
   roleId: string;
@@ -366,12 +372,15 @@ export interface homeTypes {
   description: string;
   email: string;
   etoils: number | null;
+  images: ImageLogement[] | ImageChambre[],
+
   hotelOptions: {
     hotelId?: string | null;
     logementId?: string | null;
     option: LogementOption;
     optionId: string;
   }[];
+  price:number;
   isBlocked: boolean;
   latitude: string;
   longitude: string;
