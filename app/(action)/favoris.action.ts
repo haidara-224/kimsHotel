@@ -30,7 +30,7 @@ export async function AddFavorisLogementWithUser(logementId: string) {
 
 export async function AddFavorisHotelWithUser(hotelId: string) {
     const user = await currentUser();
-    if (!user) throw new Error("Utilisateur non connecté");
+    if (!user)  return { success: false, message: "Utilisateur non connecté" }
     const alreadyFavorite = await prisma.favorite.findFirst({
         where: { userId: user.id, hotelId }
     });
