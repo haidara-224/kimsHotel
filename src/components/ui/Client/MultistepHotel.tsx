@@ -126,7 +126,7 @@ export default function MultiformStepHotel() {
                 fieldValidate = ["option", "parking", "type_etoils"];
                 break;
             case 3:
-                fieldValidate = ["hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "price", "capacity", "type_chambre", "images"];
+                fieldValidate = ["hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed","surface", "price", "capacity", "type_chambre", "images"];
                 break;
         }
         const isValid = await trigger(fieldValidate);
@@ -152,6 +152,7 @@ export default function MultiformStepHotel() {
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrl(fileUrls);
             setValue("images", fileArray);
+            console.log(files)
         }
     };
 
@@ -196,6 +197,8 @@ export default function MultiformStepHotel() {
 
     return (
         <div className="mx-2xl mx-auto p-6 ">
+            <pre>{JSON.stringify(watch(), null, 2)}</pre>
+
             <ProgresseBars curentstep={step} steps={steps} />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8  lg:px-32">
                 {step === 1 && (
@@ -293,6 +296,11 @@ export default function MultiformStepHotel() {
                                 {errors.capacity && <span className="text-red-500">{errors.capacity.message}</span>}
                             </div>
                             <div>
+                                <Label>Surface </Label>
+                                <Input type="surface"  {...register("surface", { valueAsNumber: true })} />
+                                {errors.surface && <span className="text-red-500">{errors.surface.message}</span>}
+                            </div>
+                            <div>
                                 <Label>Type de Chambre</Label>
                                 <Select onValueChange={(value) => setValue("type_chambre", value as "SIMPLE" | "DOUBLE" | "SUITE")}>
                                     <SelectTrigger>
@@ -307,6 +315,7 @@ export default function MultiformStepHotel() {
                                     </SelectContent>
                                 </Select>
                                 {errors.type_chambre && <span className="text-red-500">{errors.type_chambre.message}</span>}
+                               
                             </div>
                         </div>
                         <div className="mt-5">

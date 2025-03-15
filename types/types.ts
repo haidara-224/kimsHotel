@@ -307,7 +307,7 @@ export interface Chambre {
   hasKitchen: boolean;
   surface?: number | null;
   extraBed: boolean;
-  ImageChambre?: ImageChambre[] | null;
+  images?: ImageChambre[] | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -372,7 +372,7 @@ export interface homeTypes {
   description: string;
   email: string;
   etoils: number | null;
-  images: ImageLogement[] | ImageChambre[],
+  images: ImageLogement[],
 
   hotelOptions: {
     hotelId?: string | null;
@@ -380,6 +380,7 @@ export interface homeTypes {
     option: LogementOption;
     optionId: string;
   }[];
+  chambres:Chambre[]
   price:number;
   isBlocked: boolean;
   latitude: string;
