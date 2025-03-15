@@ -33,7 +33,7 @@ async function getData({ searchParams }: { searchParams?: { filter?: string } })
           } 
         } 
       },
-      distinct: ['hotelId'], // Assure que chaque hôtel est unique
+      distinct: ['hotelId'], 
     }),
     prisma.logementOptionOnLogement.findMany({
       where: { option: { name: searchParams?.filter } },
@@ -48,7 +48,7 @@ async function getData({ searchParams }: { searchParams?: { filter?: string } })
           } 
         } 
       },
-      distinct: ['logementId'], // Assure que chaque logement est unique
+      distinct: ['logementId'], 
     }),
   ]);
 //console.log(hotels)
@@ -94,7 +94,6 @@ async function ShowItems({
 }) {
   const datas: homeTypes[] = await getData({ searchParams }) as unknown as homeTypes[];
 
-  console.log(datas)
 
  
 
@@ -110,6 +109,8 @@ async function ShowItems({
           type={item.type}
           prix={item.type === "logement" ? item.price : undefined}
           adresse={item.adresse}
+          logementId={item.type === 'logement' ? item.id : '' }
+          hotelId={item.type === 'hotel' ? item.id : '' }
           urlImage={getImageUrls(item)}
         />
         

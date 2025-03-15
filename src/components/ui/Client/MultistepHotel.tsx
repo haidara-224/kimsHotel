@@ -132,7 +132,7 @@ export default function MultiformStepHotel() {
                 break;
         }
         const isValid = await trigger(fieldValidate);
-        console.log(isValid)
+        
         if (isValid) {
             setStep(nextStep);
         }
@@ -154,7 +154,7 @@ export default function MultiformStepHotel() {
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrl(fileUrls);
             setValue("images", fileArray);
-            console.log(files)
+       
         }
     };
 
@@ -165,7 +165,7 @@ export default function MultiformStepHotel() {
     }, [selectedOption, setValue]);
 
     const onSubmit = async (data: FormLogement) => {
-        console.log("Form submitted", data); // Ajoutez ce log pour vérifier que la fonction est appelée
+      
         const response = await createHotel(
             categoryLogementId,
             data.numero_chambre,
