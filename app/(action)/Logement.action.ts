@@ -38,7 +38,7 @@ export async function CreateLogement(
     if (!nom || !email || !ville || !adresse || !telephone || capacity <= 0 || price < 0) {
       throw new Error("Données invalides, veuillez vérifier les champs requis.");
     }
-
+/*
   
     const existingLogement = await prisma.logement.findFirst({
       where: { email },
@@ -46,7 +46,7 @@ export async function CreateLogement(
     });
 
     if (existingLogement) return { error: "L'email est déjà utilisé" };
-
+*/
    
     const createdLogement = await prisma.logement.create({
       data: {

@@ -25,6 +25,7 @@ import { createHotel } from "@/app/(action)/hotel.action";
 interface FormLogement {
     option: [string, ...string[]];
     nom: string;
+    numero_chambre:string;
     description: string;
     adresse: string;
     ville: string;
@@ -87,6 +88,7 @@ export default function MultiformStepHotel() {
         resolver: zodResolver(CreationSchemaHotel),
         mode: "onChange",
         defaultValues: {
+            numero_chambre:"",
             option: [],
             nom: "",
             description: "",
@@ -103,7 +105,7 @@ export default function MultiformStepHotel() {
             hasClim: false,
             hasKitchen: false,
             price: 0,
-            surface: 0,
+            surface: 12,
             extraBed: false,
             images: []
         },
@@ -126,7 +128,7 @@ export default function MultiformStepHotel() {
                 fieldValidate = ["option", "parking", "type_etoils"];
                 break;
             case 3:
-                fieldValidate = ["hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed","surface", "price", "capacity", "type_chambre", "images"];
+                fieldValidate = ["numero_chambre","hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed","surface", "price", "capacity", "type_chambre", "images"];
                 break;
         }
         const isValid = await trigger(fieldValidate);
@@ -166,6 +168,7 @@ export default function MultiformStepHotel() {
         console.log("Form submitted", data); // Ajoutez ce log pour vérifier que la fonction est appelée
         const response = await createHotel(
             categoryLogementId,
+            data.numero_chambre,
             data.option,
             data.nom,
             data.description,
@@ -183,6 +186,7 @@ export default function MultiformStepHotel() {
             data.type_etoils,
             data.extraBed,
             data.price,
+          
             data.images
         );
         if ('error' in response) {
@@ -206,11 +210,11 @@ export default function MultiformStepHotel() {
                     <div className="space-y-4 flex flex-col justify-center m-auto">
                         <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-5">
                             <div>
-                                <Input {...register("nom")} placeholder="Donner Un Nom A Votre Appartement" />
+                                <Input {...register("nom")} placeholder="Donner Un Nom A Votre Hôtels" />
                                 {errors.nom && <span className="text-red-500">{errors.nom.message}</span>}
                             </div>
                             <div>
-                                <Input {...register("ville")} placeholder="La ville où se trouve votre Appartement" />
+                                <Input {...register("ville")} placeholder="La ville où se trouve votre Hôtels" />
                                 {errors.ville && <span className="text-red-500">{errors?.ville?.message}</span>}
                             </div>
                             <div>
@@ -257,18 +261,26 @@ export default function MultiformStepHotel() {
                                 </div>
                             ))}
                             {errors.parking && <span className="text-red-500">{errors.parking.message}</span>}
-                        </div>
-                        <div>
+                            <div className="w-1/2">
                             <Label>Etoils</Label>
                             <Input type="number"  {...register("type_etoils", { valueAsNumber: true })} />
                             {errors.type_etoils && <span className="text-red-500">{errors.type_etoils.message}</span>}
                         </div>
+                        </div>
+                      
                     </div>
                 )}
                 {step === 3 && (
                     <>
                         <h1>Ajouter une chambre, vous serez redirigez vers votre dashboard ou vous ajouter autant de chambre que vous voulez</h1>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <Label>Numero de chambre </Label>
+                                <div >
+                                <Input type="text"  {...register("numero_chambre")} />
+                                {errors.numero_chambre && <span className="text-red-500">{errors.numero_chambre.message}</span>}
+                                </div>
+                               
+                        <div className="grid grid-cols-2 gap-4">
+                         
                             {[
                                 { id: "clim", label: "Climatisation", icon: <Snowflake />, field: "hasClim" },
                                 { id: "wifi", label: "WiFi", icon: <Wifi />, field: "hasWifi" },
@@ -277,6 +289,7 @@ export default function MultiformStepHotel() {
                                 { id: "extraBed", label: "Lit supplémentaire", icon: "🛏️", field: "extraBed" },
                             ].map(({ id, label, icon, field }) => (
                                 <div key={id} className="flex items-center space-x-3 p-2">
+                                         
                                     <Checkbox id={id}  {...register(field as keyof FormLogement)} onCheckedChange={(checked) => setValue(field as keyof FormLogement, checked)} />
                                     <label htmlFor={id} className="flex items-center text-sm font-medium cursor-pointer space-x-2">
                                         {icon} <span>{label}</span>
@@ -284,21 +297,30 @@ export default function MultiformStepHotel() {
                                 </div>
                             ))}
                         </div>
-                        {errors.type_chambre && <span className="text-red-500">{errors.type_chambre.message}</span>}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                     
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <Label>Prix </Label>
-                                <Input type="number"  {...register("price", { valueAsNumber: true })} />
+                                <div className="flex gap-2">
+                                <Input type="number"  {...register("price", { valueAsNumber: true })} /> <span>/nuit</span>
+                                </div>
+                               
                                 {errors.price && <span className="text-red-500">{errors.price.message}</span>}
                             </div>
                             <div>
                                 <Label>Capacité </Label>
-                                <Input type="number"  {...register("capacity", { valueAsNumber: true })} />
+                                <div className="flex gap-5">
+                                <Input type="number"  {...register("capacity", { valueAsNumber: true })} /> <span>Personnes</span>
+
+                                </div>
                                 {errors.capacity && <span className="text-red-500">{errors.capacity.message}</span>}
                             </div>
                             <div>
                                 <Label>Surface </Label>
-                                <Input type="surface"  {...register("surface", { valueAsNumber: true })} />
+                                <div className="flex gap-5">
+                                <Input type="surface"  {...register("surface", { valueAsNumber: true })} /> <span>m²</span>
+
+                                </div>
                                 {errors.surface && <span className="text-red-500">{errors.surface.message}</span>}
                             </div>
                             <div>

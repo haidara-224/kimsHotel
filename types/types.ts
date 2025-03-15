@@ -296,6 +296,7 @@ export interface Paiement {
 export interface Chambre {
   id: string;
   hotelId: string;
+  numero_chambre:string;
   description?: string | null;
   type: TypeChambre;
   price: number;

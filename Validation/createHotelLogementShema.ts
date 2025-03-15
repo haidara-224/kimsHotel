@@ -29,8 +29,8 @@ export const CreationSchema = z.object({
         .email("L'adresse e-mail n'est pas valide."),
 
     capacity: z.number()
-        .min(1, "La capacité doit être d'au moins 1 personne.")
-        .max(1000, "La capacité ne peut pas dépasser 1000 personnes.").positive(),
+        .min(1, "La capacité doit être d'au moins 1 personne."),
+      
 
     hasWifi: z.boolean(),
     hasTV: z.boolean(),
@@ -40,7 +40,7 @@ export const CreationSchema = z.object({
     extraBed: z.boolean(),
 
     surface: z.number()
-        .min(1, "La surface ne peut pas être négative."),
+        .min(10, "La surface ne peut pas être négative."),
 
     nbChambres: z.number()
         .min(1, "Il doit y avoir au moins 1 chambre.")

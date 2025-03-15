@@ -194,6 +194,7 @@ model HotelOptionOnHotel {
 
 model Chambre {
   id           String         @id @default(uuid())
+ numero_chambre String?  @unique
   hotel        Hotel          @relation("HotelChambres", fields: [hotelId], references: [id], onDelete: Cascade)
   hotelId      String
   description  String?        @db.VarChar(1000)

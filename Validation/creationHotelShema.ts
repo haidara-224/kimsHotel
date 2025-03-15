@@ -2,6 +2,8 @@ import * as z from "zod";
 
 export const CreationSchemaHotel = z.object({
   option: z.array(z.string()).nonempty("Sélectionnez au moins une option."),
+
+  numero_chambre: z.string().nonempty("Le numéro de chambre est requis."),
   nom: z.string()
     .min(3, "Le nom doit contenir au moins 3 caractères.")
     .max(100, "Le nom est trop long."),
@@ -22,7 +24,7 @@ export const CreationSchemaHotel = z.object({
       message: "Chaque image doit être inférieure à 5 Mo.",
     })
   ).min(1, "Ajoutez au moins une image."),
-  type_etoils: z.number().max(5, "Le nombre d'étoiles ne peut pas dépasser 5."),
+  type_etoils: z.number().max(7, "Le nombre d'étoiles ne peut pas dépasser 7."),
   parking: z.boolean(),
   capacity: z.number()
     .min(1, "La capacité doit être d'au moins 1 personne.")
@@ -34,7 +36,7 @@ export const CreationSchemaHotel = z.object({
   hasKitchen: z.boolean(),
   price: z.number().min(100000, "Le prix ne peut pas être inférieur à 100000"),
   extraBed: z.boolean(),
-  surface: z.number().min(1, "La surface ne peut pas être négative."),
+  surface: z.number().min(12, "La surface ne peut pas être négative."),
   type_chambre: z.enum(['SIMPLE', 'DOUBLE', 'SUITE'], {
     errorMap: () => ({ message: 'Sélectionnez au moins un type de chambre' })
   })

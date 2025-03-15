@@ -205,6 +205,7 @@ async function main() {
     for (let i = 0; i < 10; i++) {
       dataChambre.push({
         id: faker.string.uuid(),
+        numero_chambre:faker.string.uuid(),
         hotelId: hotel[0].id,
         description: faker.lorem.paragraph(),
         type: faker.helpers.arrayElement(["SIMPLE", "DOUBLE", "SUITE"]),

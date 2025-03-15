@@ -6,6 +6,7 @@ import {put} from '@vercel/blob'
 
 export async function createHotel(
     categoryLogementId: string,
+    numero_chambre:string,
     option: string[],
     nom: string,
     description: string,
@@ -29,7 +30,6 @@ export async function createHotel(
         const user = await currentUser();
         if (!user) throw new Error("Utilisateur non authentifié");
 
-        // Validation stricte des inputs
         if (!nom || !email || !ville || !adresse || !telephone || capacity <= 0 || price < 0) {
             throw new Error("Données invalides, veuillez vérifier les champs requis.");
         }
@@ -37,28 +37,26 @@ export async function createHotel(
         if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error("Email invalide");
         if (!/^\+?\d{8,15}$/.test(telephone)) throw new Error("Numéro de téléphone invalide");
 
-        // Vérifier si l'email est déjà utilisé
-        const existingHotel = await prisma.hotel.findFirst({ where: { email }, select: { id: true } });
-        if (existingHotel) return { error: "L'email est déjà utilisé" };
+        const existingHotel = await prisma.hotel.findFirst({ where: { chambres: { some: { numero_chambre } } }, select: { id: true } });
+        if (existingHotel) return { error: "Le numero est déjà utilisé" };
 
-        // Création de l'hôtel
+
         const createdHotel = await prisma.hotel.create({
             data: { userId: user.id, nom, description, adresse, ville,etoils, telephone, email, parking, categoryLogementId }
         });
 
-        // Ajout des options si elles existent
+       
         if (option.length > 0) {
             await prisma.hotelOptionOnHotel.createMany({
                 data: option.map((optionId) => ({ hotelId: createdHotel.id, optionId }))
             });
         }
 
-        // Création de la chambre associée
+
         const chambres = await prisma.chambre.create({
-            data: { hotelId: createdHotel.id, price, capacity, hasWifi, hasClim, hasTV, extraBed, surface, type: type_chambre }
+            data: { numero_chambre,hotelId: createdHotel.id, price, capacity, hasWifi, hasClim, hasTV, extraBed, surface, type: type_chambre }
         });
 
-        // Upload des images et association avec la chambre
         const uploadedImages = await Promise.allSettled(
             images.map(async (file) => {
                 try {
@@ -77,7 +75,7 @@ export async function createHotel(
 
         await prisma.imageChambre.createMany({ data: validImages });
 
-        // Vérification et assignation du rôle "HOTELIER"
+
         const roleHotelier = await prisma.role.findUnique({ where: { name: "HOTELIER" }, select: { id: true } });
         if (!roleHotelier) throw new Error("Le rôle 'HOTELIER' n'existe pas dans la base de données.");
 
