@@ -20,12 +20,15 @@ interface getPropsHome {
     hotelId?: string;
 }
 
+
+
 export default function ListinCardHome({ nom, type, adresse, urlImage, prix, logementId, hotelId }: getPropsHome) {
     const router = useRouter();
     const [adding, setAdding] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
-    const {isSignedIn } = useUser()
-  
+    const { isSignedIn } = useUser();
+    const [showButtons, setShowButtons] = useState(false); // ✅ Ajout de l'état pour le hover
+
     useEffect(() => {
         const checkFavorite = async () => {
             if (type === "logement" && logementId) {
@@ -38,17 +41,16 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
     }, [logementId, hotelId, type]);
 
     const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        if(!isSignedIn){
-            router.push('/sign-in')
+        if (!isSignedIn) {
+            router.push('/sign-in');
         }
         event.preventDefault();
         setAdding(true);
-    
+
         try {
             let message = "";
             let success = false;
-    
-         
+
             if (type === "logement" && logementId) {
                 const response = await AddFavorisLogementWithUser(logementId);
                 message = response.message;
@@ -58,24 +60,24 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                 message = response.message;
                 success = response.success;
             }
-    
-           
+
             toast(message);
-    
-       
-            setIsFavorite(success); 
-    
+            setIsFavorite(success);
+
         } catch (error) {
             toast.error((error as Error).message || "Erreur lors de l'ajout aux favoris");
         } finally {
             setAdding(false);
         }
     };
-    
 
     return (
         <div className="overflow-hidden duration-300">
-            <div className="relative h-72 w-full overflow-hidden">
+            <div 
+                className="relative h-72 w-full overflow-hidden"
+                onMouseEnter={() => setShowButtons(true)} // ✅ Afficher les boutons au survol
+                onMouseLeave={() => setShowButtons(false)} // ✅ Cacher les boutons quand la souris quitte
+            >
                 {urlImage.length > 1 ? (
                     <Carousel className="w-full h-full">
                         <CarouselContent className="w-full h-72">
@@ -91,19 +93,25 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                         />
                                         <div className="absolute top-3 left-3">
                                             <Button onClick={AddFavoris} className="dark:bg-slate-900">
-                                            {adding ? (
-                                    <div className="loaderFavoris"></div>
-                                ) : (
-                                    <Heart className={`w-6 h-6 ${isFavorite ? ' fill-red-700' : 'text-white'}`} />
-                                )}
+                                                {adding ? (
+                                                    <div className="loaderFavoris"></div>
+                                                ) : (
+                                                    <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
+                                                )}
                                             </Button>
                                         </div>
                                     </div>
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
-                        <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full" />
-                        <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full" />
+
+                        {/* ✅ Affichage conditionnel des boutons Previous et Next */}
+                        {showButtons && (
+                            <>
+                                <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                                <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                            </>
+                        )}
                     </Carousel>
                 ) : (
                     <div className="relative h-72 w-full">
@@ -119,9 +127,8 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                 {adding ? (
                                     <div className="loaderFavoris"></div>
                                 ) : (
-                                    <Heart className={`w-6 h-6 ${isFavorite ? ' fill-red-700' : 'text-white'}`} />
+                                    <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
                                 )}
-
                             </Button>
                         </div>
                     </div>
