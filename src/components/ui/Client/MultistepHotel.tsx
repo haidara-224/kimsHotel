@@ -197,7 +197,8 @@ export default function MultiformStepHotel() {
 
     return (
         <div className="mx-2xl mx-auto p-6 ">
-            <pre>{JSON.stringify(watch(), null, 2)}</pre>
+            {/** <pre>{JSON.stringify(watch(), null, 2)}</pre>*/}
+            
 
             <ProgresseBars curentstep={step} steps={steps} />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8  lg:px-32">
