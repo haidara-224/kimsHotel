@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "../carousel";
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import {  Heart } from "lucide-react";
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import { AddFavorisHotelWithUser, AddFavorisLogementWithUser, isFavoriteHotelUser, isFavoriteLogementUser } from "@/app/(action)/favoris.action";
@@ -20,17 +20,17 @@ interface getPropsHome {
     hotelId?: string;
 }
 
-
-
 export default function ListinCardHome({ nom, type, adresse, urlImage, prix, logementId, hotelId }: getPropsHome) {
     const router = useRouter();
     const [adding, setAdding] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const { isSignedIn } = useUser();
-    const [showButtons, setShowButtons] = useState(false); // ✅ Ajout de l'état pour le hover
+    const [showButtons, setShowButtons] = useState(false);
+
 
     useEffect(() => {
         const checkFavorite = async () => {
+            if (!isSignedIn) return;
             if (type === "logement" && logementId) {
                 setIsFavorite(await isFavoriteLogementUser(logementId));
             } else if (type === "hotel" && hotelId) {
@@ -38,11 +38,12 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
             }
         };
         checkFavorite();
-    }, [logementId, hotelId, type]);
+    }, [logementId, hotelId, type,isSignedIn]);
 
     const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
         if (!isSignedIn) {
             router.push('/sign-in');
+            return; 
         }
         event.preventDefault();
         setAdding(true);
@@ -75,23 +76,24 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
         <div className="overflow-hidden duration-300">
             <div 
                 className="relative h-72 w-full overflow-hidden"
-                onMouseEnter={() => setShowButtons(true)} // ✅ Afficher les boutons au survol
-                onMouseLeave={() => setShowButtons(false)} // ✅ Cacher les boutons quand la souris quitte
+                onMouseEnter={() => setShowButtons(true)}
+                onMouseLeave={() => setShowButtons(false)}
             >
                 {urlImage.length > 1 ? (
                     <Carousel className="w-full h-full">
                         <CarouselContent className="w-full h-72">
                             {urlImage.map((src, index) => (
                                 <CarouselItem key={index} className="relative w-full h-72">
-                                    <div className="relative w-full h-72">
+                                    <div className="relative w-full h-72" >
+                                    
                                         <Image
-                                            onClick={() => router.push('/type-etablissement')}
+                                        onClick={() => router.push('/')}
                                             alt={`Image ${index + 1}`}
                                             src={src}
                                             fill
                                             className="object-cover transition-transform duration-200 hover:scale-105 rounded-xl cursor-pointer"
                                         />
-                                        <div className="absolute top-3 left-3">
+                                        <div className="absolute top-3 left-3 w-full">
                                             <Button onClick={AddFavoris} className="dark:bg-slate-900">
                                                 {adding ? (
                                                     <div className="loaderFavoris"></div>
@@ -99,30 +101,38 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                                     <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
                                                 )}
                                             </Button>
+                                           
+                                           
                                         </div>
                                     </div>
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
 
-                        {/* ✅ Affichage conditionnel des boutons Previous et Next */}
+                     
                         {showButtons && (
                             <>
-                                <CarouselPrevious className="absolute left-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
-                                <CarouselNext className="absolute right-2 top-1/2 transform -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                                <CarouselPrevious className="absolute hidden lg:flex left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                                <CarouselNext className="absolute hidden lg:flex right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                               
                             </>
                         )}
+                        <>
+                        <CarouselPrevious className="absolute flex lg:hidden left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                        <CarouselNext className="absolute flex lg:hidden  right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" /></>
+
+                      
                     </Carousel>
                 ) : (
                     <div className="relative h-72 w-full">
                         <Image
+                         onClick={() => router.push('/')}
                             alt="Image house"
-                            onClick={() => router.push('/type-etablissement')}
                             src={urlImage.length > 0 ? urlImage[0] : "/imgd.jpg"}
                             fill
                             className="object-cover transition-transform duration-200 hover:scale-105 rounded-xl cursor-pointer"
                         />
-                        <div className="absolute top-3 left-3">
+                        <div className="absolute top-3 left-3 flex justify-between w-full">
                             <Button type="submit" onClick={AddFavoris} className="dark:bg-slate-900" disabled={adding}>
                                 {adding ? (
                                     <div className="loaderFavoris"></div>
@@ -130,6 +140,8 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                     <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
                                 )}
                             </Button>
+                           
+                           
                         </div>
                     </div>
                 )}
