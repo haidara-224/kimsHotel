@@ -51,7 +51,6 @@ async function getData({ searchParams }: { searchParams?: { filter?: string } })
       distinct: ['logementId'], 
     }),
   ]);
-//console.log(hotels)
   return [
     ...hotels.map(h => ({ type: "hotel", ...h.hotel })),
     ...logements.map(l => ({ type: "logement", ...l.logement })),

@@ -204,8 +204,6 @@ export async function getLogementById(id: string, calculateRate = false) {
 
   return logement;
 }
-
-
 export async function getLogementDetails(id: string) {
   try {
     const logement = await prisma.logement.findUnique({
@@ -244,9 +242,6 @@ export async function getLogementDetails(id: string) {
     return null; 
   }
 }
-
-
-
 export async function RepportReservation(id: string) {
   const logement = await prisma.logement.findUnique({
     where: { id },
@@ -317,8 +312,6 @@ export async function ReportReservationByMonth(id: string) {
 
   return months;
 }
-
-
 export async function BlokedLogementAction(id: string) {
 
   const logement = await prisma.logement.findUnique({
@@ -340,7 +333,6 @@ export async function BlokedLogementAction(id: string) {
 
   return updatedLogement.isBlocked;
 }
-
 export async function DeleteLogement(logement:Logement){
   const logementUnique = await prisma.logement.findUnique({
     where: { id:logement.id },
@@ -362,4 +354,22 @@ export async function DeleteLogement(logement:Logement){
 
   }
 }
+export async function getDetailsAppartement(logementId:string){
+  try {
+    const appartement=await prisma.logement.findUnique({
+      where:{id:logementId},
+      include:{
+        avis:true,
+        images:true,
+        logementOptions:true
+      }
+    })
+    if(!appartement) return
+    return appartement
 
+    
+  } catch (error) {
+    console.error(error)
+    throw new Error("Impossible d'afficher les détails de l'appartement")
+  }
+}

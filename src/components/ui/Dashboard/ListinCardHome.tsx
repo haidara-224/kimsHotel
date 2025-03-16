@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "../carousel";
 import Link from "next/link";
-import {  Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Button } from "../button";
 import { useRouter } from "next/navigation";
 import { AddFavorisHotelWithUser, AddFavorisLogementWithUser, isFavoriteHotelUser, isFavoriteLogementUser } from "@/app/(action)/favoris.action";
@@ -38,12 +38,12 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
             }
         };
         checkFavorite();
-    }, [logementId, hotelId, type,isSignedIn]);
+    }, [logementId, hotelId, type, isSignedIn]);
 
     const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
         if (!isSignedIn) {
             router.push('/sign-in');
-            return; 
+            return;
         }
         event.preventDefault();
         setAdding(true);
@@ -74,7 +74,7 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
 
     return (
         <div className="overflow-hidden duration-300">
-            <div 
+            <div
                 className="relative h-72 w-full overflow-hidden"
                 onMouseEnter={() => setShowButtons(true)}
                 onMouseLeave={() => setShowButtons(false)}
@@ -85,13 +85,17 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                             {urlImage.map((src, index) => (
                                 <CarouselItem key={index} className="relative w-full h-72">
                                     <div className="relative w-full h-72" >
-                                    
+
+
                                         <Image
-                                        onClick={() => router.push('/')}
+                                            onClick={() => router.push(`${type=='logement'?`/views/appartement/${logementId}`:`/views/hotel/${hotelId}`}`)}
                                             alt={`Image ${index + 1}`}
                                             src={src}
                                             fill
+                                            priority={index === 0}
                                             className="object-cover transition-transform duration-200 hover:scale-105 rounded-xl cursor-pointer"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            quality={80}
                                         />
                                         <div className="absolute top-3 left-3 w-full">
                                             <Button onClick={AddFavoris} className="dark:bg-slate-900">
@@ -101,36 +105,40 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                                     <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
                                                 )}
                                             </Button>
-                                           
-                                           
+
+
                                         </div>
                                     </div>
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
 
-                     
+
                         {showButtons && (
                             <>
                                 <CarouselPrevious className="absolute hidden lg:flex left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
                                 <CarouselNext className="absolute hidden lg:flex right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
-                               
+
                             </>
                         )}
                         <>
-                        <CarouselPrevious className="absolute flex lg:hidden left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
-                        <CarouselNext className="absolute flex lg:hidden  right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" /></>
+                            <CarouselPrevious className="absolute flex lg:hidden left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
+                            <CarouselNext className="absolute flex lg:hidden  right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" /></>
 
-                      
+
                     </Carousel>
                 ) : (
                     <div className="relative h-72 w-full">
+
                         <Image
-                         onClick={() => router.push('/')}
+                             onClick={() => router.push(`${type=='logement'?`/views/appartement/${logementId}`:`/views/hotel/${hotelId}`}`)}
                             alt="Image house"
                             src={urlImage.length > 0 ? urlImage[0] : "/imgd.jpg"}
                             fill
+
                             className="object-cover transition-transform duration-200 hover:scale-105 rounded-xl cursor-pointer"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            quality={80}
                         />
                         <div className="absolute top-3 left-3 flex justify-between w-full">
                             <Button type="submit" onClick={AddFavoris} className="dark:bg-slate-900" disabled={adding}>
@@ -140,8 +148,8 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                     <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
                                 )}
                             </Button>
-                           
-                           
+
+
                         </div>
                     </div>
                 )}

@@ -56,10 +56,10 @@ export default function HotelDataTable({ limit, title }: HotelDataTableProps){
     fetchData();
   },[fetchData])
 
-  // Fonction client qui appelle la Server Action pour mettre à jour le statut
+ 
   const onToggle = async (id: string, newStatus: boolean) => {
     await BlokedHotelAction(id);
-    // Optionnel : mettre à jour le tableau local si nécessaire
+
     setHotels((prev) =>
       prev.map((hl) => (hl.id === id ? { ...hl, isBlocked: newStatus } : hl))
     );

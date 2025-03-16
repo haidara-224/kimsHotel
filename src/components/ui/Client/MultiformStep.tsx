@@ -146,8 +146,8 @@ export default function MultiformStep() {
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrl(fileUrls); // Met à jour l'aperçu
-            setValue("images", fileArray); // Met à jour le formulaire
+            setImageUrl(fileUrls); 
+            setValue("images", fileArray); 
         }
     };
 

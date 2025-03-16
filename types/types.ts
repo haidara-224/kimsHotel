@@ -167,7 +167,7 @@ export interface Logement {
     optionId: string;
     option: LogementOption;
   }[];
-
+images:ImageLogement[]
   nbChambres: number;
   price: number;
   createdAt: Date;
