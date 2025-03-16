@@ -26,22 +26,12 @@ export default function Page() {
     getAppartement();
   }, [logementId]);
 
-  // Sécurité : si logement n'est pas encore chargé ou s'il n'y a pas d'images
-  if (!logement || !logement.images || logement.images.length === 0) {
-    return (
-      <>
-        <NavBar />
-        <div className="container mx-auto px-5 lg:px-16 mt-5">
-          <h1 className="text-2xl font-bold">Aucune donnée trouvée</h1>
-        </div>
-      </>
-    );
-  }
+  
 
   return (
     <>
       <NavBar />
-      <Gallery logement={logement} />
+      {logement && <Gallery logement={logement} />}
     </>
   );
 }
