@@ -22,13 +22,8 @@ async function getData({ searchParams }: { searchParams?: { filter?: string } })
           include: {  
             hotelOptions: { include: { option: true } },
             categoryLogement: true, 
-            chambres:{
-              include:{images:{
-                select:{
-                  urlImage:true
-                }
-              }}
-            }
+            images:true,
+          
             
           } 
         } 
@@ -51,6 +46,7 @@ async function getData({ searchParams }: { searchParams?: { filter?: string } })
       distinct: ['logementId'], 
     }),
   ]);
+  console.log(hotels)
   return [
     ...hotels.map(h => ({ type: "hotel", ...h.hotel })),
     ...logements.map(l => ({ type: "logement", ...l.logement })),
@@ -77,9 +73,9 @@ export default async function Home(props: { searchParams?: Promise<{ filter?: st
 const getImageUrls = (item: homeTypes) => {
   if (item.type === "logement") {
     return item.images?.map((img) => img.urlImage) || [];
-  } else if (item.chambres) {
+  } else if (item.type==="hotel"){
    
-    return item.chambres.flatMap((chambre) => chambre.images?.map((img) => img.urlImage) || []);
+    return item.images?.map((img) => img.urlImage) || [];
   }
   return [];
 };

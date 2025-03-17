@@ -16,6 +16,7 @@ interface getPropsHome {
     adresse: string;
     prix?: number;
     urlImage: string[];
+    
     logementId?: string;
     hotelId?: string;
 }
@@ -164,7 +165,7 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                 {prix ? (
                     <p className="text-sm text-gray-500">{prix} GNF par nuit</p>
                 ) : (
-                    <Link href="/" className="text-blue-500 dark:text-blue-200">voir prix..</Link>
+                    <Link href={`/views/hotel/${hotelId}`} className="text-blue-500 dark:text-blue-200">voir prix..</Link>
                 )}
             </div>
         </div>

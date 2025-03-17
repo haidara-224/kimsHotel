@@ -1,3 +1,4 @@
+
 // Enums
 export enum Roles {
   CLIENT = "CLIENT",
@@ -194,7 +195,16 @@ export interface Hotel {
   latitude?: number;
   longitude?: number;
   note?: number;
+  images:ImageHotel[]
   etoils?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface ImageHotel {
+  id : string;
+  hotel:     Hotel[] ;
+  hotelId:   string;
+  urlImage:  string;
   createdAt: Date;
   updatedAt: Date;
 }

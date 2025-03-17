@@ -42,7 +42,8 @@ interface FormLogement {
     extraBed: boolean;
     price: number;
     type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
-    images: File[];
+    images: File[],
+    images_hotel:File[]
 }
 
 const steps = [
@@ -62,6 +63,7 @@ export default function MultiformStepHotel() {
     const [step, setStep] = useState(1);
     const router = useRouter()
     const [imageUrl, setImageUrl] = useState<string[] | null>(null)
+    const [imageUrlHotel, setImageUrlHotel] = useState<string[] | null>(null)
     const [selectedOption, setSelectedOption] = useState<string[]>([]);
     const [option, setOption] = useState<Option[]>([])
     const params = useParams()
@@ -107,7 +109,8 @@ export default function MultiformStepHotel() {
             price: 0,
             surface: 12,
             extraBed: false,
-            images: []
+            images: [],
+            images_hotel:[]
         },
     });
 
@@ -125,7 +128,7 @@ export default function MultiformStepHotel() {
                 fieldValidate = ["nom", "description", "adresse", "ville", "telephone", "email"];
                 break;
             case 2:
-                fieldValidate = ["option", "parking", "type_etoils"];
+                fieldValidate = ["option", "parking", "type_etoils","images_hotel"];
                 break;
             case 3:
                 fieldValidate = ["numero_chambre","hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed","surface", "price", "capacity", "type_chambre", "images"];
@@ -154,6 +157,16 @@ export default function MultiformStepHotel() {
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrl(fileUrls);
             setValue("images", fileArray);
+       
+        }
+    };
+    const onUploadedImageHotel = (e: ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const fileArray = Array.from(files);
+            const fileUrls = fileArray.map(file => URL.createObjectURL(file));
+            setImageUrlHotel(fileUrls);
+            setValue("images_hotel", fileArray);
        
         }
     };
@@ -187,7 +200,8 @@ export default function MultiformStepHotel() {
             data.extraBed,
             data.price,
           
-            data.images
+            data.images,
+            data.images_hotel
         );
         if ('error' in response) {
             alert(response.error)
@@ -266,6 +280,27 @@ export default function MultiformStepHotel() {
                             <Input type="number"  {...register("type_etoils", { valueAsNumber: true })} />
                             {errors.type_etoils && <span className="text-red-500">{errors.type_etoils.message}</span>}
                         </div>
+                        </div>
+                        <div className="mt-5">
+                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images de votre Hotel</Label>
+                            <div className="flex flex-col items-center justify-center  gap-3">
+                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V8a4 4 0 018 0v8m-4 4h.01M4 16h16"></path>
+                                        </svg>
+                                        <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Cliquez pour télécharger</span> ou faites glisser et déposez</p>
+                                        <p className="text-xs text-gray-500">PNG, JPG (MAX. 800x400px)</p>
+                                    </div>
+                                    <Input type="file" multiple accept="image/*" onChange={onUploadedImageHotel} className="hidden" />
+                                </label>
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {imageUrlHotel && imageUrlHotel.map((url, index) => (
+                                        <Image key={index} src={url} alt={`Preview ${index}`} className="rounded-md shadow w-32 h-32 object-cover" width={128} height={128} />
+                                    ))}
+                                </div>
+                            </div>
+                            {errors.images_hotel && <span className="text-red-500">{errors.images_hotel.message}</span>}
                         </div>
                       
                     </div>

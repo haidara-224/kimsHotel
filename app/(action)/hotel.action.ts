@@ -24,7 +24,8 @@ export async function createHotel(
     etoils:number,
     extraBed: boolean,
     price: number,
-    images: File[]
+    images: File[],
+    imagesHotel:File[]
 ) {
     try {
         const user = await currentUser();
@@ -44,7 +45,23 @@ export async function createHotel(
         const createdHotel = await prisma.hotel.create({
             data: { userId: user.id, nom, description, adresse, ville,etoils, telephone, email, parking, categoryLogementId }
         });
+        const uploadedImagesHotel = await Promise.allSettled(
+            imagesHotel.map(async (file) => {
+                try {
+                    const fileBuffer = Buffer.from(await file.arrayBuffer());
+                    const blob = await put(file.name, fileBuffer, { access: 'public' });
+                    return { hotelId: createdHotel.id, urlImage: blob.url };
+                } catch (err) {
+                    console.error("Erreur lors de l'upload d'une image :", err);
+                    return null;
+                }
+            })
+        );
 
+        const validImagesHotel = uploadedImagesHotel.filter(result => result.status === "fulfilled" && result.value !== null)
+            .map(result => (result as PromiseFulfilledResult<{ hotelId: string; urlImage: string }>).value);
+
+        await prisma.imageHotel.createMany({ data: validImagesHotel });
        
         if (option.length > 0) {
             await prisma.hotelOptionOnHotel.createMany({
@@ -332,6 +349,26 @@ export async function getHotelsDetails(hotelId:string){
  
   
 }
+export async function getDetailsHotel(hotel:string){
+    try {
+      const hotels=await prisma.hotel.findUnique({
+        where:{id:hotel},
+        include:{
+          avis:true,
+          images:true,
+          hotelOptions:true,
+          chambres:true
+        }
+      })
+      if(!hotels) return
+      return hotels
+  
+      
+    } catch (error) {
+      console.error(error)
+      throw new Error("Impossible d'afficher les détails de l'hotel")
+    }
+  }
 
 
 
