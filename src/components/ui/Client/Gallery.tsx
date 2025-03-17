@@ -12,16 +12,17 @@ const Gallery = ({ logement }: LogementsProps) => {
     const [open, setOpen] = useState(false);
 
     if (!logement || !logement.images || logement.images.length === 0) {
-        return null; 
+        return null;
     }
 
     return (
-        <div className="container mx-auto px-5 lg:px-16 mt-5">
+        <>
+
             <h1 className="text-2xl font-bold mb-4">{logement.description}</h1>
 
-            {/* Grille principale : Ajustement responsive */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-auto md:h-[300px]">
-                {/* Image principale : Pleine largeur sur mobile, colonne gauche sur desktop */}
+
                 <div className="relative w-full h-[250px] md:h-full">
                     <Image
                         src={logement.images[0].urlImage}
@@ -31,7 +32,7 @@ const Gallery = ({ logement }: LogementsProps) => {
                     />
                 </div>
 
-                {/* Grille de 4 images : Passe en colonne sur mobile */}
+
                 <div className="grid grid-cols-2 md:grid-rows-2 gap-2 relative">
                     {logement.images.slice(1, 5).map((img, index, array) => (
                         <div key={img.id} className="relative w-full h-[120px] md:h-[150px]">
@@ -42,7 +43,6 @@ const Gallery = ({ logement }: LogementsProps) => {
                                 className={`object-cover ${index === 0 ? "rounded-tr-lg" : ""} ${index === 3 ? "rounded-br-lg" : ""}`}
                             />
 
-                            {/* Bouton +X photos uniquement sur la dernière image affichée */}
                             {index === array.length - 1 && logement.images.length > 5 && (
                                 <Dialog open={open} onOpenChange={setOpen}>
                                     <DialogTrigger asChild>
@@ -51,7 +51,6 @@ const Gallery = ({ logement }: LogementsProps) => {
                                         </button>
                                     </DialogTrigger>
 
-                                    {/* Contenu du Dialog : affichage de toutes les photos */}
                                     <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
                                         <DialogHeader>
                                             <DialogTitle>Toutes les photos</DialogTitle>
@@ -60,7 +59,7 @@ const Gallery = ({ logement }: LogementsProps) => {
                                             </DialogDescription>
                                         </DialogHeader>
 
-                                        {/* Grille de toutes les images */}
+
                                         <div className="grid grid-cols-2 gap-4 mt-4">
                                             {logement.images.map((img, index) => (
                                                 <div key={img.id} className="relative w-full h-[180px] rounded-md overflow-hidden">
@@ -80,7 +79,7 @@ const Gallery = ({ logement }: LogementsProps) => {
                     ))}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

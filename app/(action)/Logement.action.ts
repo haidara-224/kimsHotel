@@ -361,10 +361,16 @@ export async function getDetailsAppartement(logementId:string){
       include:{
         avis:true,
         images:true,
-        logementOptions:true
+        favorites:true,
+        logementOptions:{
+          select:{
+            option:true
+          }
+        }
       }
     })
     if(!appartement) return
+  
     return appartement
 
     

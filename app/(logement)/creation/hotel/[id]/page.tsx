@@ -1,7 +1,11 @@
 import MultiformStepHotel from "@/src/components/ui/Client/MultistepHotel";
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { NavBar } from "@/src/components/ui/NavBar";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+    title: "Creation Hotel",
+    description: "Creer Votre Hotel en toute simplicité",
+};
 export default function Page() {
     return (
         <>

@@ -1,7 +1,11 @@
 import MultiformStep from "@/src/components/ui/Client/MultiformStep";
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { NavBar } from "@/src/components/ui/NavBar";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+    title: "Creation Appartement",
+    description: "Creer Votre Logement en toute simplicité",
+};
 export default function Page() {
     return (
         <>
