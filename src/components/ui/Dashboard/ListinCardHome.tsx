@@ -165,7 +165,7 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                 {prix ? (
                     <p className="text-sm text-gray-500">{prix} GNF par nuit</p>
                 ) : (
-                    <Link href={`/views/hotel/${hotelId}`} className="text-blue-500 dark:text-blue-200">voir prix..</Link>
+                    <Link href={`/views/hotel/${hotelId}`} className="text-blue-500 dark:text-blue-200">voir prix des Chambres...</Link>
                 )}
             </div>
         </div>
