@@ -42,6 +42,15 @@ export interface Role {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface CommentaireLogement{
+  id:string;
+  logementId:string;
+  logement:Logement[]
+  userId:string;
+  user:User[]
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export interface User {
   id: string;
@@ -50,6 +59,7 @@ export interface User {
   clerkUserId: string;
   email: string;
   roles?: Role[]
+  commentUser: CommentaireLogement[]
   profileImage?: string | null;
   telephone?: string | null
   createdAt: Date;
@@ -168,6 +178,7 @@ export interface Logement {
     optionId: string;
     option: LogementOption;
   }[];
+  commentLogement:CommentaireLogement[]
 images:ImageLogement[]
   nbChambres: number;
   price: number;

@@ -58,6 +58,7 @@ model User {
   favorites    Favorite[]    @relation("UserFavorites")
   avis         Avis[]        @relation("UserAvis")
   reservations Reservation[] @relation("UserReservations")
+  commentUser CommentaireLogement[] @relation("UserComment")
   hotels       Hotel[]       @relation("UserHotels")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -167,6 +168,7 @@ model Logement {
   avis               Avis[]                     @relation("LogementAvis")
   reservations       Reservation[]              @relation("LogementReservations")
   images             ImageLogement[]            @relation("LogementImages")
+  commentLogement            CommentaireLogement[]        @relation("LogementComment") 
   nbChambres         Int
   price              Int
   createdAt          DateTime                   @default(now())
@@ -253,6 +255,17 @@ model Avis {
   hotelId    String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+model CommentaireLogement{
+  id String @id @default(uuid())
+  comment   String  @db.VarChar(1000)
+    logement   Logement? @relation("LogementComment", fields: [logementId], references: [id], onDelete: Cascade)
+  logementId String?
+   user       User?     @relation("UserComment", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  userId     String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
 }
 
 model ImageLogement {

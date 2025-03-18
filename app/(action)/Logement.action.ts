@@ -359,6 +359,7 @@ export async function getDetailsAppartement(logementId:string){
     const appartement=await prisma.logement.findUnique({
       where:{id:logementId},
       include:{
+        user:true,
         avis:true,
         images:true,
         favorites:true,

@@ -55,7 +55,7 @@ const Gallery = ({ logement }: LogementsProps) => {
                                         <DialogHeader>
                                             <DialogTitle>Toutes les photos</DialogTitle>
                                             <DialogDescription>
-                                                Cliquez sur une image pour la voir en détail.
+                                             Photos du Logements
                                             </DialogDescription>
                                         </DialogHeader>
 

@@ -3,7 +3,7 @@
 import { getDetailsAppartement } from "@/app/(action)/Logement.action";
 import { NavBar } from "@/src/components/ui/NavBar";
 import { Logement } from "@/types/types";
-
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Gallery from "@/src/components/ui/Client/Gallery";
@@ -12,12 +12,13 @@ import { OptionLogement } from "@/src/components/ui/Client/OptionLogement";
 import { Heart, Star } from "lucide-react";
 import { LogementSpecificity } from "@/src/components/ui/Client/logementSpecificity";
 import { Separator } from "@/src/components/ui/separator";
+import AvisCommentLogement from "@/src/components/ui/Client/AvisCommentLogement";
 
 
 export default function Page() {
   const [logement, setLogement] = useState<Logement | null>(null);
   const [isLoading, setisLoading] = useState(false);
-
+  const [dateAnnes, setDateAnne] = React.useState<number>()
   const params = useParams();
   const logementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? "";
 
@@ -27,6 +28,14 @@ export default function Page() {
       try {
         setisLoading(true);
         const data = await getDetailsAppartement(logementId) as unknown as Logement;
+
+
+        const getAge = () => {
+          const createdYear = new Date(data.createdAt).getFullYear(); 
+          const currentYear = new Date().getFullYear(); 
+          return currentYear - createdYear;
+        };
+        setDateAnne(getAge)
         setLogement(data);
       } catch (e) {
         console.error(e);
@@ -38,11 +47,6 @@ export default function Page() {
   }, [logementId]);
 
 
-  /*
-    function handleSetVoyageurs(value: string): void {
-      setVoyageurs(value);
-    }
-      */
 
   return (
     <>
@@ -59,6 +63,20 @@ export default function Page() {
             <div className="mt-5 font-bold text-xl">
               Cet appartement dispose de {logement.nbChambres} chambres et peut accueillir jusqu&apos;à {logement.capacity} personnes.
             </div>
+            <div className="flex items-center gap-4 p-4 ">
+              <Image
+                src={logement.user?.profileImage ?? '/user_default.jpg'}
+                alt={`${logement.user.nom}`}
+                className="w-14 h-14 rounded-full object-cover"
+                width={56}
+                height={56}
+              />
+              <div>
+                <p className="text-lg font-semibold">Hôte : {logement.user.nom} {logement.user.prenom}</p>
+                <p className="text-sm text-gray-500">Membre depuis {dateAnnes} ans</p>
+              </div>
+            </div>
+
             <div className="flex flex-col lg:flex-row lg:space-x-6 space-y-4 lg:space-y-1 mt-3">
               <p className="lg:mt-1"><span className="font-bold">Ville:</span> {logement?.ville}</p>
               <p><span className="font-bold">Adresse:</span> {logement?.adresse}</p>
@@ -86,6 +104,7 @@ export default function Page() {
                     <Heart className="w-5 h-5 text-red-500" /> {logement.favorites?.length} Favoris
                   </p>
                 </section>
+                
               </div>
 
 
@@ -93,12 +112,15 @@ export default function Page() {
                 {logement.disponible ? (
                   <CardReservationLogement logement={logement} />
                 ) : (
-                 <p className="text-red-600 text-xl font-bold"> Ce logement est déjà réservé.</p>
+                  <p className="text-red-600 text-xl font-bold"> Ce logement est déjà réservé.</p>
                 )}
               </div>
 
 
             </section>
+            <section>
+                  <AvisCommentLogement/>
+                </section>
 
           </div>
         )}
