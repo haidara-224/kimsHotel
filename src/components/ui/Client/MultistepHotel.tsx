@@ -25,7 +25,7 @@ import { createHotel } from "@/app/(action)/hotel.action";
 interface FormLogement {
     option: [string, ...string[]];
     nom: string;
-    numero_chambre:string;
+    numero_chambre: string;
     description: string;
     adresse: string;
     ville: string;
@@ -43,7 +43,7 @@ interface FormLogement {
     price: number;
     type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
     images: File[],
-    images_hotel:File[]
+    images_hotel: File[]
 }
 
 const steps = [
@@ -90,7 +90,7 @@ export default function MultiformStepHotel() {
         resolver: zodResolver(CreationSchemaHotel),
         mode: "onChange",
         defaultValues: {
-            numero_chambre:"",
+            numero_chambre: "",
             option: [],
             nom: "",
             description: "",
@@ -110,7 +110,7 @@ export default function MultiformStepHotel() {
             surface: 12,
             extraBed: false,
             images: [],
-            images_hotel:[]
+            images_hotel: []
         },
     });
 
@@ -128,14 +128,14 @@ export default function MultiformStepHotel() {
                 fieldValidate = ["nom", "description", "adresse", "ville", "telephone", "email"];
                 break;
             case 2:
-                fieldValidate = ["option", "parking", "type_etoils","images_hotel"];
+                fieldValidate = ["option", "parking", "type_etoils", "images_hotel"];
                 break;
             case 3:
-                fieldValidate = ["numero_chambre","hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed","surface", "price", "capacity", "type_chambre", "images"];
+                fieldValidate = ["numero_chambre", "hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "surface", "price", "capacity", "type_chambre", "images"];
                 break;
         }
         const isValid = await trigger(fieldValidate);
-        
+
         if (isValid) {
             setStep(nextStep);
         }
@@ -157,7 +157,7 @@ export default function MultiformStepHotel() {
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrl(fileUrls);
             setValue("images", fileArray);
-       
+
         }
     };
     const onUploadedImageHotel = (e: ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +167,7 @@ export default function MultiformStepHotel() {
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrlHotel(fileUrls);
             setValue("images_hotel", fileArray);
-       
+
         }
     };
 
@@ -178,7 +178,7 @@ export default function MultiformStepHotel() {
     }, [selectedOption, setValue]);
 
     const onSubmit = async (data: FormLogement) => {
-      
+
         const response = await createHotel(
             categoryLogementId,
             data.numero_chambre,
@@ -199,7 +199,7 @@ export default function MultiformStepHotel() {
             data.type_etoils,
             data.extraBed,
             data.price,
-          
+
             data.images,
             data.images_hotel
         );
@@ -216,7 +216,7 @@ export default function MultiformStepHotel() {
     return (
         <div className="mx-2xl mx-auto p-6 ">
             {/** <pre>{JSON.stringify(watch(), null, 2)}</pre>*/}
-            
+
 
             <ProgresseBars curentstep={step} steps={steps} />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8  lg:px-32">
@@ -276,10 +276,10 @@ export default function MultiformStepHotel() {
                             ))}
                             {errors.parking && <span className="text-red-500">{errors.parking.message}</span>}
                             <div className="w-1/2">
-                            <Label>Etoils</Label>
-                            <Input type="number"  {...register("type_etoils", { valueAsNumber: true })} />
-                            {errors.type_etoils && <span className="text-red-500">{errors.type_etoils.message}</span>}
-                        </div>
+                                <Label>Etoils</Label>
+                                <Input type="number"  {...register("type_etoils", { valueAsNumber: true })} />
+                                {errors.type_etoils && <span className="text-red-500">{errors.type_etoils.message}</span>}
+                            </div>
                         </div>
                         <div className="mt-5">
                             <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images de votre Hotel</Label>
@@ -302,20 +302,20 @@ export default function MultiformStepHotel() {
                             </div>
                             {errors.images_hotel && <span className="text-red-500">{errors.images_hotel.message}</span>}
                         </div>
-                      
+
                     </div>
                 )}
                 {step === 3 && (
                     <>
                         <h1>Ajouter une chambre, vous serez redirigez vers votre dashboard ou vous ajouter autant de chambre que vous voulez</h1>
                         <Label>Numero de chambre </Label>
-                                <div >
-                                <Input type="text"  {...register("numero_chambre")} />
-                                {errors.numero_chambre && <span className="text-red-500">{errors.numero_chambre.message}</span>}
-                                </div>
-                               
+                        <div >
+                            <Input type="text"  {...register("numero_chambre")} />
+                            {errors.numero_chambre && <span className="text-red-500">{errors.numero_chambre.message}</span>}
+                        </div>
+
                         <div className="grid grid-cols-2 gap-4">
-                         
+
                             {[
                                 { id: "clim", label: "Climatisation", icon: <Snowflake />, field: "hasClim" },
                                 { id: "wifi", label: "WiFi", icon: <Wifi />, field: "hasWifi" },
@@ -324,7 +324,7 @@ export default function MultiformStepHotel() {
                                 { id: "extraBed", label: "Lit supplémentaire", icon: "🛏️", field: "extraBed" },
                             ].map(({ id, label, icon, field }) => (
                                 <div key={id} className="flex items-center space-x-3 p-2">
-                                         
+
                                     <Checkbox id={id}  {...register(field as keyof FormLogement)} onCheckedChange={(checked) => setValue(field as keyof FormLogement, checked)} />
                                     <label htmlFor={id} className="flex items-center text-sm font-medium cursor-pointer space-x-2">
                                         {icon} <span>{label}</span>
@@ -332,20 +332,20 @@ export default function MultiformStepHotel() {
                                 </div>
                             ))}
                         </div>
-                     
+
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <Label>Prix </Label>
                                 <div className="flex gap-2">
-                                <Input type="number"  {...register("price", { valueAsNumber: true })} /> <span>/nuit</span>
+                                    <Input type="number"  {...register("price", { valueAsNumber: true })} /> <span>/nuit</span>
                                 </div>
-                               
+
                                 {errors.price && <span className="text-red-500">{errors.price.message}</span>}
                             </div>
                             <div>
                                 <Label>Capacité </Label>
                                 <div className="flex gap-5">
-                                <Input type="number"  {...register("capacity", { valueAsNumber: true })} /> <span>Personnes</span>
+                                    <Input type="number"  {...register("capacity", { valueAsNumber: true })} /> <span>Personnes</span>
 
                                 </div>
                                 {errors.capacity && <span className="text-red-500">{errors.capacity.message}</span>}
@@ -353,7 +353,7 @@ export default function MultiformStepHotel() {
                             <div>
                                 <Label>Surface </Label>
                                 <div className="flex gap-5">
-                                <Input type="surface"  {...register("surface", { valueAsNumber: true })} /> <span>m²</span>
+                                    <Input type="surface"  {...register("surface", { valueAsNumber: true })} /> <span>m²</span>
 
                                 </div>
                                 {errors.surface && <span className="text-red-500">{errors.surface.message}</span>}
@@ -373,11 +373,11 @@ export default function MultiformStepHotel() {
                                     </SelectContent>
                                 </Select>
                                 {errors.type_chambre && <span className="text-red-500">{errors.type_chambre.message}</span>}
-                               
+
                             </div>
                         </div>
                         <div className="mt-5">
-                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images</Label>
+                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images (telecharger 4 Images au minimum)</Label>
                             <div className="flex flex-col items-center justify-center  gap-3">
                                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">

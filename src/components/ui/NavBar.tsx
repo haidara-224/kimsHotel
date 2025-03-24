@@ -11,7 +11,7 @@ export function NavBar() {
         <nav className="w-full border-b">
             <div className="flex items-center justify-between container mx-auto px-5 lg:px-10 py-5">
                 <Link href="/" className="text-2xl">
-                    <Image src='/kims_hotel_logo2 (1).png' width={100} height={100} alt="kims Hotel"/>
+                    <Image src='/kims_hotel_logo2 (1).png' width={100} height={100} layout="intrinsic" alt="kims Hotel" />
                 </Link>
                 <div className="rounded-full border px-5 py-2">
                     <h1>Hello from the search</h1>

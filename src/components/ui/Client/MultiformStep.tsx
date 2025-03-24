@@ -287,7 +287,7 @@ export default function MultiformStep() {
                         </div>
                         {errors.option && <span className="text-red-500">{errors.option.message}</span>}
                         <div className="mt-5">
-                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images</Label>
+                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images (telecharger 4 Images au minimum)</Label>
                             <div className="flex flex-col items-center justify-center  gap-3">
                                 <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">

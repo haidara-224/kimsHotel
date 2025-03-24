@@ -13,6 +13,7 @@ import { Heart, Star } from "lucide-react";
 import { LogementSpecificity } from "@/src/components/ui/Client/logementSpecificity";
 import { Separator } from "@/src/components/ui/separator";
 import AvisCommentLogement from "@/src/components/ui/Client/AvisCommentLogement";
+import { LogementComment } from "@/src/components/ui/Client/LogementComment";
 
 
 export default function Page() {
@@ -31,8 +32,8 @@ export default function Page() {
 
 
         const getAge = () => {
-          const createdYear = new Date(data.createdAt).getFullYear(); 
-          const currentYear = new Date().getFullYear(); 
+          const createdYear = new Date(data.createdAt).getFullYear();
+          const currentYear = new Date().getFullYear();
           return currentYear - createdYear;
         };
         setDateAnne(getAge)
@@ -104,10 +105,7 @@ export default function Page() {
                     <Heart className="w-5 h-5 text-red-500" /> {logement.favorites?.length} Favoris
                   </p>
                 </section>
-                
               </div>
-
-
               <div className="w-full lg:w-1/3 lg:sticky lg:top-20 lg:self-start">
                 {logement.disponible ? (
                   <CardReservationLogement logement={logement} />
@@ -115,12 +113,11 @@ export default function Page() {
                   <p className="text-red-600 text-xl font-bold"> Ce logement est déjà réservé.</p>
                 )}
               </div>
-
-
             </section>
             <section>
-                  <AvisCommentLogement/>
-                </section>
+              <AvisCommentLogement logementId={logement.id} />
+              <LogementComment logmentId={logement.id}/>
+            </section>
 
           </div>
         )}

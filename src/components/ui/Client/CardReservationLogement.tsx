@@ -29,7 +29,7 @@ export function CardReservationLogement({ logement }: logementProps) {
     const getNumberOfNights = () => {
         if (!dateA || !dateD) return 0;
         const diffTime = dateD.getTime() - dateA.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convertir en jours
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
         return diffDays > 0 ? diffDays : 0;
     };
     return (

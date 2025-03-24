@@ -1,6 +1,6 @@
 interface ProgresseBarsPrpos{
     curentstep:number,
-    steps:{title:string,description:string}[]
+    steps:{title:string}[]
 }
 export default function ProgresseBars({curentstep,steps}:ProgresseBarsPrpos) {
     const progressWith=((curentstep-1)/(steps.length-1))*100
@@ -25,9 +25,7 @@ export default function ProgresseBars({curentstep,steps}:ProgresseBarsPrpos) {
                                 <div className={`text-sm font-medium transition-all duration-300 ${index+1<=curentstep ? 'text-blue-600': 'text-gray-500'}`}>
                                     {step.title}
                                 </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    {step.description}
-                                </div>
+                                
 
                             </div>
                         </div>

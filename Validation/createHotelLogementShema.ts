@@ -52,7 +52,7 @@ export const CreationSchema = z.object({
          z.custom<File>((file) => file instanceof File && file.size < 5 * 1024 * 1024, {
                 message: "Chaque image doit être inférieure à 5 Mo.",
             })
-        ).min(1, "Ajoutez au moins une image.")
+        ).min(4, "Ajoutez au moins (4) images.")
         
         
 });
