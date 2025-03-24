@@ -72,13 +72,16 @@ const {user}=useUser()
         ...prevComments,
         {
           comment,
+          createdAt: new Date(), 
           user: {
             nom: user?.firstName || "", 
             prenom: user?.lastName || "",  
+            profileImage: user?.imageUrl || null,
             avis: [{ start: rating }],
           },
         },
       ]);
+      
     });
   };
 

@@ -29,14 +29,15 @@ export default function Page() {
       try {
         setisLoading(true);
         const data = await getDetailsAppartement(logementId) as unknown as Logement;
-
-
-        const getAge = () => {
+  
+        if (data.createdAt) {
           const createdYear = new Date(data.createdAt).getFullYear();
           const currentYear = new Date().getFullYear();
-          return currentYear - createdYear;
-        };
-        setDateAnne(getAge)
+          const yearsDifference = currentYear - createdYear;
+  
+          setDateAnne(yearsDifference);
+        }
+  
         setLogement(data);
       } catch (e) {
         console.error(e);
@@ -46,7 +47,7 @@ export default function Page() {
     };
     getAppartement();
   }, [logementId]);
-
+  
 
 
   return (

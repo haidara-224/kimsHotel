@@ -94,6 +94,7 @@ export async function UserComment(logementId: string) {
                 select: {
                     nom: true,
                     prenom: true,
+                    profileImage:true,
                     avis: {
                         where: {
                             logementId: logementId, 

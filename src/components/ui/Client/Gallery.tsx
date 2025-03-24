@@ -28,6 +28,7 @@ const Gallery = ({ logement }: LogementsProps) => {
                         src={logement.images[0].urlImage}
                         alt="Image principale"
                         fill
+                        priority
                         className="object-cover rounded-lg md:rounded-l-lg"
                     />
                 </div>
