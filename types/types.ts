@@ -199,7 +199,38 @@ export interface Hotel {
   telephone?: string | null;
   email?: string | null;
   parking: boolean;
-  chambres: { reservations: Reservation[] }[];
+  chambres: { 
+    Chambres:Chambre[]
+    reservations: Reservation[] 
+  }[];
+  avis: Avis[];
+  favorites: Favorite[];
+  isBlocked: boolean;
+  latitude?: number;
+  longitude?: number;
+  note?: number;
+  images:ImageHotel[]
+  etoils?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface Hotele {
+  id: string;
+  userId: string;
+  user: User
+  categoryLogementId: string;
+  categoryLogement: CategoryLogement;
+  nom: string;
+  hotelOptions: HotelOptionOnHotel[]
+  description?: string | null;
+  adresse?: string | null;
+  ville?: string | null;
+  telephone?: string | null;
+  email?: string | null;
+  parking: boolean;
+  chambres:Chambre[];
+   
+
   avis: Avis[];
   favorites: Favorite[];
   isBlocked: boolean;

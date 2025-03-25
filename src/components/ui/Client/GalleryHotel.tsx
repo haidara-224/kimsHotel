@@ -2,10 +2,10 @@ import { useState } from "react";
 import Image from "next/image";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "../dialog";
 import { DialogHeader } from "../dialog";
-import { Hotel } from "@/types/types";
+import { Hotele } from "@/types/types";
 
 interface HotelsProps {
-    hotel: Hotel;
+    hotel: Hotele;
 }
 
 const Gallery = ({ hotel }: HotelsProps) => {

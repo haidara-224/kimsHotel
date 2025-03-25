@@ -1,5 +1,4 @@
 'use client';
-
 import { getDetailsAppartement } from "@/app/(action)/Logement.action";
 import { NavBar } from "@/src/components/ui/NavBar";
 import { Logement } from "@/types/types";

@@ -354,10 +354,19 @@ export async function getDetailsHotel(hotel:string){
       const hotels=await prisma.hotel.findUnique({
         where:{id:hotel},
         include:{
+            user:true,
           avis:true,
           images:true,
-          hotelOptions:true,
-          chambres:true
+          hotelOptions: {
+            select: {
+                option: true,
+            },
+        },
+          chambres:{
+            include:{
+                images:true
+            }
+          }
         }
       })
       if(!hotels) return

@@ -20,7 +20,7 @@ interface Comment {
 interface CommentContextType {
   comments: Comment[];
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
-  fetchComments: (logementId: string) => Promise<void>; // Ajout de la fonction pour récupérer les commentaires
+  fetchComments: (logementId: string) => Promise<void>;
 }
 
 const CommentContext = createContext<CommentContextType | undefined>(undefined);
