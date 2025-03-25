@@ -42,7 +42,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                             <p className="text-sm text-muted-foreground">par nuit</p>
                         </div>
                         <Badge variant="outline" className="border-emerald-500 text-emerald-500">
-                            ⚡ Disponible
+                        {logement?.disponible ? '⚡ Disponible' : '⛔ Occupée'}
                         </Badge>
                     </div>
 
@@ -123,25 +123,20 @@ export function CardReservationLogement({ logement }: logementProps) {
                             </Select>
                         </div>
                     </div>
-
-                    <Button className="w-full h-12 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all">
-                        Réserver maintenant
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                                    {
+                                        logement.disponible && (   <Button className="w-full h-12 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all">
+                                            Réserver maintenant
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>)
+                                    }
+                 
 
                     <div className="space-y-4 pt-4">
                         <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">{formatPrice(logement.price)}  ×  {getNumberOfNights()} nuits</span>
                             <span className="font-medium">{formatPrice(logement.price * getNumberOfNights())} </span>
                         </div>
-                        {
-                            /*
-                             <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Frais de ménage</span>
-                            <span className="font-medium">13 €</span>
-                          </div>
-                            */
-                        }
+                      
 
                         <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Frais de service de Kims</span>

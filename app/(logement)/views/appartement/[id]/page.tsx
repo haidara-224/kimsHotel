@@ -107,11 +107,9 @@ export default function Page() {
                 </section>
               </div>
               <div className="w-full lg:w-1/3 lg:sticky lg:top-20 lg:self-start">
-                {logement.disponible ? (
+            
                   <CardReservationLogement logement={logement} />
-                ) : (
-                  <p className="text-red-600 text-xl font-bold"> Ce logement est déjà réservé.</p>
-                )}
+              
               </div>
             </section>
             <section>

@@ -1,10 +1,11 @@
 'use client';
 
-import { Hotele } from "@/types/types";
+import { Chambre, Hotele } from "@/types/types";
 import { useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../carousel";
 import Image from "next/image";
 import { Bed, CheckCircle, Tv2, Utensils, Wifi, XCircle } from "lucide-react";
+import { CardReservationHotel } from "./CardReservationHotel";
 
 interface HotelProps {
   hotel: Hotele;
@@ -12,7 +13,13 @@ interface HotelProps {
 
 export function HotelChambre({ hotel }: HotelProps) {
   const [hoveredCarousel, setHoveredCarousel] = useState<number | null>(null);
+  const [selectedChambre, setSelectedChambre] = useState<Chambre | null>(null);
 
+  const [open,setOpenChange]=useState(false)
+    const onOpenChange=(chambre:Chambre)=>{
+            setSelectedChambre(chambre)
+        setOpenChange(true)
+    }
   return (
     <>
       {hotel.chambres.map((ch, index) => (
@@ -64,29 +71,47 @@ export function HotelChambre({ hotel }: HotelProps) {
           </div>
           <div className="grid grid-cols-1 my-3 space-y-4">
             {ch.hasClim && (
-              <p className="group flex items-center gap-4 rounded-xl   transition-all duration-300 cursor-pointer">
+              <div className="group flex items-center gap-4 rounded-xl   transition-all duration-300 cursor-pointer">
                 <Wifi className="w-4 h-4 text-blue-500" /> Wi-Fi gratuit
-              </p>
+              </div>
             )}
             {ch.hasTV && (
-              <p className="group flex items-center gap-4 rounded-xl  transition-all duration-300 cursor-pointer">
+              <div className="group flex items-center gap-4 rounded-xl  transition-all duration-300 cursor-pointer">
                 <Tv2 className="w-4 h-4 text-gray-600" /> Télévision incluse
-              </p>
+              </div>
             )}
             {ch.hasKitchen && (
-              <p className="group flex items-center gap-4 rounded-xl transition-all duration-300 cursor-pointer">
+              <div className="group flex items-center gap-4 rounded-xl transition-all duration-300 cursor-pointer">
                 <Utensils className="w-4 h-4 text-green-500" /> Cuisine équipée
-              </p>
+              </div>
             )}
             {ch.extraBed && (
-              <p className="group w-full flex items-center gap-4 rounded-xl transition-all duration-300 cursor-pointer">
+              <div className="group w-full flex items-center gap-4 rounded-xl transition-all duration-300 cursor-pointer">
                 <Bed className="w-4 h-4 text-purple-500" /> Lit supplémentaire
-              </p>
+              </div>
             )}
           </div>
-          <button type="button" className="bg-green-800 p-2 rounded-lg text-white w-10/12 lg:w-full hover:bg-green-600 hover:transition-all">Reserver</button>
+          <button className="bg-green-800 p-2 rounded-lg text-white w-10/12 lg:w-full hover:bg-green-600 hover:transition-all" onClick={() => onOpenChange(ch)}
+          >Reserver</button>
+         <div>
+      
+       
+         </div>
         </div>
+      
       ))}
+   
+        <CardReservationHotel 
+          open={open} 
+          onOpenChange={setOpenChange}
+          chambre={selectedChambre}
+        />
+    
+      
     </>
+    
+
+     
   );
+
 }
