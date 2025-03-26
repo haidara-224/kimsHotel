@@ -46,22 +46,23 @@ model Role {
 }
 
 model User {
-  id           String        @id @unique
-  prenom       String
-  nom          String
-  clerkUserId  String        @unique
-  email        String        @unique
-  profileImage String?
-  telephone    String?
-  roles        UserRole[]    @relation("UserRoles")
-  logements    Logement[]    @relation("UserLogements")
-  favorites    Favorite[]    @relation("UserFavorites")
-  avis         Avis[]        @relation("UserAvis")
-  reservations Reservation[] @relation("UserReservations")
-  commentUser CommentaireLogement[] @relation("UserComment")
-  hotels       Hotel[]       @relation("UserHotels")
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id               String                @id @unique
+  prenom           String
+  nom              String
+  clerkUserId      String                @unique
+  email            String                @unique
+  profileImage     String?
+  telephone        String?
+  roles            UserRole[]            @relation("UserRoles")
+  logements        Logement[]            @relation("UserLogements")
+  favorites        Favorite[]            @relation("UserFavorites")
+  avis             Avis[]                @relation("UserAvis")
+  reservations     Reservation[]         @relation("UserReservations")
+  commentUser      CommentaireLogement[] @relation("UserComment")
+  hotels           Hotel[]               @relation("UserHotels")
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  CommentaireHotel CommentaireHotel[]    @relation("UserCommentHotel")
 
   @@index([email])
 }
@@ -132,8 +133,9 @@ model Hotel {
   etoils             Int?
   images             ImageHotel[]         @relation("HotelImages")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  CommentaireHotel CommentaireHotel[] @relation("HotelComment")
 
   @@index([nom])
 }
@@ -168,7 +170,7 @@ model Logement {
   avis               Avis[]                     @relation("LogementAvis")
   reservations       Reservation[]              @relation("LogementReservations")
   images             ImageLogement[]            @relation("LogementImages")
-  commentLogement            CommentaireLogement[]        @relation("LogementComment") 
+  commentLogement    CommentaireLogement[]      @relation("LogementComment")
   nbChambres         Int
   price              Int
   createdAt          DateTime                   @default(now())
@@ -195,25 +197,25 @@ model HotelOptionOnHotel {
 }
 
 model Chambre {
-  id           String         @id @default(uuid())
- numero_chambre String?  @unique
-  hotel        Hotel          @relation("HotelChambres", fields: [hotelId], references: [id], onDelete: Cascade)
-  hotelId      String
-  description  String?        @db.VarChar(1000)
-  type         TypeChambre
-  price        Int
-  capacity     Int            @default(1)
-  disponible   Boolean        @default(true)
-  hasWifi      Boolean        @default(false)
-  hasTV        Boolean        @default(false)
-  hasClim      Boolean        @default(false)
-  hasKitchen   Boolean        @default(false)
-  surface      Int?
-  extraBed     Boolean        @default(false)
-  images       ImageChambre[] @relation("ChambreImages")
-  reservations Reservation[]  @relation("ChambreReservations")
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id             String         @id @default(uuid())
+  numero_chambre String?        @unique
+  hotel          Hotel          @relation("HotelChambres", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId        String
+  description    String?        @db.VarChar(1000)
+  type           TypeChambre
+  price          Int
+  capacity       Int            @default(1)
+  disponible     Boolean        @default(true)
+  hasWifi        Boolean        @default(false)
+  hasTV          Boolean        @default(false)
+  hasClim        Boolean        @default(false)
+  hasKitchen     Boolean        @default(false)
+  surface        Int?
+  extraBed       Boolean        @default(false)
+  images         ImageChambre[] @relation("ChambreImages")
+  reservations   Reservation[]  @relation("ChambreReservations")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 }
 
 model Favorite {
@@ -256,16 +258,27 @@ model Avis {
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
-model CommentaireLogement{
-  id String @id @default(uuid())
-  comment   String  @db.VarChar(1000)
-    logement   Logement? @relation("LogementComment", fields: [logementId], references: [id], onDelete: Cascade)
+
+model CommentaireLogement {
+  id         String    @id @default(uuid())
+  comment    String    @db.VarChar(1000)
+  logement   Logement? @relation("LogementComment", fields: [logementId], references: [id], onDelete: Cascade)
   logementId String?
-   user       User?     @relation("UserComment", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user       User?     @relation("UserComment", fields: [userId], references: [clerkUserId], onDelete: Cascade)
   userId     String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
 
+model CommentaireHotel {
+  id        String   @id @default(uuid())
+  comment   String   @db.VarChar(1000)
+  hotel     Hotel?   @relation("HotelComment", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId   String?
+  user      User?    @relation("UserCommentHotel", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ImageLogement {

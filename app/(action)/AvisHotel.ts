@@ -2,14 +2,13 @@
 
 import { prisma } from "@/src/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
-
-export async function createAvis(logementId: string, rating: number) {
+export async function createAvis(hotelId: string, rating: number) {
     const user = await currentUser();
     if (!user) {
         return { success: false, message: "Utilisateur non connecté" };
     }
 
-    if (!logementId || typeof rating !== "number" || rating < 1) {
+    if (!hotelId || typeof rating !== "number" || rating < 1) {
         return { success: false, message: "Données manquantes ou invalides" };
     }
 
@@ -18,7 +17,7 @@ export async function createAvis(logementId: string, rating: number) {
         const existingAvis = await prisma.avis.findFirst({
             where: {
                 userId: user.id,
-                logementId: logementId,
+                hotelId: hotelId,
             }
         });
 
@@ -35,7 +34,7 @@ export async function createAvis(logementId: string, rating: number) {
 
         const avis = await prisma.avis.create({
             data: {
-                logementId,
+                hotelId,
                 userId: user.id,
                 start: rating,
             },
@@ -48,22 +47,21 @@ export async function createAvis(logementId: string, rating: number) {
     }
 }
 
-
-export async function createComment(logementId: string, comment: string) {
+export async function createComment(hotelId: string, comment: string) {
     const user = await currentUser();
     if (!user) {
         return { success: false, message: "Utilisateur non connecté" };
     }
 
-    if (!logementId || !comment.trim()) {
+    if (!hotelId || !comment.trim()) {
         return { success: false, message: "Données manquantes" };
     }
 
     try {
-        const commentaire = await prisma.commentaireLogement.create({
+        const commentaire = await prisma.commentaireHotel.create({
             data: {
                 comment,
-                logementId,
+                hotelId,
                 userId: user.id,
             },
         });
@@ -73,21 +71,21 @@ export async function createComment(logementId: string, comment: string) {
         return { success: false, message: "Erreur serveur" };
     }
 }
-export async function getAvisByUser(logementId: string) {
+export async function getAvisByUser(hotelId: string) {
     const user = await currentUser();
     if (!user) return null;
 
     return await prisma.avis.findFirst({
         where: {
             userId: user.id,
-            logementId: logementId
+            hotelId: hotelId
         }
     });
 }
-export async function UserComment(logementId: string) {
-    const comments = await prisma.commentaireLogement.findMany({
+export async function UserCommentHotel(hotelId: string) {
+    const comments = await prisma.commentaireHotel.findMany({
         where: {
-            logementId: logementId, 
+            hotelId: hotelId, 
         },
         include: {
             user: {
@@ -97,7 +95,7 @@ export async function UserComment(logementId: string) {
                     profileImage:true,
                     avis: {
                         where: {
-                            logementId: logementId, 
+                            hotelId: hotelId, 
                         },
                         select: {
                             start: true,  
@@ -109,12 +107,8 @@ export async function UserComment(logementId: string) {
         orderBy: {
             createdAt: 'desc',
         },
-      
+       
     });
 
     return comments;
 }
-
-
-
-

@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommentProvider } from "@/contexte/CommenteContexte";
+import { CommentHotelProvider } from "@/contexte/userCommentHotelContext";
 
 
 const geistSans = Geist({
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <CommentProvider>  
+        <CommentHotelProvider>
         <html lang="en">
           <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -36,6 +38,8 @@ export default function RootLayout({
             </ThemeProvider>
           </body>
         </html>
+        </CommentHotelProvider>
+        
       </CommentProvider>
     </ClerkProvider>
   );

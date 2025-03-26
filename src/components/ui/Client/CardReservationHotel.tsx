@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Chambre } from "@/types/types";
 import { useState } from "react";
 import React from "react";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../alert-dialog";
+//import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../dialog";
 
 interface HotelProps {
     chambre: Chambre | null,
@@ -35,6 +36,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
         return diffDays > 0 ? diffDays : 0;
     };
     const resetForm = () => {
+
         setDateD(undefined);
         setDateA(undefined);
         setVoyageurs("1");
@@ -42,14 +44,15 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
 
     return (
         <>
-            <AlertDialog open={open} onOpenChange={onOpenChange}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Réservation - type Chambre: {chambre?.type}</AlertDialogTitle>
-                        <AlertDialogDescription>
+            <Dialog open={open} onOpenChange={onOpenChange}>
+
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Réservation - type Chambre: {chambre?.type}</DialogTitle>
+                        <DialogDescription>
                             {chambre?.description}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
+                        </DialogDescription>
+                    </DialogHeader>
                     <span className="p-4 space-y-4">
                         <span className="flex items-center justify-between pb-2 border-b">
                             <span>
@@ -142,12 +145,12 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                         </span>
                     </span>
 
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={resetForm}>Annuler</AlertDialogCancel>
+                    <DialogFooter>
+                        <Button onClick={resetForm}>Annuler</Button>
 
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

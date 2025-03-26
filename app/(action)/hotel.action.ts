@@ -362,6 +362,7 @@ export async function getDetailsHotel(hotel:string){
         include:{
             user:true,
           avis:true,
+          favorites:true,
           images:true,
           hotelOptions: {
             select: {

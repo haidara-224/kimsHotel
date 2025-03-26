@@ -1,10 +1,13 @@
 'use client';
 import { getDetailsHotel } from "@/app/(action)/hotel.action";
+import AvisCommentHotel from "@/src/components/ui/Client/AvisCommentHotel";
 import Gallery from "@/src/components/ui/Client/GalleryHotel";
 import { HotelChambre } from "@/src/components/ui/Client/HotelChambre";
+import { HotelComment } from "@/src/components/ui/Client/HotelComment";
 import { OptionHotel } from "@/src/components/ui/Client/OptionHotel";
 import { NavBar } from "@/src/components/ui/NavBar";
 import { Hotele } from "@/types/types";
+import { Heart, Star } from "lucide-react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -12,7 +15,7 @@ import { useEffect, useState } from "react";
 export default function Page() {
   const [hotel, setHotel] = useState<Hotele | null>(null);
   const [isLoading, setisLoading] = useState(false)
-  
+
 
   const [dateAnnes, setDateAnne] = React.useState<number>()
   const params = useParams();
@@ -60,6 +63,14 @@ export default function Page() {
               <Gallery hotel={hotel} />
               <div className="mt-5 font-bold text-xl">
                 Cet hôtel {hotel.etoils}-étoiles vous offre un séjour d&apos;exception avec des services de qualité.
+                <div className="flex gap-5 mt-5">
+                  <p className="flex items-center gap-1">
+                    <Star className="w-5 h-5 text-yellow-500" /> {hotel.avis?.length} Avis
+                  </p>
+                  <p className="flex items-center gap-1">
+                    <Heart className="w-5 h-5 text-red-500" /> {hotel.favorites?.length} Favoris
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-4 p-4 ">
                 <Image
@@ -94,7 +105,11 @@ export default function Page() {
                     <HotelChambre hotel={hotel} />
                   </div>
                 </div>
-              
+
+              </section>
+              <section>
+             <AvisCommentHotel hotelId={hotel.id} />
+             <HotelComment hotelId={hotel.id}/>
               </section>
             </div>
 

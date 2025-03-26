@@ -362,7 +362,7 @@ export async function getDetailsAppartement(logementId:string){
         user:true,
         avis:true,
         images:true,
-        favorites:true,
+       favorites:true, 
         logementOptions:{
           select:{
             option:true

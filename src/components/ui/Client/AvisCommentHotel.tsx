@@ -4,13 +4,15 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 import { Textarea } from "../textarea";
-import { createAvis, createComment, getAvisByUser } from "@/app/(action)/createAvisLogement";
+
 import { toast } from "sonner";
-import { useCommentContext } from "@/contexte/CommenteContexte";
+
 import { useUser } from "@clerk/nextjs";
+import { createAvis, createComment, getAvisByUser } from "@/app/(action)/AvisHotel";
+import { useCommentContext } from "@/contexte/userCommentHotelContext";
 
 
-export default function AvisCommentLogement({ logementId }: { logementId: string }) {
+export default function AvisCommentHotel({ hotelId }: { hotelId: string }) {
   const { setComments } = useCommentContext();  
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
@@ -22,24 +24,24 @@ export default function AvisCommentLogement({ logementId }: { logementId: string
 const {user}=useUser()
   useEffect(() => {
     async function fetchAvis() {
-      const avis = await getAvisByUser(logementId);
+      const avis = await getAvisByUser(hotelId);
       if (avis) {
         setRating(avis.start || 0);
       }
     }
     fetchAvis();
-  }, [logementId]);
+  }, [hotelId]);
 
   const handleRatingSelect = (selectedRating: number) => {
     if (isCommentPending) return;
     setRating(selectedRating);
 
     startRatingTransition(async () => {
-      const response = await createAvis(logementId, selectedRating);
+      const response = await createAvis(hotelId, selectedRating);
       if (!response.success) {
         toast(response.message);
         if (response.message === "Utilisateur non connecté") {
-          router.push(`/sign-in?redirect_url=views/appartement/${logementId}`);
+          router.push(`/sign-in?redirect_url=views/hotel/${hotelId}`);
         }
         return;
       }
@@ -54,11 +56,11 @@ const {user}=useUser()
     if (isRatingPending) return;
 
     startCommentTransition(async () => {
-      const response = await createComment(logementId, comment);
+      const response = await createComment(hotelId, comment);
       if (!response.success) {
         toast(response.message);
         if (response.message === "Utilisateur non connecté") {
-          router.push(`/sign-in?redirect_url=views/appartement/${logementId}`);
+          router.push(`/sign-in?redirect_url=views/hotel/${hotelId}`);
         }
         return;
       }
