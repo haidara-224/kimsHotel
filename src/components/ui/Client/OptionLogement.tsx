@@ -18,7 +18,7 @@ export function OptionLogement({ logement }: logementProps) {
                                 alt={opt.option.title}
                                 width={32}
                                 height={32}
-                                className="w-6 h-6 object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+                                className="w-6 h-6 object-contain opacity-80 group-hover:opacity-100 transition-opacity dark:bg-white"
                             />
                         </div>
                         <div>
