@@ -3,7 +3,6 @@ import { prisma } from "@/src/lib/prisma";
 import { Hotel } from "@/types/types";
 import {  currentUser } from "@clerk/nextjs/server";
 import {put} from '@vercel/blob'
-
 export async function createHotel(
     categoryLogementId: string,
     numero_chambre:string,
@@ -349,7 +348,14 @@ export async function getHotelsDetails(hotelId:string){
  
   
 }
+/*
+interface Props{
+    searchParams:{[key:string]:string | string[]| undefined}
+}
+const PAGE_SIZE=2
+*/
 export async function getDetailsHotel(hotel:string){
+    //const pagenum=searchParams.pagenum ?? 0
     try {
       const hotels=await prisma.hotel.findUnique({
         where:{id:hotel},
@@ -364,8 +370,11 @@ export async function getDetailsHotel(hotel:string){
         },
           chambres:{
             include:{
-                images:true
-            }
+                images:true,
+                
+            },
+          
+            
           }
         }
       })

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Bed, CheckCircle, Tv2, Utensils, Wifi, XCircle } from "lucide-react";
 import { CardReservationHotel } from "./CardReservationHotel";
 
+
 interface HotelProps {
   hotel: Hotele;
 }
@@ -14,6 +15,7 @@ interface HotelProps {
 export function HotelChambre({ hotel }: HotelProps) {
   const [hoveredCarousel, setHoveredCarousel] = useState<number | null>(null);
   const [selectedChambre, setSelectedChambre] = useState<Chambre | null>(null);
+
 
   const [open,setOpenChange]=useState(false)
     const onOpenChange=(chambre:Chambre)=>{
@@ -65,7 +67,7 @@ export function HotelChambre({ hotel }: HotelProps) {
               {ch.disponible ? 'Disponible' : 'Occupée'}
             </span>
           </div>
-          <div className="flex flex-col lg:flex-row justify-between">
+          <div className="flex flex-col">
             <span>Capacité: {ch.capacity}</span>
             <span>Type Chambres: {ch.type}</span>
           </div>
@@ -106,7 +108,9 @@ export function HotelChambre({ hotel }: HotelProps) {
           onOpenChange={setOpenChange}
           chambre={selectedChambre}
         />
-    
+    <div className="flex justify-between mt-5">
+
+</div>
       
     </>
     

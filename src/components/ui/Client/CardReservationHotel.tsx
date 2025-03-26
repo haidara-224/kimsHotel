@@ -45,7 +45,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
             <AlertDialog open={open} onOpenChange={onOpenChange}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Réservation - {chambre?.type}</AlertDialogTitle>
+                        <AlertDialogTitle>Réservation - type Chambre: {chambre?.type}</AlertDialogTitle>
                         <AlertDialogDescription>
                             {chambre?.description}
                         </AlertDialogDescription>
@@ -122,7 +122,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                         }
 
 
-                        <span className="space-y-3 pt-3"> {/* Réduction de l'espacement */}
+                        <span className="space-y-3 pt-3">
                             <span className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">{formatPrice(chambre?.price ? chambre.price : 0)}  ×  {getNumberOfNights()}  nuits</span>
                                 <span className="font-medium">{formatPrice((chambre?.price ? chambre.price : 0) * getNumberOfNights())}</span>

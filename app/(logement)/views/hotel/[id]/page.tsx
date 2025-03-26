@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 export default function Page() {
   const [hotel, setHotel] = useState<Hotele | null>(null);
   const [isLoading, setisLoading] = useState(false)
+  
+
   const [dateAnnes, setDateAnne] = React.useState<number>()
   const params = useParams();
   const hotelId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? "";
@@ -88,7 +90,7 @@ export default function Page() {
                     <OptionHotel hotel={hotel} />
                   </div>
                   <h1 className="mt-3 font-bold">Nos Chambres</h1>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mt-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10 mt-5">
                     <HotelChambre hotel={hotel} />
                   </div>
                 </div>
