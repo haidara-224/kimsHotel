@@ -59,7 +59,7 @@ export function HotelChambre({ hotel }: HotelProps) {
             </Carousel>
           </div>
           <div className="flex flex-col lg:flex-row justify-between items-center my-3">
-            <span className="font-bold text-lg text-gray-800">
+            <span className="font-bold text-lg text-gray-800 dark:text-white">
               {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'GNF' }).format(ch.price)}
             </span>
             <span className={`flex items-center gap-1 ${ch.disponible ? 'text-green-600' : 'text-red-500'}`}>
