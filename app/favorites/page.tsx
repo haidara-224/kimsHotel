@@ -76,7 +76,7 @@ export default function Page() {
                 </div>
             </>
 
-        );
+        )
     }
 
     if (error) {
