@@ -90,6 +90,7 @@ export async function UserCommentHotel(hotelId: string) {
         include: {
             user: {
                 select: {
+                    id:true,
                     nom: true,
                     prenom: true,
                     profileImage:true,
@@ -111,4 +112,17 @@ export async function UserCommentHotel(hotelId: string) {
     });
 
     return comments;
+}
+export async function DeleteCommentUser(commentId: string) {
+    try {
+        const deleteMessage=await prisma.commentaireHotel.delete({
+            where:{
+                id:commentId
+            }
+        })
+        return deleteMessage
+
+    } catch (error) {
+        console.log(error)
+    }
 }

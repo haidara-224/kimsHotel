@@ -1,21 +1,37 @@
 "use client";
-import { useEffect } from "react";
-import { Star } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { Star, Trash } from "lucide-react";
 
 import Image from "next/image";
 import { useCommentContext } from "@/contexte/userCommentHotelContext";
+import { useUser } from "@clerk/nextjs";
+import { DeleteCommentUser } from "@/app/(action)/AvisHotel";
+import { toast } from "sonner";
+
 
 interface PropsId {
   hotelId: string;
 }
 
 export function HotelComment({ hotelId }: PropsId) {
-  const { comments, fetchComments } = useCommentContext(); 
+  const { comments, fetchComments,setComments } = useCommentContext(); 
+  const [isPending, startTransition] = useTransition();
 
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { user } = useUser();
   useEffect(() => {
     fetchComments(hotelId); 
   }, [hotelId]); 
-
+  const handleDelete = (id: string) => {
+     setDeletingId(id);
+     startTransition(async () => {
+       
+       setComments((prev) => prev.filter((comment) => comment.id !== id));
+       await DeleteCommentUser(id);
+       setDeletingId(null);
+       toast("Commentaire supprimé avec succès !");
+     });
+   };
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Derniers avis et commentaires</h1>
@@ -54,8 +70,23 @@ export function HotelComment({ hotelId }: PropsId) {
                 )}
               </div>
 
-              <p className="text-gray-600">{comment.comment}</p>
-
+            <div className="flex">
+                <span className="text-gray-600">{comment.comment}</span>
+                {user?.id === comment.user?.id && (
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(comment.id)}
+                    disabled={isPending}
+                    className="text-sm text-red-400 hover:text-red-800 hover:transition-all flex items-center"
+                  >
+                    {deletingId === comment.id ? (
+                      <div className="w-5 h-5 border-2 border-gray-200 border-t-transparent rounded-full animate-spin mx-5" />
+                    ) : (
+                      <Trash className="mx-5" />
+                    )}
+                  </button>
+                )}
+              </div>
               <p className="text-sm text-gray-400 mt-2">
                 {new Date(comment.createdAt).toLocaleDateString("fr-FR", {
                   year: "numeric",

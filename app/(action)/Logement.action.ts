@@ -380,3 +380,4 @@ export async function getDetailsAppartement(logementId:string){
     throw new Error("Impossible d'afficher les détails de l'appartement")
   }
 }
+

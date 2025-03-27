@@ -87,20 +87,21 @@ export async function getAvisByUser(logementId: string) {
 export async function UserComment(logementId: string) {
     const comments = await prisma.commentaireLogement.findMany({
         where: {
-            logementId: logementId, 
+            logementId: logementId,
         },
         include: {
             user: {
                 select: {
+                    id: true,
                     nom: true,
                     prenom: true,
-                    profileImage:true,
+                    profileImage: true,
                     avis: {
                         where: {
-                            logementId: logementId, 
+                            logementId: logementId,
                         },
                         select: {
-                            start: true,  
+                            start: true,
                         },
                     },
                 },
@@ -109,11 +110,25 @@ export async function UserComment(logementId: string) {
         orderBy: {
             createdAt: 'desc',
         },
-      
+
     });
 
     return comments;
 }
+export async function DeleteCommentUser(commentId: string) {
+    try {
+        const deleteMessage=await prisma.commentaireLogement.delete({
+            where:{
+                id:commentId
+            }
+        })
+        return deleteMessage
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 
 

@@ -71,17 +71,19 @@ const {user}=useUser()
 
     
       setComments((prevComments) => [
-        ...prevComments,
         {
+          id: crypto.randomUUID(), 
           comment,
           createdAt: new Date(), 
           user: {
+            id: user?.id || "", 
             nom: user?.firstName || "", 
             prenom: user?.lastName || "",  
             profileImage: user?.imageUrl || null,
             avis: [{ start: rating }],
           },
         },
+        ...prevComments, 
       ]);
       
     });

@@ -4,9 +4,11 @@ import React, { createContext, useContext, useState } from 'react';
 
 
 interface Comment {
+  id:string,
   comment: string;
   createdAt:Date;
   user: {
+    id:string,
     nom: string;
     prenom: string;
     profileImage:string | null;
