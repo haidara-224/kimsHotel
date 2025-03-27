@@ -19,7 +19,7 @@ export function LogementComment({ logmentId }: PropsId) {
 
   useEffect(() => {
     fetchComments(logmentId);
-  }, [logmentId,fetchComments]);
+  }, [logmentId]);
 
   const handleDelete = (id: string) => {
     setDeletingId(id);
