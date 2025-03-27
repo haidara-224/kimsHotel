@@ -88,6 +88,77 @@ export interface Favorite {
   updatedAt: Date;
 
 }
+export interface Favorites {
+  id: string;
+  userId: string | null;
+  logementId: string | null;
+  hotelId: string | null;
+  user: User; // Typage de l'utilisateur (assume que l'interface User est définie ailleurs)
+  hotel: {
+    id: string;
+    userId: string;
+    user: User
+    categoryLogementId: string;
+    categoryLogement: CategoryLogement;
+    nom: string;
+    description?: string | null;
+    adresse?: string | null;
+    ville?: string | null;
+    telephone?: string | null;
+    email?: string | null;
+    parking: boolean;
+    reservationRate: number;
+    avisRate: number;
+    favorisRate: number;
+    isBlocked: boolean;
+    latitude?: number | null;
+    longitude?: number | null;
+    note?: number | null;
+    etoils?: number;
+    createdAt: Date;
+    updatedAt: Date;
+    images: {
+      urlImage: string; // Typage des images liées à l'hôtel
+    }[];
+  };
+  logement: {
+    id: string;
+  userId: string;
+  user: User;
+  categoryLogementId: string;
+  categoryLogement: CategoryLogement;
+  nom: string;
+  description?: string | null;
+  adresse?: string | null;
+  ville?: string | null;
+  telephone?: string | null;
+  email?: string | null;
+  capacity: number;
+  disponible: boolean;
+  hasWifi: boolean;
+  hasTV: boolean;
+  hasClim: boolean;
+  hasKitchen: boolean;
+  parking: boolean;
+  surface?: number | null;
+  extraBed: boolean;
+  isBlocked: boolean;
+  latitude?: number;
+  longitude?: number;
+  note?: number;
+  nbChambres: number;
+  price: number;
+  createdAt: Date;
+  updatedAt: Date;
+    images: {
+      urlImage: string; 
+    }[];
+  };
+  createdAt: Date;
+  updatedAt: Date;
+  [key: string]: unknown; 
+}
+
 
 export interface Avis {
   id: string;

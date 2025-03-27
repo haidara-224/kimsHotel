@@ -94,9 +94,8 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                                             src={src}
                                             fill
                                             priority={index === 0}
-                                            className="object-cover transition-transform duration-200 hover:scale-105 rounded-xl cursor-pointer"
-                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                            quality={80}
+                                            className="rounded-lg h-full object-cover transition-transform duration-200 hover:scale-105  cursor-pointer"
+                                            
                                         />
                                         <div className="absolute top-3 left-3 w-full">
                                             <Button onClick={AddFavoris} className="dark:bg-slate-900">
@@ -137,8 +136,8 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                             src={urlImage.length > 0 ? urlImage[0] : "/imgd.jpg"}
                             fill
 
-                            className="object-cover transition-transform duration-200 hover:scale-105 rounded-xl cursor-pointer"
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="transition-transform duration-200 hover:scale-105 rounded-lg h-full object-cover cursor-pointer"
+                           
                             quality={80}
                         />
                         <div className="absolute top-3 left-3 flex justify-between w-full">
@@ -165,7 +164,7 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
                 {prix ? (
                     <p className="text-sm text-gray-500">{prix} GNF par nuit</p>
                 ) : (
-                    <Link href={`/views/hotel/${hotelId}`} className="text-blue-500 dark:text-blue-200">voir prix des Chambres...</Link>
+                    <Link href={`/views/hotel/${hotelId}`} className="text-blue-500 dark:text-blue-200">voir plus...</Link>
                 )}
             </div>
         </div>

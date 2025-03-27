@@ -63,21 +63,21 @@ export function UserNav() {
                 Ajouter Mon Etablissement Chez Kims
               </Link>
             </DropdownMenuItem>
+           
+        {user ? (
+          <>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link href="/">Mes Annonces</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href="/">Mes Favoris</Link>
+              <Link href="/favorites">Mes Favoris</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link href="/">Mes Reservations</Link>
             </DropdownMenuItem>
-        {user ? (
-          <>
-           
             {hasRole("ADMIN") && (
               <DropdownMenuItem>
                 <Link href="/dashboard">Dashboard</Link>

@@ -72,5 +72,54 @@ export async function isFavoriteHotelUser(hotelId: string) {
     return !!isFavorite;
 }
 
+export async function getFavorisByUserId() {
+    const user = await currentUser();
+    if (!user) return [];
+
+    const favorites = await prisma.favorite.findMany({
+        where: { userId: user.id },
+        include: {
+            logement: {
+              
+                include: {
+                    images: {
+                        select:{
+                            urlImage:true
+                        }
+                    }, 
+                }
+               
+            },
+            hotel: {
+               
+                include: {
+                    images: {
+                        select:{
+                            urlImage:true
+                        }
+                    }, 
+                },
+               
+            },
+        },
+    });
+
+ 
+    return favorites;
+}
+
+
+
+export async function deleteFavorisById(favorisId: string) {
+    const user = await currentUser();
+    if (!user) return null;
+
+    const deletedFavoris = await prisma.favorite.delete({
+        where: { id: favorisId, userId: user.id },
+    });
+
+    return deletedFavoris;
+}
+
   
   
