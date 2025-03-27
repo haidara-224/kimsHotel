@@ -13,7 +13,7 @@ import { Chambre } from "@/types/types";
 import { useState } from "react";
 import React from "react";
 //import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../alert-dialog";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../dialog";
 
 interface HotelProps {
     chambre: Chambre | null,
@@ -35,12 +35,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays > 0 ? diffDays : 0;
     };
-    const resetForm = () => {
-
-        setDateD(undefined);
-        setDateA(undefined);
-        setVoyageurs("1");
-    };
+  
 
     return (
         <>
@@ -145,10 +140,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                         </span>
                     </span>
 
-                    <DialogFooter>
-                        <Button onClick={resetForm}>Annuler</Button>
-
-                    </DialogFooter>
+                  
                 </DialogContent>
             </Dialog>
         </>
