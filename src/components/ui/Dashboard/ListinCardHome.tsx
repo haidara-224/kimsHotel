@@ -1,14 +1,20 @@
-'use client'
-import Image from "next/image";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "../carousel";
-import Link from "next/link";
-import { Heart } from "lucide-react";
-import { Button } from "../button";
-import { useRouter } from "next/navigation";
-import { AddFavorisHotelWithUser, AddFavorisLogementWithUser, isFavoriteHotelUser, isFavoriteLogementUser } from "@/app/(action)/favoris.action";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { Button } from '../button';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
+import {
+    AddFavorisHotelWithUser,
+    AddFavorisLogementWithUser,
+    isFavoriteHotelUser,
+    isFavoriteLogementUser,
+} from '@/app/(action)/favoris.action';
+import { toast } from 'sonner';
 
 interface getPropsHome {
     nom: string;
@@ -16,25 +22,37 @@ interface getPropsHome {
     adresse: string;
     prix?: number;
     urlImage: string[];
-    
     logementId?: string;
     hotelId?: string;
 }
 
-export default function ListinCardHome({ nom, type, adresse, urlImage, prix, logementId, hotelId }: getPropsHome) {
+export default function ListingCardHome({
+    nom,
+    type,
+    adresse,
+    urlImage,
+    prix,
+    logementId,
+    hotelId,
+}: getPropsHome) {
     const router = useRouter();
+    const { isSignedIn } = useUser();
     const [adding, setAdding] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
-    const { isSignedIn } = useUser();
-    const [showButtons, setShowButtons] = useState(false);
+    const [current, setCurrent] = useState(0);
+    const [direction, setDirection] = useState(0);
 
+    const paginate = (dir: number) => {
+        setDirection(dir);
+        setCurrent((prev) => (prev + dir + urlImage.length) % urlImage.length);
+    };
 
     useEffect(() => {
         const checkFavorite = async () => {
             if (!isSignedIn) return;
-            if (type === "logement" && logementId) {
+            if (type === 'logement' && logementId) {
                 setIsFavorite(await isFavoriteLogementUser(logementId));
-            } else if (type === "hotel" && hotelId) {
+            } else if (type === 'hotel' && hotelId) {
                 setIsFavorite(await isFavoriteHotelUser(hotelId));
             }
         };
@@ -50,22 +68,15 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
         setAdding(true);
 
         try {
-            let message = "";
-            let success = false;
-
-            if (type === "logement" && logementId) {
-                const response = await AddFavorisLogementWithUser(logementId);
-                message = response.message;
-                success = response.success;
-            } else if (type === "hotel" && hotelId) {
-                const response = await AddFavorisHotelWithUser(hotelId);
-                message = response.message;
-                success = response.success;
+            let response: { message: string; success: boolean } = { message: '', success: false };
+            if (type === 'logement' && logementId) {
+                response = await AddFavorisLogementWithUser(logementId);
+            } else if (type === 'hotel' && hotelId) {
+                response = await AddFavorisHotelWithUser(hotelId);
             }
 
-            toast(message);
-            setIsFavorite(success);
-
+            toast(response.message);
+            setIsFavorite(response.success);
         } catch (error) {
             toast.error((error as Error).message || "Erreur lors de l'ajout aux favoris");
         } finally {
@@ -74,99 +85,95 @@ export default function ListinCardHome({ nom, type, adresse, urlImage, prix, log
     };
 
     return (
-        <div className="overflow-hidden duration-300">
-            <div
-                className="relative h-72 w-full overflow-hidden"
-                onMouseEnter={() => setShowButtons(true)}
-                onMouseLeave={() => setShowButtons(false)}
-            >
-                {urlImage.length > 1 ? (
-                    <Carousel className="w-full h-full">
-                        <CarouselContent className="w-full h-72">
-                            {urlImage.map((src, index) => (
-                                <CarouselItem key={index} className="relative w-full h-72">
-                                    <div className="relative w-full h-72" >
-
-
-                                        <Image
-                                            onClick={() => router.push(`${type=='logement'?`/views/appartement/${logementId}`:`/views/hotel/${hotelId}`}`)}
-                                            alt={`Image ${index + 1}`}
-                                            src={src}
-                                            fill
-                                            priority={index === 0}
-                                            className="rounded-lg h-full object-cover transition-transform duration-200 hover:scale-105  cursor-pointer"
-                                            
-                                        />
-                                        <div className="absolute top-3 left-3 w-full">
-                                            <Button onClick={AddFavoris} className="dark:bg-slate-900">
-                                                {adding ? (
-                                                    <div className="loaderFavoris"></div>
-                                                ) : (
-                                                    <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
-                                                )}
-                                            </Button>
-
-
-                                        </div>
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-
-
-                        {showButtons && (
-                            <>
-                                <CarouselPrevious className="absolute hidden lg:flex left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
-                                <CarouselNext className="absolute hidden lg:flex right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
-
-                            </>
-                        )}
-                        <>
-                            <CarouselPrevious className="absolute flex lg:hidden left-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" />
-                            <CarouselNext className="absolute flex lg:hidden  right-2 top-1/2 transform -translate-y-1/2 w-10 h-10  items-center justify-center bg-black/50 text-white rounded-full transition-opacity duration-300" /></>
-
-
-                    </Carousel>
-                ) : (
-                    <div className="relative h-72 w-full">
-
+        <div className="overflow-hidden rounded-lg border dark:border-slate-700 shadow-md">
+            <div className="relative h-72 w-full bg-black/10 overflow-hidden group">
+                <AnimatePresence initial={false} custom={direction} mode="wait">
+                    <motion.div
+                        key={urlImage[current]}
+                        custom={direction}
+                        initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: direction < 0 ? 100 : -100 }}
+                        transition={{ duration: 0.4 }}
+                        className="absolute inset-0 w-full h-full"
+                    >
                         <Image
-                             onClick={() => router.push(`${type=='logement'?`/views/appartement/${logementId}`:`/views/hotel/${hotelId}`}`)}
-                            alt="Image house"
-                            src={urlImage.length > 0 ? urlImage[0] : "/imgd.jpg"}
+                            src={urlImage[current]}
+                            alt={`Image ${current + 1}`}
                             fill
-
-                            className="transition-transform duration-200 hover:scale-105 rounded-lg h-full object-cover cursor-pointer"
-                           
-                            quality={80}
+                            priority
+                            onClick={() =>
+                                router.push(
+                                    type === 'logement'
+                                        ? `/views/appartement/${logementId}`
+                                        : `/views/hotel/${hotelId}`
+                                )
+                            }
+                            className="object-cover w-full h-full cursor-pointer  transition-transform duration-200 hover:scale-105"
                         />
-                        <div className="absolute top-3 left-3 flex justify-between w-full">
-                            <Button type="submit" onClick={AddFavoris} className="dark:bg-slate-900" disabled={adding}>
-                                {adding ? (
-                                    <div className="loaderFavoris"></div>
-                                ) : (
-                                    <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
-                                )}
-                            </Button>
+                    </motion.div>
+                </AnimatePresence>
 
-
-                        </div>
-                    </div>
+                {urlImage.length > 1 && (
+                    <>
+                        <button
+                            onClick={() => paginate(-1)}
+                            className="hidden group-hover:block absolute left-3 top-1/2 -translate-y-1/2 text-2xl bg-black/50 text-white p-2 rounded-full z-10"
+                        >
+                            <ChevronLeft />
+                        </button>
+                        <button
+                            onClick={() => paginate(1)}
+                            className="hidden group-hover:block absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full z-10"
+                        >
+                            <ChevronRight />
+                        </button>
+                    </>
                 )}
-            </div>
 
-            <div className="p-4 space-y-3">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-sm font-semibold text-gray-900 dark:text-white">{nom}</h1>
-                    <span className="text-sm text-gray-500 dark:text-white">{type}</span>
+                <div className="absolute top-3 left-3 z-10">
+                    <Button onClick={AddFavoris} className="dark:bg-slate-900">
+                        {adding ? (
+                            <div className="loaderFavoris" />
+                        ) : (
+                            <Heart className={`w-6 h-6 ${isFavorite ? 'fill-red-700' : 'text-white'}`} />
+                        )}
+                    </Button>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-white">{adresse}</p>
-                {prix ? (
-                    <p className="text-sm text-gray-500">{prix} GNF par nuit</p>
-                ) : (
-                    <Link href={`/views/hotel/${hotelId}`} className="text-blue-500 dark:text-blue-200">voir plus...</Link>
-                )}
             </div>
+
+
+            <div className="p-4 flex flex-col h-full">
+                <div className="flex justify-between">
+                    <h1 className="text-sm font-semibold text-gray-900 dark:text-white">{nom}</h1>
+                    <span className="text-xs text-gray-500 dark:text-white">{type}</span>
+                </div>
+
+                <p className="text-sm text-gray-500 dark:text-white">{adresse}</p>
+
+                {prix && (
+                    <p className="text-sm text-gray-500 mt-1">
+                        {new Intl.NumberFormat('fr-FR').format(prix)} GNF / nuit
+                    </p>
+                )}
+
+                
+
+                <Button className="w-full mt-8">
+                    <Link
+                        href={
+                            type === 'logement'
+                                ? `/views/appartement/${logementId}`
+                                : `/views/hotel/${hotelId}`
+                        }
+                        className="text-white dark:text-blue-200"
+                    >
+                        {type === 'logement' ? 'Reserver' : 'Voir Chambres'}
+                    </Link>
+                </Button>
+            </div>
+
+
         </div>
     );
 }

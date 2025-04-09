@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       }
     ],
-    domains: ['unxovct6jcrhoof5.public.blob.vercel-storage.com',"img.clerk.com"],
+    domains: ['unxovct6jcrhoof5.public.blob.vercel-storage.com',"img.clerk.com",'images.unsplash.com', 'encrypted-tbn0.gstatic.com'],
   
   },
   experimental: {

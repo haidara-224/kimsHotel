@@ -8,6 +8,16 @@ interface iAppProps {
 
 export const categoryItems: iAppProps[] = [
   {
+    
+    id: 0,
+    name: "tout",
+    description: "",
+    title: "Tout",
+    imageUrl:
+       "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWFsaWduLXJpZ2h0LWljb24gbHVjaWRlLWFsaWduLXJpZ2h0Ij48cGF0aCBkPSJNMjEgMTJIOSIvPjxwYXRoIGQ9Ik0yMSAxOEg3Ii8+PHBhdGggZD0iTTIxIDZIMyIvPjwvc3ZnPg=="
+  },
+  {
+    
     id: 1,
     name: "plage",
     description: "Cette propriété est proche de la plage.",

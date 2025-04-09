@@ -66,18 +66,7 @@ export function UserNav() {
            
         {user ? (
           <>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href="/">Mes Annonces</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href="/favorites">Mes Favoris</Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href="/">Mes Reservations</Link>
-            </DropdownMenuItem>
+            
             {hasRole("ADMIN") && (
               <DropdownMenuItem>
                 <Link href="/dashboard">Dashboard</Link>

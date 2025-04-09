@@ -1,22 +1,20 @@
 "use client";
 
-
-
 import { categoryItems } from "@/app/lib/categoryItems";
 import { cn } from "@/src/lib/utils";
-
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef } from "react";
 
 export function MapFilterItems() {
   const searchParams = useSearchParams();
   const search = searchParams.get("filter");
-
-
   const pathName = usePathname();
+  const router = useRouter();
 
+  // Utilisation d'un ref pour garder une référence du scroll
+  const prevScrollPos = useRef(0);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -27,16 +25,34 @@ export function MapFilterItems() {
     [searchParams]
   );
 
+  // Pour éviter le scroll vers le haut
+  useEffect(() => {
+    // Si un filtre est appliqué, maintiens le scroll
+    if (search) {
+      window.scrollTo(0, prevScrollPos.current); // Revenir à la position précédente
+    }
+  }, [search]);
+
+  const handleCategoryClick = (category: string) => {
+    if (category === "tout") {     
+      router.push("/");
+    } else {
+      // Sauvegarder la position actuelle avant la navigation
+      prevScrollPos.current = window.pageYOffset;
+      router.push(pathName + "?" + createQueryString("filter", category));
+    }
+  };
+
   return (
-    <div className="flex justify-center gap-x-6 mt-5 w-full overflow-x-auto no-scrollbar px-4 py-2 border-2 bg-white rounded-lg shadow-2xl">
+    <div className="flex justify-center gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2 border-2 bg-white rounded-lg shadow-2xl">
       {categoryItems.map((item) => (
-        <Link
+        <div
           key={item.id}
-          href={pathName + "?" + createQueryString("filter", item.name)}
           className={cn(
             "flex flex-col items-center gap-y-2 transition-all duration-300", 
             search === item.name ? "opacity-100 scale-105" : "opacity-60 hover:opacity-90"
           )}
+          onClick={() => handleCategoryClick(item.name)} // Gérer le clic sur la catégorie
         >
           <div
             className={cn(
@@ -53,7 +69,7 @@ export function MapFilterItems() {
             />
           </div>
           <p className="text-sm font-medium text-gray-700">{item.title}</p>
-        </Link>
+        </div>
       ))}
     </div>
   );
