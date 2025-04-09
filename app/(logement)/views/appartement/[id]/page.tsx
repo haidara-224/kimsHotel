@@ -51,13 +51,16 @@ export default function Page() {
 
   return (
     <>
-      <NavBar />
+    <div className="w-full min-h-screen bg-background">
+    <nav className="bg-white shadow-md  z-40 p-2 lg:p-5">
+        <NavBar />
+      </nav>
       {isLoading && (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50">
           <span className="loaderCharge"></span>
         </div>
       )}
-      <div className="container mx-auto px-5 lg:px-16 mt-5">
+      <div className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
         {logement && (
           <div>
             <Gallery logement={logement} />
@@ -120,6 +123,8 @@ export default function Page() {
           </div>
         )}
       </div>
+    </div>
+     
     </>
   );
 }
