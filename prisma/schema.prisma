@@ -40,29 +40,33 @@ enum TypePaiement {
 }
 
 model Role {
-  id    String     @id @default(uuid())
-  name  Roles      @unique
-  users UserRole[] @relation("RoleUsers")
+  id                  String                @id @default(uuid())
+  name                Roles                 @unique
+  users               UserRole[]            @relation("RoleUsers")
+  UserRoleAppartement UserRoleAppartement[] @relation("RoleUsersLogement")
+  UserRoleHotel       UserRoleHotel[] @relation("RoleUsersHotel")
 }
 
 model User {
-  id               String                @id @unique
-  prenom           String
-  nom              String
-  clerkUserId      String                @unique
-  email            String                @unique
-  profileImage     String?
-  telephone        String?
-  roles            UserRole[]            @relation("UserRoles")
-  logements        Logement[]            @relation("UserLogements")
-  favorites        Favorite[]            @relation("UserFavorites")
-  avis             Avis[]                @relation("UserAvis")
-  reservations     Reservation[]         @relation("UserReservations")
-  commentUser      CommentaireLogement[] @relation("UserComment")
-  hotels           Hotel[]               @relation("UserHotels")
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
-  CommentaireHotel CommentaireHotel[]    @relation("UserCommentHotel")
+  id                  String                @id @unique
+  prenom              String
+  nom                 String
+  clerkUserId         String                @unique
+  email               String                @unique
+  profileImage        String?
+  telephone           String?
+  roles               UserRole[]            @relation("UserRoles")
+  logements           Logement[]            @relation("UserLogements")
+  favorites           Favorite[]            @relation("UserFavorites")
+  avis                Avis[]                @relation("UserAvis")
+  reservations        Reservation[]         @relation("UserReservations")
+  commentUser         CommentaireLogement[] @relation("UserComment")
+  hotels              Hotel[]               @relation("UserHotels")
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  CommentaireHotel    CommentaireHotel[]    @relation("UserCommentHotel")
+  UserRoleAppartement UserRoleAppartement[] @relation("UserLogement")
+  UserRoleHotel       UserRoleHotel[] @relation("UserHotel")
 
   @@index([email])
 }
@@ -74,7 +78,7 @@ model UserRole {
   user User @relation("UserRoles", fields: [userId], references: [clerkUserId], onDelete: Cascade)
   role Role @relation("RoleUsers", fields: [roleId], references: [id], onDelete: Cascade)
 
-  @@id([userId, roleId]) // Composite key
+  @@id([userId, roleId])
 }
 
 model CategoryLogement {
@@ -136,6 +140,7 @@ model Hotel {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   CommentaireHotel CommentaireHotel[] @relation("HotelComment")
+  UserRoleHotel    UserRoleHotel[] @relation("UserRoleHotel")
 
   @@index([nom])
 }
@@ -175,6 +180,8 @@ model Logement {
   price              Int
   createdAt          DateTime                   @default(now())
   updatedAt          DateTime                   @updatedAt
+
+  UserRoleAppartement UserRoleAppartement[] @relation("UserRoleLogement")
 }
 
 model LogementOptionOnLogement {
@@ -308,4 +315,30 @@ model Paiement {
   type          TypePaiement
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+}
+
+model UserRoleAppartement {
+  id         String    @id @default(uuid())
+  logement   Logement @relation("UserRoleLogement", fields: [logementId], references: [id], onDelete: Cascade)
+  logementId String
+  roleId     String
+  role       Role      @relation("RoleUsersLogement", fields: [roleId], references: [id], onDelete: Cascade)
+  userId     String
+
+  user      User     @relation("UserLogement", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserRoleHotel {
+  id      String  @id @default(uuid())
+  hotel   Hotel  @relation("UserRoleHotel", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId String
+  roleId  String
+  role    Role    @relation("RoleUsersHotel", fields: [roleId], references: [id], onDelete: Cascade)
+  userId  String
+
+  user      User     @relation("UserHotel", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

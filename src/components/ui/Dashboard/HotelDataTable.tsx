@@ -115,7 +115,7 @@ export default function HotelDataTable({ limit, title }: HotelDataTableProps){
                   isSuperAdmin && 
                   <Button onClick={()=>onDeleteLogement(lg)}><Trash2 className="text-red-400 rounded text-xl hover:text-red-800 transition-all cursor-pointer" /></Button>
                 }
-                
+                 
               </TableCell>
             </TableRow>
           ))}

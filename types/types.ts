@@ -118,7 +118,7 @@ export interface Favorites {
     createdAt: Date;
     updatedAt: Date;
     images: {
-      urlImage: string; // Typage des images liées à l'hôtel
+      urlImage: string; 
     }[];
   };
   logement: {
@@ -516,6 +516,16 @@ export interface homeTypes {
   type: string;
   userId: string;
   ville: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface RoleUserHotel {
+  userId: string;
+  user?: User;      
+  roleId: string;
+  role: Role;
+  hotelId: string;
+  hotel?: Hotel; 
   createdAt: Date;
   updatedAt: Date;
 }

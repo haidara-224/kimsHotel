@@ -73,7 +73,21 @@ export async function CreateLogement(
 
     if (!createdLogement) throw new Error("Échec de la création du logement");
 
-
+    if(createdLogement){
+      const clientRole = await prisma.role.findUnique({
+        where: { name: "ADMIN" },
+      });
+    if (!clientRole) {
+        throw new Error("Le rôle 'CLIENT' n'existe pas dans la base de données.");
+    }
+       await prisma.userRoleAppartement.create({
+           data:{
+               userId:user.id,
+               logementId:createdLogement.id,
+               roleId:clientRole.id
+           }
+       })
+   }
     const uploadedImages = await Promise.allSettled(
       images.map(async (file) => {
         try {

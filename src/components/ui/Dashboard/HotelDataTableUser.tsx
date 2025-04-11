@@ -3,38 +3,55 @@
 import { useState, useEffect, useCallback } from "react";
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Check, Eye, Star, Trash2, X } from "lucide-react";
+import { Check, Eye, PencilLine, PlusCircleIcon, Star, Trash2, X } from "lucide-react";
 import Link from "next/link";
 
-import { Hotel } from "@/types/types";
+import { Hotel, RoleUserHotel } from "@/types/types";
 
 import { Button } from "../button";
 import { useToast } from "@/src/hooks/use-toast";
-import {  DeleteHotel, getHotelWithUser } from "@/app/(action)/hotel.action";
+import { DeleteHotel, getHotelWithUser } from "@/app/(action)/hotel.action";
 import Loader from "../Client/Loader";
-
-
-
+import { getRolesUserHotel } from "@/app/(action)/Roles.action";
+import { userIsAdmin } from "@/app/(action)/user.action";
+import { useUser } from "@clerk/nextjs";
 export default function HotelDataTableUser() {
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [isLoading, setIsloading] = useState(false)
+    const [roles, setRoles] = useState<RoleUserHotel[]>([])
+    const [isAdmin, setIsAdmin] = useState(false)
+    const { user } = useUser()
+    const chechIsAdmin = async () => {
+        const isSuper = await userIsAdmin()
+        setIsAdmin(isSuper)
 
+    }
     const { toast } = useToast();
     const fetchData = useCallback(async () => {
         try {
             setIsloading(true)
             const data = await getHotelWithUser();
 
-            setHotels((data as Hotel[]));
+            setHotels(data as Hotel[]);
         } catch (e) {
             console.log(e)
         } finally {
             setIsloading(false)
         }
-       
+
 
 
     }, []);
+    const fetchRolesUser = async () => {
+        try {
+            const data = await getRolesUserHotel()
+            console.log(data)
+            setRoles(data as unknown as RoleUserHotel[])
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const onDeleteLogement = async (lg: Hotel) => {
         const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer ce Logement ?")
         if (confirmed) {
@@ -53,64 +70,76 @@ export default function HotelDataTableUser() {
       }, [limit]);
       */
     useEffect(() => {
-
+        chechIsAdmin()
+        fetchRolesUser()
         fetchData();
     }, [fetchData])
 
 
-  
+
 
     return (
         <div className="mt-10 overflow-x-auto">
             {
-                isLoading ? <Loader/> : 
-                <Table className="min-w-full">
-                <TableCaption>Liste des Hôtels</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead className="hidden md:table-cell">Category</TableHead>
-                        <TableHead className="hidden lg:table-cell">Address</TableHead>
-                        <TableHead className="hidden lg:table-cell">City</TableHead>
-                        <TableHead className="hidden lg:table-cell">Bloqué/Débloqué</TableHead>
-                        <TableHead className="hidden lg:table-cell">Etoils</TableHead>
-                        <TableHead className="hidden xl:table-cell">User</TableHead>
-                        <TableHead>Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {hotels.map((lg) => (
-                        <TableRow key={lg.id}>
-                            <TableCell>{lg.nom}</TableCell>
-                            <TableCell className="hidden md:table-cell">{lg.categoryLogement.name}</TableCell>
-                            <TableCell className="hidden lg:table-cell">{lg.adresse}</TableCell>
-                            <TableCell className="hidden lg:table-cell">{lg.ville}</TableCell>
-                            <TableCell className="hidden lg:table-cell">
-                                {
-                                    lg.isBlocked ? <X className="text-red-800"/> : <Check className="text-green-600" />
-                                }
-                            </TableCell>
+                roles.map((r) => (
+                    <p key={r.role.id} className=" float-right bg-green-600 p-3 text-white rounded-lg " >{r.role.name}</p>
+                ))
 
-                            <TableCell className="hidden xl:table-cell">
-                                <div className="flex text-[#D4AF37]">
-                                    {Array.from({ length: lg.etoils || 0 }).map((_, index) => (
-                                        <Star key={index} className="w-5 h-5" fill="currentColor" />
-                                    ))}
-                                </div>
-                            </TableCell>
-                            <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
-                            <TableCell className="flex gap-3">
-                                <Link href={`/dashboard/hotels/${lg.id}`}><Eye /></Link>
-
-                                <Button onClick={() => onDeleteLogement(lg)}><Trash2 className="text-red-400 rounded text-xl hover:text-red-800 transition-all cursor-pointer" /></Button>
-
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
             }
-            
+            {
+                isLoading ? <Loader /> :
+                    <Table className="min-w-full">
+                        <TableCaption>Liste des Hôtels</TableCaption>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Name</TableHead>
+                                <TableHead className="hidden md:table-cell">Category</TableHead>
+                                <TableHead className="hidden lg:table-cell">Address</TableHead>
+                                <TableHead className="hidden lg:table-cell">City</TableHead>
+                                <TableHead className="hidden lg:table-cell">Bloqué/Débloqué</TableHead>
+                                <TableHead className="hidden lg:table-cell">Etoils</TableHead>
+                                <TableHead className="hidden xl:table-cell">User</TableHead>
+                                <TableHead>Action</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {hotels.map((lg) => (
+                                <TableRow key={lg.id}>
+                                    <TableCell>{lg.nom}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{lg.categoryLogement.name}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">{lg.adresse}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">{lg.ville}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">
+                                        {
+                                            lg.isBlocked ? <X className="text-red-800" /> : <Check className="text-green-600" />
+                                        }
+                                    </TableCell>
+
+                                    <TableCell className="hidden xl:table-cell">
+                                        <div className="flex text-[#D4AF37]">
+                                            {Array.from({ length: lg.etoils || 0 }).map((_, index) => (
+                                                <Star key={index} className="w-5 h-5" fill="currentColor" />
+                                            ))}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
+                                    <TableCell className="flex gap-3">
+                                        <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg.id}/AddChambre`}><PlusCircleIcon /></Link>
+                                        <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg.id}`}><Eye /></Link>
+
+                                        
+                                        <Link href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg.id}`}><PencilLine /></Link>
+                                        {
+                                            isAdmin &&
+                                            <Button onClick={() => onDeleteLogement(lg)}><Trash2 className="text-red-400 rounded text-xl hover:text-red-800 transition-all cursor-pointer" /></Button>
+                                        }
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+            }
+
         </div>
     );
 }

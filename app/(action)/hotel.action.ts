@@ -44,6 +44,21 @@ export async function createHotel(
         const createdHotel = await prisma.hotel.create({
             data: { userId: user.id, nom, description, adresse, ville,etoils, telephone, email, parking, categoryLogementId }
         });
+        if(createdHotel){
+            const clientRole = await prisma.role.findUnique({
+                where: { name: "ADMIN" },
+              });
+            if (!clientRole) {
+                throw new Error("Le rôle 'CLIENT' n'existe pas dans la base de données.");
+            }
+            await prisma.userRoleHotel.create({
+                data:{
+                    userId:user.id,
+                    hotelId:createdHotel.id,
+                    roleId:clientRole.id 
+                }
+            })
+        }
         const uploadedImagesHotel = await Promise.allSettled(
             imagesHotel.map(async (file) => {
                 try {
@@ -56,6 +71,7 @@ export async function createHotel(
                 }
             })
         );
+        
 
         const validImagesHotel = uploadedImagesHotel.filter(result => result.status === "fulfilled" && result.value !== null)
             .map(result => (result as PromiseFulfilledResult<{ hotelId: string; urlImage: string }>).value);
