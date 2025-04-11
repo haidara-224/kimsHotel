@@ -3,12 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Check, Eye, PencilLine, PlusCircleIcon, Star, Trash2, X } from "lucide-react";
+import { Bed, Check, Eye, PencilLine, Star, Trash2, X } from "lucide-react";
 import Link from "next/link";
 
 import { Hotel, RoleUserHotel } from "@/types/types";
 
-import { Button } from "../button";
+
 import { useToast } from "@/src/hooks/use-toast";
 import { DeleteHotel, getHotelWithUser } from "@/app/(action)/hotel.action";
 import Loader from "../Client/Loader";
@@ -123,17 +123,40 @@ export default function HotelDataTableUser() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
-                                    <TableCell className="flex gap-3">
-                                        <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg.id}/AddChambre`}><PlusCircleIcon /></Link>
-                                        <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg.id}`}><Eye /></Link>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Link
+                                                href={`/dashboard/hotes/${user?.id}/hotels/${lg.id}`}
+                                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                                            >
+                                                <Eye className="w-5 h-5" />
+                                            </Link>
 
-                                        
-                                        <Link href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg.id}`}><PencilLine /></Link>
-                                        {
-                                            isAdmin &&
-                                            <Button onClick={() => onDeleteLogement(lg)}><Trash2 className="text-red-400 rounded text-xl hover:text-red-800 transition-all cursor-pointer" /></Button>
-                                        }
+                                            <Link
+                                                href={`/dashboard/hotes/${user?.id}/hotels/${lg.id}/chambres`}
+                                                className="text-green-600 hover:text-green-800 transition-colors"
+                                            >
+                                                <Bed className="w-5 h-5" />
+                                            </Link>
+
+                                            <Link
+                                                href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg.id}`}
+                                                className="text-yellow-600 hover:text-yellow-800 transition-colors"
+                                            >
+                                                <PencilLine className="w-5 h-5" />
+                                            </Link>
+
+                                            {isAdmin && (
+                                                <button
+                                                    onClick={() => onDeleteLogement(lg)}
+                                                    className="text-red-500 hover:text-red-700 transition-colors"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </TableCell>
+
                                 </TableRow>
                             ))}
                         </TableBody>

@@ -444,6 +444,26 @@ export interface ImageLogement {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface Chambres{
+  id: string;
+  hotelId: string;
+  numero_chambre:string;
+  description?: string | null;
+  type: TypeChambre;
+  price: number;
+  capacity: number;
+  disponible: boolean;
+  hasWifi: boolean;
+  hasTV: boolean;
+  hasClim: boolean;
+  hasKitchen: boolean;
+  surface?: number | null;
+  extraBed: boolean;
+  images?: ImageChambre[] | null;
+  reservation:Reservation[] | null
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 // Image associée à une chambre
 export interface ImageChambre {

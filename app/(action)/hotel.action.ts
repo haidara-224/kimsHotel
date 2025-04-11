@@ -1,11 +1,11 @@
 'use server';
 import { prisma } from "@/src/lib/prisma";
 import { Hotel } from "@/types/types";
-import {  currentUser } from "@clerk/nextjs/server";
-import {put} from '@vercel/blob'
+import { currentUser } from "@clerk/nextjs/server";
+import { put } from '@vercel/blob'
 export async function createHotel(
     categoryLogementId: string,
-    numero_chambre:string,
+    numero_chambre: string,
     option: string[],
     nom: string,
     description: string,
@@ -20,11 +20,11 @@ export async function createHotel(
     type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
     parking: boolean,
     surface: number,
-    etoils:number,
+    etoils: number,
     extraBed: boolean,
     price: number,
     images: File[],
-    imagesHotel:File[]
+    imagesHotel: File[]
 ) {
     try {
         const user = await currentUser();
@@ -42,20 +42,20 @@ export async function createHotel(
 
 
         const createdHotel = await prisma.hotel.create({
-            data: { userId: user.id, nom, description, adresse, ville,etoils, telephone, email, parking, categoryLogementId }
+            data: { userId: user.id, nom, description, adresse, ville, etoils, telephone, email, parking, categoryLogementId }
         });
-        if(createdHotel){
+        if (createdHotel) {
             const clientRole = await prisma.role.findUnique({
                 where: { name: "ADMIN" },
-              });
+            });
             if (!clientRole) {
                 throw new Error("Le rôle 'CLIENT' n'existe pas dans la base de données.");
             }
             await prisma.userRoleHotel.create({
-                data:{
-                    userId:user.id,
-                    hotelId:createdHotel.id,
-                    roleId:clientRole.id 
+                data: {
+                    userId: user.id,
+                    hotelId: createdHotel.id,
+                    roleId: clientRole.id
                 }
             })
         }
@@ -71,13 +71,13 @@ export async function createHotel(
                 }
             })
         );
-        
+
 
         const validImagesHotel = uploadedImagesHotel.filter(result => result.status === "fulfilled" && result.value !== null)
             .map(result => (result as PromiseFulfilledResult<{ hotelId: string; urlImage: string }>).value);
 
         await prisma.imageHotel.createMany({ data: validImagesHotel });
-       
+
         if (option.length > 0) {
             await prisma.hotelOptionOnHotel.createMany({
                 data: option.map((optionId) => ({ hotelId: createdHotel.id, optionId }))
@@ -86,7 +86,7 @@ export async function createHotel(
 
 
         const chambres = await prisma.chambre.create({
-            data: { numero_chambre,hotelId: createdHotel.id, price, capacity, hasWifi, hasClim, hasTV, extraBed, surface, type: type_chambre }
+            data: { numero_chambre, hotelId: createdHotel.id, price, capacity, hasWifi, hasClim, hasTV, extraBed, surface, type: type_chambre }
         });
 
         const uploadedImages = await Promise.allSettled(
@@ -236,16 +236,16 @@ export async function RepportReservation(id: string) {
     const hotel = await prisma.hotel.findUnique({
         where: { id },
         include: {
-            chambres:{
-                include:{
-                    reservations:{
-                        select:{
-                            status:true
+            chambres: {
+                include: {
+                    reservations: {
+                        select: {
+                            status: true
                         }
                     }
                 }
             }
-           
+
         },
     });
 
@@ -328,7 +328,7 @@ export async function ReportReservationByMonth(hotelId: string) {
 
     return months;
 }
-export async function getHotelsDetails(hotelId:string){
+export async function getHotelsDetails(hotelId: string) {
     try {
         const hotel = await prisma.hotel.findUnique({
             where: { id: hotelId },
@@ -345,13 +345,13 @@ export async function getHotelsDetails(hotelId:string){
                 chambres: {
                     include: {
                         reservations: {
-                            include:{user:true}
+                            include: { user: true }
                         }
                     },
                 },
             },
         });
-    
+
         if (!hotel) return null;
 
         return hotel;
@@ -359,10 +359,10 @@ export async function getHotelsDetails(hotelId:string){
         console.error("Erreur lors de la récupération des détails de l'hotel :", error);
         return null;
     }
-  
 
- 
-  
+
+
+
 }
 /*
 interface Props{
@@ -370,47 +370,48 @@ interface Props{
 }
 const PAGE_SIZE=2
 */
-export async function getDetailsHotel(hotel:string){
+export async function getDetailsHotel(hotel: string) {
     //const pagenum=searchParams.pagenum ?? 0
     try {
-      const hotels=await prisma.hotel.findUnique({
-        where:{id:hotel},
-        include:{
-            user:true,
-          avis:true,
-          favorites:true,
-          images:true,
-          hotelOptions: {
-            select: {
-                option: true,
-            },
-        },
-          chambres:{
-            include:{
-                images:true,
-                
-            },
-          
-            
-          }
-        }
-      })
-      if(!hotels) return
-      return hotels
-  
-      
+        const hotels = await prisma.hotel.findUnique({
+            where: { id: hotel },
+            include: {
+                user: true,
+                avis: true,
+                favorites: true,
+                images: true,
+                hotelOptions: {
+                    select: {
+                        option: true,
+                    },
+                },
+                chambres: {
+                    include: {
+                        images: true,
+
+                    },
+
+
+                }
+            }
+        })
+        if (!hotels) return
+        return hotels
+
+
     } catch (error) {
-      console.error(error)
-      throw new Error("Impossible d'afficher les détails de l'hotel")
+        console.error(error)
+        throw new Error("Impossible d'afficher les détails de l'hotel")
     }
-  }
-  export async function getHotelWithUser() {
-    const user_id=await currentUser()
+}
+export async function getHotelWithUser() {
+    const user_id = await currentUser()
     try {
         const hotel = await prisma.hotel.findMany({
             orderBy: { createdAt: "desc" },
-            where:{
-                userId:user_id?.id            },
+            where: {
+                userId: user_id?.id
+            },
             include: {
                 user: true,
                 categoryLogement: true
@@ -426,7 +427,25 @@ export async function getDetailsHotel(hotel:string){
         console.error("Erreur lors de la récupération des hotels :", error);
         return null;
     }
-  }
+}
 
+export async function getChambreHotels(hotelId: string) {
+    try {
+        return await prisma.chambre.findMany({
+            where: { hotelId },
+            include: {
+                images: true,
+                reservations: {
+                    where:{
+                        status:"PENDING"
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Erreur lors de la récupération des chambres :", error);
+        throw new Error("Impossible de récupérer les chambres");
+    }
+}
 
 
