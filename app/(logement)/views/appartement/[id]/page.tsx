@@ -13,6 +13,7 @@ import { LogementSpecificity } from "@/src/components/ui/Client/logementSpecific
 import { Separator } from "@/src/components/ui/separator";
 import AvisCommentLogement from "@/src/components/ui/Client/AvisCommentLogement";
 import { LogementComment } from "@/src/components/ui/Client/LogementComment";
+import Loader from "@/src/components/ui/Client/Loader";
 
 
 export default function Page() {
@@ -56,9 +57,7 @@ export default function Page() {
         <NavBar />
       </nav>
       {isLoading && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50">
-          <span className="loaderCharge"></span>
-        </div>
+        <Loader/>
       )}
       <div className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
         {logement && (

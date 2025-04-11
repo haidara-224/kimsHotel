@@ -4,6 +4,7 @@ import AvisCommentHotel from "@/src/components/ui/Client/AvisCommentHotel";
 import Gallery from "@/src/components/ui/Client/GalleryHotel";
 import { HotelChambre } from "@/src/components/ui/Client/HotelChambre";
 import { HotelComment } from "@/src/components/ui/Client/HotelComment";
+import Loader from "@/src/components/ui/Client/Loader";
 import { OptionHotel } from "@/src/components/ui/Client/OptionHotel";
 import { NavBar } from "@/src/components/ui/NavBar";
 import { Hotele } from "@/types/types";
@@ -55,9 +56,7 @@ export default function Page() {
             <NavBar />
           </nav>
       {isLoading && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center  bg-opacity-50">
-          <span className="loaderCharge"></span>
-        </div>
+         <Loader/>
       )}
       <div className="container mx-auto px-5 lg:px-16 mt-5">
         {
