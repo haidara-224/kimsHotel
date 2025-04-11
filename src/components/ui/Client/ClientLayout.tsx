@@ -1,28 +1,71 @@
-"use client"; 
-import { NavBar } from "@/src/components/ui/Dashboard/NavBar";
+"use client";
 
-import { SidebarProvider, SidebarTrigger } from "../sidebar";
-import { SideBarsClient } from "./SideBars";
-
-
+import { useState } from "react";
+import { Menu, X, Hotel, House, Users } from "lucide-react";
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+import { ModeToggle } from "../ThemeToggler";
 
 export default function ClientLayouts({ children }: { children: React.ReactNode }) {
-    return (
-        <div>
-            <NavBar/>
-            <SidebarProvider>
-            
-            <SideBarsClient/>
-            <main  className="p-5 w-full md:max-w[1140px]">
-              <SidebarTrigger />
-              {children}
-            </main>
-          </SidebarProvider>
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useUser();
+  const pathname = usePathname();
 
+  const navItems = [
+    { icon: Hotel, label: "Hotels", href: `/dashboard/hotes/${user?.id}/hotels` },
+    { icon: House, label: "Appartements", href: `/dashboard/hotes/${user?.id}/appartements` },
+    { icon: Users, label: "Utilisateurs", href: `/dashboard/hotes/${user?.id}/appartements` },
+  ];
+
+  return (
+    <div className="flex min-h-screen bg-background">
+      
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r shadow-lg transform transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 lg:shadow-none ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-6 border-b">
+          <Link href="/" className="text-2xl font-bold text-teal-700">Kims Hotel</Link>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
+            <X className="w-6 h-6 text-gray-700" />
+          </button>
         </div>
-       
-  
-             
-       
-    );
+
+        <nav className="p-4 space-y-2">
+          {navItems.map((item, index) => {
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={index}
+                href={item.href}
+                className={`flex items-center gap-3 p-3 rounded-md text-sm font-medium transition-colors ${
+                  isActive ? "bg-teal-600 text-white" : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Mobile Topbar */}
+      <div className="fixed top-0 left-0 bottom- w-full z-30 flex items-center justify-between bg-white border-b p-4 shadow-sm">
+        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
+          <Menu className="w-6 h-6 text-gray-700" />
+        </button>
+        <ModeToggle />
+      </div>
+
+      {/* Main Content */}
+      <main className="flex-1 p-4 lg:ml-0 mt-16 lg:mt-20 w-full">
+        {children}
+      </main>
+    </div>
+  );
 }

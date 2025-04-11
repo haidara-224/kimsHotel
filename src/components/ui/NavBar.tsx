@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserNav } from "./userNav";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { ModeToggle } from "./ThemeToggler";
 import Image from "next/image";
 import { useState } from "react";
 
 
 export function NavBar() {
+    const { user } = useUser()
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     return (
@@ -25,7 +26,7 @@ export function NavBar() {
                     </div>
                     <div className="hidden md:flex justify-center items-center space-x-6">
                  
-                        <AnimatedLink href="/">Mes Annonces</AnimatedLink>
+                        <AnimatedLink href={`/dashboard/hotes/${user?.id || ''}`}>Mes Annonces</AnimatedLink>
                         <AnimatedLink href="/favorites">Mes Favoris</AnimatedLink>
                         <AnimatedLink href="/">Mes Reservations</AnimatedLink>
                     

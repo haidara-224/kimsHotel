@@ -9,17 +9,22 @@ export const metadata: Metadata = {
 export default function Page() {
     return (
         <>
-            <NavBar />
-            <div className="lg:px-8 min-h-screen mt-3">
+            <div className="w-full min-h-screen bg-background">
+                <nav className="bg-white shadow-md w-full z-40 p-2 lg:p-5">
+                    <NavBar />
+                </nav>
+                <div className="lg:px-8 min-h-screen mt-3">
 
-                <BackButton text="Back" link="/type-etablissement" />
+                    <BackButton text="Back" link="/type-etablissement" />
 
 
-                <div className="container mx-auto w-full ">
-                    <h1 className="text-center text-slate-500 cursor-pointer hover:text-slate-400 hover:transition-all text-xl lg:text-4xl">Inscrivez votre Appartement,et commencez à recevoir des clients !</h1>
-                    <MultiformStep />
+                    <div className="container mx-auto w-full ">
+                        <h1 className="text-center text-slate-500 cursor-pointer hover:text-slate-400 hover:transition-all text-xl lg:text-4xl">Inscrivez votre Appartement,et commencez à recevoir des clients !</h1>
+                        <MultiformStep />
+                    </div>
                 </div>
             </div>
+
 
         </>
     )
