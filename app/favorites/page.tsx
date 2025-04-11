@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import Loader from "@/src/components/ui/Client/Loader";
 
 export default function Page() {
     const { user, isSignedIn } = useUser();
@@ -68,9 +69,13 @@ export default function Page() {
     if (isLoading) {
         return (
             <>
-                <NavBar />
+                 <div className="w-full min-h-screen bg-background">
+                <nav className="bg-white shadow-md  z-40 p-2 lg:p-5">
+                    <NavBar />
+                    </nav>
                 <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50">
-                    <span className="loaderCharge"></span>
+                    <Loader/>
+                </div>
                 </div>
             </>
 
@@ -84,8 +89,13 @@ export default function Page() {
     if (!favoris || favoris.length === 0) {
         return (
             <>
-                <NavBar />
-                <div className="text-center mt-5">Aucun favori trouvé.</div>;
+                  <div className="w-full min-h-screen bg-background">
+                <nav className="bg-white shadow-md  z-40 p-2 lg:p-5">
+                    <NavBar />
+                    <div className="text-center mt-5">Aucun favori trouvé.</div>;
+                    </nav>
+                    </div>
+                
             </>
         )
 
