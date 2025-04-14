@@ -25,26 +25,29 @@ export function MapFilterItems() {
     [searchParams]
   );
 
+
   // Pour éviter le scroll vers le haut
   useEffect(() => {
     // Si un filtre est appliqué, maintiens le scroll
     if (search) {
-      window.scrollTo(0, prevScrollPos.current); // Revenir à la position précédente
+      console.log(prevScrollPos)
+      window.scrollTo(0, prevScrollPos.current); 
     }
   }, [search]);
 
   const handleCategoryClick = (category: string) => {
     if (category === "tout") {     
-      router.push("/");
+      router.push("/", { scroll: false });
     } else {
-      // Sauvegarder la position actuelle avant la navigation
+     
       prevScrollPos.current = window.pageYOffset;
-      router.push(pathName + "?" + createQueryString("filter", category));
+      router.push(pathName + "?" + createQueryString("filter", category), { scroll: false });
     }
   };
+  
 
   return (
-    <div className="flex justify-center gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2 border-2 bg-white rounded-lg shadow-2xl">
+    <div className="flex  justify-center gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2 border-2 bg-white rounded-lg shadow-2xl">
       {categoryItems.map((item) => (
         <div
           key={item.id}
@@ -52,7 +55,7 @@ export function MapFilterItems() {
             "flex flex-col items-center gap-y-2 transition-all duration-300", 
             search === item.name ? "opacity-100 scale-105" : "opacity-60 hover:opacity-90"
           )}
-          onClick={() => handleCategoryClick(item.name)} // Gérer le clic sur la catégorie
+          onClick={() => handleCategoryClick(item.name)}// Gérer le clic sur la catégorie
         >
           <div
             className={cn(

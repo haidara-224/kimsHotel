@@ -89,6 +89,7 @@ function ShowItems({
     }
     return pageNumbers;
   };
+ 
   return (
     <>
       {paginatedData.length > 0 ? (
@@ -149,7 +150,7 @@ function ShowItems({
         </>
       ) : (
         <h1 className="h-screen flex justify-center items-center text-3xl">
-          Aucun établissement n&apos;est enregistré pour cette option.
+          <Loader/>
         </h1>
       )}
     </>
@@ -225,9 +226,7 @@ export default function Home(props: { searchParams?: Promise<{ filter?: string }
     }
   }, [props.searchParams]);
 
-  const SearchParamsComponent = () => {
-    return <ShowItems searchParams={sc ?? {}} />;
-  };
+ 
 
   const features = [
     {
@@ -261,17 +260,17 @@ export default function Home(props: { searchParams?: Promise<{ filter?: string }
       <HearderSection />
 
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-semibold mb-8 text-center">
-          <Suspense fallback={<Loader/>}>
-            <MapFilterItems />
-          </Suspense>
-        </h2>
+      <div className="text-3xl font-semibold mb-8 text-center">
+    <Suspense fallback={<Loader />}>
+      <MapFilterItems />
+    </Suspense>
+  </div>
 
         <div className="flex flex-col lg:flex-row gap-6 items-start">
 
           <div className="w-full self-stretch flex flex-col">
             <Suspense fallback={<SkeletonLoading />}>
-              <SearchParamsComponent />
+            <ShowItems searchParams={sc ?? {}} />
             </Suspense>
 
           </div>
