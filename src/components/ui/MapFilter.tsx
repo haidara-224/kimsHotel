@@ -30,7 +30,7 @@ export function MapFilterItems() {
   useEffect(() => {
     // Si un filtre est appliqué, maintiens le scroll
     if (search) {
-      console.log(prevScrollPos)
+     
       window.scrollTo(0, prevScrollPos.current); 
     }
   }, [search]);
