@@ -21,7 +21,7 @@ export function HotelComment({ hotelId }: PropsId) {
   const { user } = useUser();
   useEffect(() => {
     fetchComments(hotelId); 
-  }, [hotelId]); 
+  }, [hotelId,fetchComments]); 
   const handleDelete = (id: string) => {
      setDeletingId(id);
      startTransition(async () => {

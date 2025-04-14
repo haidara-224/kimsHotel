@@ -73,20 +73,20 @@ const columns: ColumnDef<Chambres>[] = [
 
             return (
                 <div className="flex gap-1">
-                    {images.slice(0, 3).map((img, index) => (
+                    {images.slice(0, 1).map((img, index) => (
                         
                         
                         <Image
                             key={index}
                             src={img.urlImage}
                             alt={`Image ${index + 1}`}
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                             className="rounded object-cover border"
                         />
                     ))}
                     {images.length > 3 && (
-                        <span className="text-xs text-gray-500">+{images.length - 3} autres</span>
+                        <span className="text-xs text-gray-500">+{images.length - 1} autres</span>
                     )}
                 </div>
             );

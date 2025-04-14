@@ -19,7 +19,7 @@ export function HearderSection(){
         }, 4000); 
     
         return () => clearInterval(interval);
-      }, []);
+      }, [images.length]);
     return(
         
         <section

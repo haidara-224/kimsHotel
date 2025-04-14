@@ -16,6 +16,7 @@ import {
 } from '@/app/(action)/favoris.action';
 import { toast } from 'sonner';
 
+
 interface getPropsHome {
     nom: string;
     type: string;
@@ -23,6 +24,7 @@ interface getPropsHome {
     prix?: number;
     urlImage: string[];
     logementId?: string;
+    
     hotelId?: string;
 }
 
@@ -33,6 +35,7 @@ export default function ListingCardHome({
     urlImage,
     prix,
     logementId,
+   
     hotelId,
 }: getPropsHome) {
     const router = useRouter();
@@ -85,7 +88,10 @@ export default function ListingCardHome({
     };
 
     return (
-        <div className="overflow-hidden rounded-lg border dark:border-slate-700 shadow-md">
+        
+             
+           
+            <div className="overflow-hidden rounded-lg border dark:border-slate-700 shadow-md">
             <div className="relative h-72 w-full bg-black/10 overflow-hidden group">
                 <AnimatePresence initial={false} custom={direction} mode="wait">
                     <motion.div
@@ -147,17 +153,16 @@ export default function ListingCardHome({
                 <div className="flex justify-between">
                     <h1 className="text-sm font-semibold text-gray-900 dark:text-white">{nom}</h1>
                     <span className="text-xs text-gray-500 dark:text-white">{type}</span>
+                    
                 </div>
 
                 <p className="text-sm text-gray-500 dark:text-white">{adresse}</p>
-
+                       
                 {prix && (
                     <p className="text-sm text-gray-500 mt-1">
                         {new Intl.NumberFormat('fr-FR').format(prix)} GNF / nuit
                     </p>
                 )}
-
-                
 
                 <Button className="w-full mt-8">
                     <Link
@@ -175,5 +180,6 @@ export default function ListingCardHome({
 
 
         </div>
+      
     );
 }

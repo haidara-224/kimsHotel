@@ -1,6 +1,6 @@
 'use client';
 import { UserComment } from '@/app/(action)/createAvisLogement';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useCallback, useContext, useState } from 'react';
 
 
 interface Comment {
@@ -37,7 +37,7 @@ export const useCommentContext = () => {
 
 export const CommentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [comments, setComments] = useState<Comment[]>([]);
-  const fetchComments = async (logementId: string) => {
+  const fetchComments = useCallback(async (logementId: string) => {
     try {
       const data = await UserComment(logementId);
       setComments(data);
@@ -45,7 +45,7 @@ export const CommentProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (error) {
       console.error("Erreur lors du chargement des commentaires :", error);
     }
-  };
+  },[])
 
   return (
     <CommentContext.Provider value={{ comments, setComments, fetchComments }}>
