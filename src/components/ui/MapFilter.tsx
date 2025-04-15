@@ -7,7 +7,7 @@ import Image from "next/image";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 
-export function MapFilterItems() {
+export default function MapFilterItems() {
   const searchParams = useSearchParams();
   const search = searchParams.get("filter");
   const pathName = usePathname();
