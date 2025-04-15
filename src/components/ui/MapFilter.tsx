@@ -28,7 +28,7 @@ export function MapFilterItems() {
 
   // Pour éviter le scroll vers le haut
   useEffect(() => {
-    // Si un filtre est appliqué, maintiens le scroll
+    
     if (search) {
      
       window.scrollTo(0, prevScrollPos.current); 
