@@ -11,6 +11,7 @@ async function getCategoryLogement(name: string) {
 
   return category ? category.id : null;
 }
+
 async function getCategoryHotel(name: string) {
   const category = await prisma.categoryLogement.findUnique({
     where: { name },
@@ -133,8 +134,21 @@ const generatePaiement = (reservationId: string) => ({
 
 async function main() {
   console.log("🔄 Début de l'insertion des données...");
+  async function getCreateRole(){
+    await prisma.role.createMany({
+      data: [
+        { name: 'CLIENT' },
+        { name: 'HOTELIER' },
+        { name: 'ADMIN' },
+        { name: 'SUPER_ADMIN' }
+      ],
+      skipDuplicates: true
+    });
+    
+  }
 
   // Création des catégories si elles n'existent pas
+
   await prisma.categoryLogement.upsert({
     where: { name: "Appartements" },
     update: {},
@@ -160,8 +174,11 @@ async function main() {
       updatedAt: faker.date.recent(),
     },
   });
-
+  await getCreateRole()
+  console.log('role creer')
   // Création des utilisateurs
+
+
   const users = Array.from({ length: 5 }, generateUser);
   await prisma.user.createMany({ data: users });
   console.log("✅ Utilisateurs insérés");

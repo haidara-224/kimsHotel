@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/src/components/ui/card";
 import { HearderSection } from "@/src/components/ui/heardersSection";
 
 const MapFilterItems = dynamic(() => import("@/src/components/ui/MapFilter"), {
-    ssr: false, // désactive le rendu côté serveur
+    ssr: false, 
   });
 import { NavBar } from "@/src/components/ui/NavBar";
 import { homeTypes } from "@/types/types";
@@ -33,135 +33,139 @@ const getImageUrls = (item: homeTypes) => {
 
 
 function ShowItems({
-  searchParams,
-}: {
-  searchParams: {
-    filter?: string;
-  };
-}) {
-  const [datas, setData] = useState<homeTypes[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 6;
-
-  const fetchsData = useCallback(async () => {
-    const resolvedSearchParams = await Promise.resolve(searchParams); // Ensure searchParams is awaited
-    const data = await getData({ searchParams: resolvedSearchParams }) as unknown as homeTypes[];
-    setData(data);
-  }, [searchParams]);
-
-  const scrollPositionRef = useRef(0);
-
-  useEffect(() => {
-    fetchsData();
-  }, [fetchsData, searchParams]);
-
-  useEffect(() => {
-
-    window.scrollTo(0, scrollPositionRef.current);
-  }, [currentPage]);
-
-
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedData = datas.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(datas.length / ITEMS_PER_PAGE);
-
-  const handlePageChange = (page: number) => {
-
-    scrollPositionRef.current = window.scrollY;
-    setCurrentPage(page);
-  };
-
-
-  const getPageNumbers = () => {
-    const pageNumbers: number[] = [];
-    const maxPagesToShow = 4;
-    if (totalPages <= maxPagesToShow) {
-
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
+    searchParams,
+  }: {
+    searchParams: {
+      filter?: string;
+    };
+  }) {
+    const [datas, setData] = useState<homeTypes[]>([]);
+    const [isLoading, setIsLoading] = useState(true); // 💡 loading
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 6;
+  
+    const fetchsData = useCallback(async () => {
+      setIsLoading(true); // ⏳ début loading
+      try {
+        const resolvedSearchParams = await Promise.resolve(searchParams);
+        const data = await getData({ searchParams: resolvedSearchParams }) as unknown as homeTypes[];
+        setData(data);
+      } catch (error) {
+        console.error("Erreur fetch:", error);
+        setData([]);
+      } finally {
+        setIsLoading(false); // ✅ fin loading
       }
-    } else {
-
-      for (let i = 1; i <= maxPagesToShow; i++) {
-        pageNumbers.push(i);
+    }, [searchParams]);
+  
+    const scrollPositionRef = useRef(0);
+  
+    useEffect(() => {
+      fetchsData();
+    }, [fetchsData, searchParams]);
+  
+    useEffect(() => {
+      window.scrollTo(0, scrollPositionRef.current);
+    }, [currentPage]);
+  
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedData = datas.slice(startIndex, endIndex);
+    const totalPages = Math.ceil(datas.length / ITEMS_PER_PAGE);
+  
+    const handlePageChange = (page: number) => {
+      scrollPositionRef.current = window.scrollY;
+      setCurrentPage(page);
+    };
+  
+    const getPageNumbers = () => {
+      const pageNumbers: number[] = [];
+      const maxPagesToShow = 4;
+      if (totalPages <= maxPagesToShow) {
+        for (let i = 1; i <= totalPages; i++) {
+          pageNumbers.push(i);
+        }
+      } else {
+        for (let i = 1; i <= maxPagesToShow; i++) {
+          pageNumbers.push(i);
+        }
+        if (currentPage < totalPages - 2) {
+          pageNumbers.push(-1);
+        }
+        if (currentPage < totalPages - 1) {
+          pageNumbers.push(totalPages);
+        }
       }
-      if (currentPage < totalPages - 2) {
-        pageNumbers.push(-1);
-      }
-      if (currentPage < totalPages - 1) {
-        pageNumbers.push(totalPages);
-      }
-    }
-    return pageNumbers;
-  };
- 
-  return (
-    <>
-      {paginatedData.length > 0 ? (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
-            {paginatedData.map((item, index) => (
-              <ListinCardHome
-                key={index}
-                nom={item.nom}
-                type={item.type}
-                prix={item.type === "logement" ? item.price : undefined}
-                adresse={item.adresse}
-                logementId={item.type === 'logement' ? item.id : ''}
-                hotelId={item.type === 'hotel' ? item.id : ''}
-
-                urlImage={getImageUrls(item)}
-              />
-            ))}
+      return pageNumbers;
+    };
+  
+    return (
+      <>
+        {isLoading ? (
+          <div className="h-screen flex justify-center items-center text-3xl animate-pulse text-gray-400">
+            Chargement...
           </div>
-
-
-          <div className="flex items-center justify-center gap-2 mt-8">
-            <button
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              Précédent
-            </button>
-
-            <div className="flex gap-2">
-              {getPageNumbers().map((page, index) => {
-                if (page === -1) {
-                  return (
-                    <span key={index} className="px-4 py-2">...</span>
-                  );
-                }
-                return (
-                  <button
-                    key={page}
-                    className={`px-4 py-2 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                );
-              })}
+        ) : paginatedData.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
+              {paginatedData.map((item, index) => (
+                <ListinCardHome
+                  key={index}
+                  nom={item.nom}
+                  type={item.type}
+                  prix={item.type === "logement" ? item.price : undefined}
+                  adresse={item.adresse}
+                  logementId={item.type === 'logement' ? item.id : ''}
+                  hotelId={item.type === 'hotel' ? item.id : ''}
+                  urlImage={getImageUrls(item)}
+                />
+              ))}
             </div>
-
-            <button
-              className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
-              disabled={currentPage === totalPages}
-            >
-              Suivant
-            </button>
+  
+            <div className="flex items-center justify-center gap-2 mt-8">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Précédent
+              </button>
+  
+              <div className="flex gap-2">
+                {getPageNumbers().map((page, index) => {
+                  if (page === -1) {
+                    return <span key={index} className="px-4 py-2">...</span>;
+                  }
+                  return (
+                    <button
+                      key={page}
+                      className={`px-4 py-2 rounded ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </button>
+                  );
+                })}
+              </div>
+  
+              <button
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Suivant
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="h-screen flex justify-center items-center text-xl text-gray-500">
+            Aucune donnée trouvée.
           </div>
-        </>
-      ) : (
-        <h1 className="h-screen flex justify-center items-center text-3xl">
-        ......
-        </h1>
-      )}
-    </>
-  );
-}
+        )}
+      </>
+    );
+  }
+  
 
 
 function SkeletonLoading() {

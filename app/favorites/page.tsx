@@ -92,8 +92,9 @@ export default function Page() {
                   <div className="w-full min-h-screen bg-background">
                 <nav className="bg-white shadow-md  z-40 p-2 lg:p-5">
                     <NavBar />
-                    <div className="text-center mt-5">Aucun favori trouvé.</div>;
+                    
                     </nav>
+                    <div className="text-center mt-5">Aucun favori trouvé.</div>
                     </div>
                 
             </>
