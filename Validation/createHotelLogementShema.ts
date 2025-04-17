@@ -40,7 +40,7 @@ export const CreationSchema = z.object({
     extraBed: z.boolean(),
 
     surface: z.number()
-        .min(10, "La surface ne peut pas être négative."),
+        .min(9, "La surface ne peut pas être inferieur a 9."),
 
     nbChambres: z.number()
         .min(1, "Il doit y avoir au moins 1 chambre.")

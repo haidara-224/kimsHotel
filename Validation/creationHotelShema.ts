@@ -23,7 +23,7 @@ export const CreationSchemaHotel = z.object({
     z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
       message: "Chaque image doit être inférieure à 5 Mo.",
     })
-  ).min(1, "Ajoutez au moins une image."),
+  ).min(1, "Ajoutez au moins 4 image."),
   images_hotel:z.array(
     z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
       message: "Chaque image doit être inférieure à 5 Mo.",
@@ -42,7 +42,7 @@ export const CreationSchemaHotel = z.object({
   hasKitchen: z.boolean(),
   price: z.number().min(100000, "Le prix ne peut pas être inférieur à 100000"),
   extraBed: z.boolean(),
-  surface: z.number().min(12, "La surface ne peut pas être négative."),
+  surface: z.number().min(9, "La surface ne peut pas être négative."),
   type_chambre: z.enum(['SIMPLE', 'DOUBLE', 'SUITE'], {
     errorMap: () => ({ message: 'Sélectionnez au moins un type de chambre' })
   })

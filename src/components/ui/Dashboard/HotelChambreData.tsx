@@ -23,6 +23,9 @@ import { getChambreHotels } from "@/app/(action)/hotel.action";
 import { useParams } from "next/navigation";
 import Loader from "../Client/Loader";
 import Image from "next/image";
+
+import ToggleDisponibiliteCell from "./Toggledisponibility";
+
 const columns: ColumnDef<Chambres>[] = [
     {
         accessorKey: "numero_chambre",
@@ -50,15 +53,15 @@ const columns: ColumnDef<Chambres>[] = [
     {
         accessorKey: "disponible",
         header: "Disponible",
-        cell: ({ row }) => {
-            const dispo = row.getValue("disponible") as boolean;
-            return (
-                <span className={`px-2 py-1 rounded-full text-white text-xs font-semibold ${dispo ? "bg-green-500" : "bg-red-500"}`}>
-                    {dispo ? "Disponible" : "Indisponible"}
-                </span>
-            );
-        },
-    },
+        cell: ({ row }) => (
+          <ToggleDisponibiliteCell
+            id={row.original.id}
+            initialValue={row.original.disponible}
+          />
+        ),
+      },
+      
+    
     {
         id: "reservationsCount",
         header: "Réservations",
@@ -107,7 +110,7 @@ const columns: ColumnDef<Chambres>[] = [
                 chambre.hasKitchen ? { icon: <CookingPot size={16} />, label: "Cuisine" } : null,
                 chambre.extraBed ? { icon: <BedDouble size={16} />, label: "Lit supp." } : null,
                 chambre.surface ? { icon: <Ruler size={16} />, label: `${chambre.surface} m²` } : null,
-            ].filter((f): f is { icon: JSX.Element; label: string } => f !== null); // Filter out null values
+            ].filter((f): f is { icon: JSX.Element; label: string } => f !== null); 
 
             return (
                 <div className="flex flex-wrap gap-2 items-center">

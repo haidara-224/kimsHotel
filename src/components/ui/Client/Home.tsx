@@ -102,8 +102,8 @@ function ShowItems({
     return (
       <>
         {isLoading ? (
-          <div className="h-screen flex justify-center items-center text-3xl animate-pulse text-gray-400">
-            Chargement...
+          <div className="h-64 flex justify-center items-center text-3xl animate-pulse text-gray-400">
+            <Loader/>
           </div>
         ) : paginatedData.length > 0 ? (
           <>
@@ -227,7 +227,7 @@ export default function Home({ searchParams }: { searchParams?: { filter?: strin
   useEffect(() => {
     const resolveSearchParams = async () => {
       if (searchParams) {
-        setSearch(await Promise.resolve(searchParams)); // Ensure searchParams is awaited
+        setSearch(await Promise.resolve(searchParams)); 
       } else {
         setSearch(null);
       }

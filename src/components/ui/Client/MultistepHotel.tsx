@@ -106,8 +106,8 @@ export default function MultiformStepHotel() {
             hasTV: false,
             hasClim: false,
             hasKitchen: false,
-            price: 0,
-            surface: 12,
+            price: 100000,
+            surface: 9,
             extraBed: false,
             images: [],
             images_hotel: []
