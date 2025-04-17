@@ -23,7 +23,7 @@ export function HearderSection(){
     return(
         
         <section
-        className="relative h-[500px] bg-cover bg-center transition-all duration-1000"
+        className="relative h-[500px] bg-cover bg-center transition-all duration-1000 pt-[60px] lg:pt-[80px]"
         style={{
           backgroundImage: `url('${images[currentImage]}')`,
         }}
