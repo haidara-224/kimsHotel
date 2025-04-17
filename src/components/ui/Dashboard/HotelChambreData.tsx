@@ -10,7 +10,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
-import { JSX, useEffect, useState } from "react";
+import { JSX, useCallback, useEffect, useState } from "react";
 import { Wifi, Tv, Snowflake, CookingPot, BedDouble, Ruler } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../table";
@@ -25,112 +25,125 @@ import Loader from "../Client/Loader";
 import Image from "next/image";
 
 import ToggleDisponibiliteCell from "./Toggledisponibility";
-
-const columns: ColumnDef<Chambres>[] = [
-    {
-        accessorKey: "numero_chambre",
-        header: "Numero de la chambre",
-        cell: ({ row }) => <div className="font-medium">{row.getValue("numero_chambre")}</div>,
-    },
-    {
-        accessorKey: "price",
-        header: "Prix",
-        cell: ({ row }) => {
-            const price = parseFloat(row.getValue("price"));
-            return `${price.toLocaleString()} GNF`;
-        },
-    },
-    {
-        accessorKey: "type",
-        header: "Type de Chambres",
-        cell: ({ row }) => <div className="font-medium">{row.getValue("type")}</div>,
-    },
-    {
-        accessorKey: "capacity",
-        header: "Capacity",
-        cell: ({ row }) => <div className="font-medium">{row.getValue("capacity")}</div>,
-    },
-    {
-        accessorKey: "disponible",
-        header: "Disponible",
-        cell: ({ row }) => (
-          <ToggleDisponibiliteCell
-            id={row.original.id}
-            initialValue={row.original.disponible}
-          />
-        ),
-      },
-      
-    
-    {
-        id: "reservationsCount",
-        header: "Réservations",
-        cell: ({ row }) => (row.original.reservation ?? []).length,
-    },
-
-    {
-        id: "images",
-        header: "Images",
-        cell: ({ row }) => {
-            const images = row.original.images ?? [];
-
-            return (
-                <div className="flex gap-1">
-                    {images.slice(0, 1).map((img, index) => (
-                        
-                        
-                        <Image
-                            key={index}
-                            src={img.urlImage}
-                            alt={`Image ${index + 1}`}
-                            width={50}
-                            height={50}
-                            className="rounded object-cover border"
-                        />
-                    ))}
-                    {images.length > 3 && (
-                        <span className="text-xs text-gray-500">+{images.length - 1} autres</span>
-                    )}
-                </div>
-            );
-        },
-    },
+import { ActionRow } from "./ActionRow";
 
 
-    {
-        id: "equipements",
-        header: "Équipements",
-        cell: ({ row }) => {
-            const chambre = row.original;
-
-            const features: { icon: JSX.Element; label: string }[] = [
-                chambre.hasWifi ? { icon: <Wifi size={16} />, label: "Wifi" } : null,
-                chambre.hasTV ? { icon: <Tv size={16} />, label: "TV" } : null,
-                chambre.hasClim ? { icon: <Snowflake size={16} />, label: "Clim" } : null,
-                chambre.hasKitchen ? { icon: <CookingPot size={16} />, label: "Cuisine" } : null,
-                chambre.extraBed ? { icon: <BedDouble size={16} />, label: "Lit supp." } : null,
-                chambre.surface ? { icon: <Ruler size={16} />, label: `${chambre.surface} m²` } : null,
-            ].filter((f): f is { icon: JSX.Element; label: string } => f !== null); 
-
-            return (
-                <div className="flex flex-wrap gap-2 items-center">
-                    {features.map((f, i) => (
-                        <div
-                            key={i}
-                            className="flex items-center gap-1 text-sm bg-gray-100 px-2 py-1 rounded shadow-sm"
-                        >
-                            {f?.icon}
-                            <span>{f?.label}</span>
-                        </div>
-                    ))}
-                </div>
-            );
-        },
-    }
-];
 
 
 export default function HotelChambreData() {
+    const columns: ColumnDef<Chambres>[] = [
+        {
+            accessorKey: "numero_chambre",
+            header: "Numero de la chambre",
+            cell: ({ row }) => <div className="font-medium">{row.getValue("numero_chambre")}</div>,
+        },
+        {
+            accessorKey: "price",
+            header: "Prix",
+            cell: ({ row }) => {
+                const price = parseFloat(row.getValue("price"));
+                return `${price.toLocaleString()} GNF`;
+            },
+        },
+        {
+            accessorKey: "type",
+            header: "Type de Chambres",
+            cell: ({ row }) => <div className="font-medium">{row.getValue("type")}</div>,
+        },
+        {
+            accessorKey: "capacity",
+            header: "Capacity",
+            cell: ({ row }) => <div className="font-medium">{row.getValue("capacity")}</div>,
+        },
+        {
+            accessorKey: "disponible",
+            header: "Disponible",
+            cell: ({ row }) => (
+                <ToggleDisponibiliteCell
+                    id={row.original.id}
+                    initialValue={row.original.disponible}
+                />
+            ),
+        },
+
+
+        {
+            id: "reservationsCount",
+            header: "Réservations En Attente",
+            cell: ({ row }) => (row.original.reservation ?? []).length,
+        },
+
+        {
+            id: "images",
+            header: "Images",
+            cell: ({ row }) => {
+                const images = row.original.images ?? [];
+
+                return (
+                    <div className="flex gap-1">
+                        {images.slice(0, 1).map((img, index) => (
+
+
+                            <Image
+                                key={index}
+                                src={img.urlImage}
+                                alt={`Image ${index + 1}`}
+                                width={50}
+                                height={50}
+                                className="rounded object-cover border"
+                            />
+                        ))}
+                        {images.length > 3 && (
+                            <span className="text-xs text-gray-500">+{images.length - 1} autres</span>
+                        )}
+                    </div>
+                );
+            },
+        },
+
+
+        {
+            id: "equipements",
+            header: "Équipements",
+            cell: ({ row }) => {
+                const chambre = row.original;
+
+                const features: { icon: JSX.Element; label: string }[] = [
+                    chambre.hasWifi ? { icon: <Wifi size={16} />, label: "Wifi" } : null,
+                    chambre.hasTV ? { icon: <Tv size={16} />, label: "TV" } : null,
+                    chambre.hasClim ? { icon: <Snowflake size={16} />, label: "Clim" } : null,
+                    chambre.hasKitchen ? { icon: <CookingPot size={16} />, label: "Cuisine" } : null,
+                    chambre.extraBed ? { icon: <BedDouble size={16} />, label: "Lit supp." } : null,
+                    chambre.surface ? { icon: <Ruler size={16} />, label: `${chambre.surface} m²` } : null,
+                ].filter((f): f is { icon: JSX.Element; label: string } => f !== null);
+
+                return (
+                    <div className="flex flex-wrap gap-2 items-center">
+                        {features.map((f, i) => (
+                            <div
+                                key={i}
+                                className="flex items-center gap-1 text-sm bg-gray-100 px-2 py-1 rounded shadow-sm"
+                            >
+                                {f?.icon}
+                                <span>{f?.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: "Action",
+            header: "Action",
+            cell: ({ row }) => (
+                <ActionRow
+                    id={row.original.id}
+                    reload={fetchPost}
+
+                />
+            ),
+        },
+    ];
     const pageSize = 5;
     const [isLoading, setIsLoading] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -147,24 +160,27 @@ export default function HotelChambreData() {
     ]);
 
     const [data, setData] = useState<Chambres[]>([]);
-    useEffect(() => {
+    const fetchPost =useCallback(async () => {
         try {
             setIsLoading(true)
-            async function fetchPosts() {
-                const data = await getChambreHotels(HotelId)
 
-                setData(data as unknown as Chambres[]);
-            }
-            fetchPosts();
+            const data = await getChambreHotels(HotelId)
+
+            setData(data as unknown as Chambres[]);
+
+
 
         } catch (error) {
             console.error(error)
         } finally {
             setIsLoading(false)
         }
+    },[HotelId])
+    useEffect(() => {
 
+        fetchPost()
 
-    }, [HotelId]);
+    }, [fetchPost]);
 
     const table = useReactTable({
         data,
