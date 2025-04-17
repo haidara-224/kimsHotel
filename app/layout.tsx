@@ -18,10 +18,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
+export const metadata:Metadata = {
   title: "Kims Hotel",
-  description: "Application de Reservation d'hotel en Guinée",
+  description: "Application de réservation d'hôtel en Guinée",
+  verification: {
+    google: "_l9ejk4gq4RUP30Z65C0z_r73lbwWIVC26EDgZ6dIuE",
+  },
 };
+
 
 export default function RootLayout({
   children,
