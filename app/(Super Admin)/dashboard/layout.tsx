@@ -1,4 +1,4 @@
-import { userIsAdmin } from "@/app/(action)/user.action";
+import { userIsAdmin, userIsSuperAdmin } from "@/app/(action)/user.action";
 import ClientLayout from "@/src/components/ui/Dashboard/ClientLayout";
 import { Metadata } from "next";
 import { forbidden } from "next/navigation";
@@ -8,8 +8,10 @@ export const metadata: Metadata = {
 };
 export default async function Layout({ children }: { children: React.ReactNode }) {
     const isAdmin = await userIsAdmin();
-    if (!isAdmin) {
+    const isSuperAdmin = await userIsSuperAdmin();
+    if (!isAdmin && !isSuperAdmin) {
         forbidden();
-    }
+      }
+      
     return <ClientLayout>{children}</ClientLayout>;   
 }

@@ -27,6 +27,7 @@ export function UserNav() {
       const rolesData = await userHasRoles();
       if (rolesData && rolesData.roles) {
         setUserRoles(rolesData.roles);
+       
       }
      
     };
@@ -47,6 +48,7 @@ export function UserNav() {
 
 
   const hasRole = (roleName: string): boolean => {
+    
     return userRoles.includes(roleName);
   };
 
@@ -68,6 +70,11 @@ export function UserNav() {
           <>
             
             {hasRole("ADMIN") && (
+              <DropdownMenuItem>
+                <Link href="/dashboard">Dashboard</Link>
+              </DropdownMenuItem>
+            )}
+            {hasRole("SUPER_ADMIN") && (
               <DropdownMenuItem>
                 <Link href="/dashboard">Dashboard</Link>
               </DropdownMenuItem>
