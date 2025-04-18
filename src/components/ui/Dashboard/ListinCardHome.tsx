@@ -171,7 +171,7 @@ export default function ListingCardHome({
                                 ? `/views/appartement/${logementId}`
                                 : `/views/hotel/${hotelId}`
                         }
-                        className="text-white dark:text-blue-200"
+                        className="text-white dark:text-blue-800"
                     >
                         {type === 'logement' ? 'Reserver' : 'Voir Chambres'}
                     </Link>

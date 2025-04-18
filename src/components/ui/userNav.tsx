@@ -56,7 +56,7 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger>
         <div className="rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2 flex items-center gap-x-3">
-          <AlignRight />
+          <AlignRight className="dark:text-slate-600" />
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px]">

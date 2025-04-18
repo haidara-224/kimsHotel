@@ -45,18 +45,18 @@ function ShowItems({
     const ITEMS_PER_PAGE = 6;
   
     const fetchsData = useCallback(async () => {
-      setIsLoading(true); // ⏳ début loading
+      setIsLoading(true);
       try {
-        const resolvedSearchParams = await Promise.resolve(searchParams);
-        const data = await getData({ searchParams: resolvedSearchParams }) as unknown as homeTypes[];
+        const data = await getData({ searchParams }) as unknown as homeTypes[];
         setData(data);
       } catch (error) {
         console.error("Erreur fetch:", error);
         setData([]);
       } finally {
-        setIsLoading(false); // ✅ fin loading
+        setIsLoading(false);
       }
     }, [searchParams]);
+    
   
     const scrollPositionRef = useRef(0);
   
@@ -124,7 +124,7 @@ function ShowItems({
   
             <div className="flex items-center justify-center gap-2 mt-8">
               <button
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50 dark:bg-gray-800"
                 onClick={() => handlePageChange(Math.max(currentPage - 1, 1))}
                 disabled={currentPage === 1}
               >
@@ -149,7 +149,7 @@ function ShowItems({
               </div>
   
               <button
-                className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-800 rounded disabled:opacity-50"
                 onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))}
                 disabled={currentPage === totalPages}
               >
@@ -221,20 +221,16 @@ function SkeletonLoading() {
 
 
 
-export default function Home({ searchParams }: { searchParams?: { filter?: string } }) {
-  const [sc, setSearch] = useState<{ filter?: string } | null>(null);
+export default function Home({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {  const [sc, setSearch] = useState(searchParams ?? null);
 
-  useEffect(() => {
-    const resolveSearchParams = async () => {
-      if (searchParams) {
-        setSearch(await Promise.resolve(searchParams)); 
-      } else {
-        setSearch(null);
-      }
-    };
+useEffect(() => {
+  setSearch(searchParams ?? null);
+}, [searchParams]);
 
-    resolveSearchParams();
-  }, [searchParams]);
   
 
  
@@ -288,12 +284,12 @@ export default function Home({ searchParams }: { searchParams?: { filter?: strin
         </div>
       </section>
 
-      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50"></section>
-      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50">
+      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50 dark:bg-slate-800 "></section>
+      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50 dark:bg-slate-800">
         <h2 className="text-3xl font-semibold mb-8 text-center">Pourquoi faire appel à nos services ??</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature) => (
-            <Card key={feature.id} className="bg-white/80 backdrop-blur-sm">
+            <Card key={feature.id} className="bg-white/80 backdrop-blur-sm dark:bg-white/75">
               <CardContent className="p-6 text-center">
                 <div className="text-4xl mb-4">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
@@ -313,7 +309,7 @@ export default function Home({ searchParams }: { searchParams?: { filter?: strin
         </div>
       </section>
 
-      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50">
+      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50 dark:bg-slate-900">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
             <h2 className="text-2xl font-semibold mb-2">DESTINATIONS POPULAIRES</h2>

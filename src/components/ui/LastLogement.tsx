@@ -71,7 +71,7 @@ export function LastLogement() {
         return (
             <>
                 {adventureDestinations.map((dest) => (
-                    <Card key={dest.id} className="overflow-hidden group">
+                    <Card key={dest.id} className="overflow-hidden group dark:bg-slate-800">
                         <div className="relative h-48 overflow-hidden">
                             <Image
                                 src={dest.image}
