@@ -68,20 +68,20 @@ export function HearderSection() {
             </TabsList>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="w-full">
-              <Input placeholder="De" className="flex-1 text-slate-700 p-3 lg:p-0" />
+                <Input placeholder="De" className="flex-1 text-slate-700 p-3 lg:p-0" />
 
               </div>
               <div className="w-full">
-              <Input placeholder="À" className="flex-1 text-slate-700 p-3 lg:p-0" />
+                <Input placeholder="À" className="flex-1 text-slate-700 p-3 lg:p-0" />
 
               </div>
               <div className=" w-full">
-  <Input
-    type="date"
-    className="w-full p-6 lg:p-3 pr-10 text-slate-600 appearance-none"
-  />
- 
-</div>
+                <Input
+                  type="date"
+                  className="w-full p-6 lg:p-3 pr-10 text-slate-600"
+                />
+
+              </div>
 
               <Button className="bg-teal-600 hover:bg-teal-700">Rechercher</Button>
             </div>
