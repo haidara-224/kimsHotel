@@ -47,7 +47,7 @@ export default function MapFilterItems() {
   
 
   return (
-    <div className="flex  justify-center gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2 border-2 bg-white rounded-lg shadow-2xl">
+    <div className="flex justify-between gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2 ">
       {categoryItems.map((item) => (
         <div
           key={item.id}
@@ -59,7 +59,7 @@ export default function MapFilterItems() {
         >
           <div
             className={cn(
-              "relative flex items-center justify-center w-12 h-12 rounded-full border-2 shadow-sm transition-all duration-300",
+              "relative flex items-center justify-center w-12 h-12 rounded-full border-2 shadow-sm transition-all duration-300 dark:text-white",
               search === item.name ? "border-cyan-500 bg-cyan-100" : "border-gray-300 bg-gray-100"
             )}
           >
@@ -71,7 +71,7 @@ export default function MapFilterItems() {
               className="w-8 h-8"
             />
           </div>
-          <p className="text-sm font-medium text-gray-700">{item.title}</p>
+          <p className="text-sm font-medium text-gray-700 dark:text-white">{item.title}</p>
         </div>
       ))}
     </div>
