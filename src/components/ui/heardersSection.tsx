@@ -6,6 +6,7 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { motion, AnimatePresence } from "framer-motion";
 
+
 export function HearderSection() {
   const images = [
     "https://plus.unsplash.com/premium_photo-1675745329954-9639d3b74bbf?w=1600&auto=format&fit=crop&q=80",
@@ -67,11 +68,12 @@ export function HearderSection() {
             <div className="flex flex-col md:flex-row gap-4">
               <Input placeholder="De" className="flex-1 text-slate-700 p-3 lg:p-0" />
               <Input placeholder="À" className="flex-1 text-slate-700 p-3 lg:p-0" />
-              <Input placeholder="Départ" type="date" className="flex-1 p-3 lg:p-0   text-slate-600" />
+              <Input placeholder="Départ" type="date" className="flex-1 p-2 lg:p-3 text-slate-600" />
               <Button className="bg-teal-600 hover:bg-teal-700">Rechercher</Button>
             </div>
           </Tabs>
         </div>
+
       </div>
     </section>
   );
