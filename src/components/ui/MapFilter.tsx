@@ -47,19 +47,18 @@ export default function MapFilterItems() {
   
 
   return (
-    <div className="flex justify-between gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2 ">
+    <div className="flex justify-between gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2  ">
       {categoryItems.map((item) => (
         <div
           key={item.id}
           className={cn(
-            "flex flex-col items-center gap-y-2 transition-all duration-300", 
             search === item.name ? "opacity-100 scale-105" : "opacity-60 hover:opacity-90"
           )}
           onClick={() => handleCategoryClick(item.name)}// Gérer le clic sur la catégorie
         >
           <div
             className={cn(
-              "relative flex items-center justify-center w-12 h-12 rounded-full border-2 shadow-sm transition-all duration-300 dark:text-white",
+              "relative flex items-center justify-center w-12 h-12 rounded-full border-2 shadow-sm transition-all duration-300 dark:text-white cursor-pointer hover:animate-in ",
               search === item.name ? "border-cyan-500 bg-cyan-100" : "border-gray-300 bg-gray-100"
             )}
           >

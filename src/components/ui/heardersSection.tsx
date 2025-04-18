@@ -67,7 +67,7 @@ export function HearderSection() {
             <div className="flex flex-col md:flex-row gap-4">
               <Input placeholder="De" className="flex-1 text-slate-700 p-3 lg:p-0" />
               <Input placeholder="À" className="flex-1 text-slate-700 p-3 lg:p-0" />
-              <input placeholder="Départ" type="date" className="flex-1 p-3 lg:p-0 rounded-md bg-white border text-slate-600" />
+              <Input placeholder="Départ" type="date" className="flex-1 p-3 lg:p-0   text-slate-600" />
               <Button className="bg-teal-600 hover:bg-teal-700">Rechercher</Button>
             </div>
           </Tabs>
