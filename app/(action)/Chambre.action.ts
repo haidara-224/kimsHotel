@@ -1,5 +1,6 @@
 "use server";
 import { prisma } from "@/src/lib/prisma";
+
 import { put } from "@vercel/blob";
 
 
@@ -95,8 +96,8 @@ export async function toggleDisponibilite(chambreId: string) {
             data: { disponible: nouvelleDisponibilite },
         });
 
-        return updatedChambre; 
-        
+        return updatedChambre;
+
     } catch (error) {
         console.error("Erreur lors du changement de disponibilité :", error);
         throw new Error(error instanceof Error ? error.message : "Une erreur inconnue est survenue");
@@ -105,35 +106,49 @@ export async function toggleDisponibilite(chambreId: string) {
 
 
 export async function DeleteChambre(chambreId: string) {
-  try {
-    const chambre = await prisma.chambre.findUnique({
-      where: { id: chambreId },
-      include: {
-        reservations: {
-          where: { status: "CONFIRMED" }, // ⬅️ On ne récupère que les réservations confirmées
-        },
-      },
-    });
+    try {
+        const chambre = await prisma.chambre.findUnique({
+            where: { id: chambreId },
+            include: {
+                reservations: {
+                    where: { status: "CONFIRMED" }, // ⬅️ On ne récupère que les réservations confirmées
+                },
+            },
+        });
 
-    if (!chambre) {
-      throw new Error("Chambre non trouvée");
+        if (!chambre) {
+            throw new Error("Chambre non trouvée");
+        }
+
+        if (chambre.reservations.length > 0) {
+            throw new Error("Impossible de supprimer cette chambre car elle a des réservations confirmées.");
+        }
+
+        await prisma.chambre.delete({
+            where: { id: chambreId },
+        });
+
+        return { success: true, message: "Chambre supprimée avec succès." };
+    } catch (error: unknown) {
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression.",
+        };
     }
-
-    if (chambre.reservations.length > 0) {
-      throw new Error("Impossible de supprimer cette chambre car elle a des réservations confirmées.");
-    }
-
-    await prisma.chambre.delete({
-      where: { id: chambreId },
-    });
-
-    return { success: true, message: "Chambre supprimée avec succès." };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      message: error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression.",
-    };
-  }
 }
 
 
+export async function getChambreById(id:string) {
+    try {
+        const chambres=await prisma.chambre.findUnique({
+            where:{
+                id
+            }
+        })
+        if(!chambres) return
+        return chambres
+        
+    } catch (error) {
+        throw new Error("Impossible d'afficher les donnees "+error)
+    }
+}

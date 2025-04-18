@@ -8,10 +8,12 @@ import { toast } from "sonner";
 
 interface PropsId {
   id: string;
+  hotelId:string;
+  userId?:string;
 reload: () => void;
 }
 
-export function ActionRow({ id,reload }: PropsId) {
+export function ActionRow({ id,hotelId,userId,reload }: PropsId) {
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +43,7 @@ export function ActionRow({ id,reload }: PropsId) {
       </Button>
 
       <Button type="button" variant="secondary" className="mt-8 lg:mt-0">
-        <Link href={`${id}`} className="bg-green-700 rounded text-white">
+        <Link href={`/dashboard/hotes/${userId}/hotels/${hotelId}/chambres/${id}/edit`} className="bg-green-700 rounded text-white">
           <Edit />
         </Link>
       </Button>

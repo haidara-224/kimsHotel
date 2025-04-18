@@ -64,11 +64,7 @@ export default function HotelDataTableUser() {
 
         }
     }
-    /*
-      useEffect(() => {
-        
-      }, [limit]);
-      */
+   
     useEffect(() => {
         chechIsAdmin()
         fetchRolesUser()

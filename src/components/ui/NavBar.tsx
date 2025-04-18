@@ -1,5 +1,6 @@
 'use client'
 import Link from "next/link";
+import { CalendarCheck, Heart, Home, LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { UserNav } from "./userNav";
 import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
@@ -33,10 +34,16 @@ export function NavBar() {
                     </div>
                     <div className="hidden md:flex justify-center items-center space-x-6">
 
-                        <AnimatedLink href={`/dashboard/hotes/${user?.id || ''}`}>Mes Annonces</AnimatedLink>
-                        <AnimatedLink href="/favorites">Mes Favoris</AnimatedLink>
-                        <AnimatedLink href="/">Mes Reservations</AnimatedLink>
-
+                        <AnimatedLink href={`/dashboard/hotes/${user?.id || ''}`} Icon={Home}>
+                            Mes Annonces
+                        </AnimatedLink>
+                        <AnimatedLink href="/favorites" Icon={Heart}>
+                            Mes Favoris
+                        </AnimatedLink>
+                        <AnimatedLink href="/" Icon={CalendarCheck}>
+                            Mes Réservations
+                        </AnimatedLink>
+                     
                     </div>
                     <div className="hidden md:flex  space-x-7  justify-center items-center rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2">
                         <SignedIn>
@@ -75,17 +82,38 @@ export function NavBar() {
                             className="md:hidden"
                         >
                             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                                <Link href={`/dashboard/hotes/${user?.id || ''}`} className="text-gray-600 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium">Mes Annonces</Link>
-                                <Link href="/favorites" className="text-gray-600 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium">Mes Favoris</Link>
-                                <Link href="/" className="text-gray-600 hover:text-teal-600 block px-3 py-2 rounded-md text-base font-medium">Mes Reservations</Link>
-                                <div className="space-x-7 flex justify-center items-center rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2">
-                                    <SignedIn>
-                                        <UserButton />
-                                    </SignedIn>
-                                    <UserNav />
-                                    <ModeToggle />
-                                </div>
-                            </div>
+  <Link
+    href={`/dashboard/hotes/${user?.id || ''}`}
+    className="text-gray-600 hover:text-teal-600 flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
+  >
+    <Home className="w-5 h-5" />
+    Mes Annonces
+  </Link>
+
+  <Link
+    href="/favorites"
+    className="text-gray-600 hover:text-teal-600 flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
+  >
+    <Heart className="w-5 h-5" />
+    Mes Favoris
+  </Link>
+
+  <Link
+    href="/"
+    className="text-gray-600 hover:text-teal-600 flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
+  >
+    <CalendarCheck className="w-5 h-5" />
+    Mes Réservations
+  </Link>
+
+  <div className="space-x-7 flex justify-center items-center rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2">
+    <SignedIn>
+      <UserButton />
+    </SignedIn>
+    <UserNav />
+    <ModeToggle />
+  </div>
+</div>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -99,12 +127,19 @@ export function NavBar() {
 }
 
 
-function AnimatedLink({ href, children }: { href: string, children: React.ReactNode }) {
+interface AnimatedLinkProps {
+    href: string;
+    children: React.ReactNode;
+    Icon?: LucideIcon; // 👈 On accepte une icône en option
+}
+
+export default function AnimatedLink({ href, children, Icon }: AnimatedLinkProps) {
     return (
         <Link
             href={href}
-            className="relative px-3 py-2 text-gray-600 hover:text-teal-600 text-md font-medium group"
+            className="relative px-3 py-2 text-gray-600 hover:text-teal-600 text-md font-medium group flex items-center gap-2"
         >
+            {Icon && <Icon className="w-5 h-5" />} {/* Affiche l’icône si elle existe */}
             <span>{children}</span>
 
             <motion.span

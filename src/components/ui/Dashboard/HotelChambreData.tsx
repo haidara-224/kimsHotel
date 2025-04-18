@@ -26,11 +26,50 @@ import Image from "next/image";
 
 import ToggleDisponibiliteCell from "./Toggledisponibility";
 import { ActionRow } from "./ActionRow";
+import { useUser } from "@clerk/nextjs";
 
 
 
 
 export default function HotelChambreData() {
+    const pageSize = 5;
+    const [isLoading, setIsLoading] = useState(false)
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: pageSize,
+    });
+    const params = useParams();
+    const HotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
+    const [sorting, setSorting] = useState<SortingState>([
+        {
+            id: "numero_chambre",
+            desc: false,
+        },
+    ]);
+
+    const [data, setData] = useState<Chambres[]>([]);
+    const fetchPost =useCallback(async () => {
+        try {
+            setIsLoading(true)
+
+            const data = await getChambreHotels(HotelId)
+
+            setData(data as unknown as Chambres[]);
+
+
+
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false)
+        }
+    },[HotelId])
+    useEffect(() => {
+
+        fetchPost()
+
+    }, [fetchPost]);
+    const {user}=useUser()
     const columns: ColumnDef<Chambres>[] = [
         {
             accessorKey: "numero_chambre",
@@ -139,49 +178,13 @@ export default function HotelChambreData() {
                 <ActionRow
                     id={row.original.id}
                     reload={fetchPost}
+                    hotelId={HotelId}
+                    userId={user?.id}
 
                 />
             ),
         },
     ];
-    const pageSize = 5;
-    const [isLoading, setIsLoading] = useState(false)
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: pageSize,
-    });
-    const params = useParams();
-    const HotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
-    const [sorting, setSorting] = useState<SortingState>([
-        {
-            id: "numero_chambre",
-            desc: false,
-        },
-    ]);
-
-    const [data, setData] = useState<Chambres[]>([]);
-    const fetchPost =useCallback(async () => {
-        try {
-            setIsLoading(true)
-
-            const data = await getChambreHotels(HotelId)
-
-            setData(data as unknown as Chambres[]);
-
-
-
-        } catch (error) {
-            console.error(error)
-        } finally {
-            setIsLoading(false)
-        }
-    },[HotelId])
-    useEffect(() => {
-
-        fetchPost()
-
-    }, [fetchPost]);
-
     const table = useReactTable({
         data,
         columns,
@@ -202,6 +205,9 @@ export default function HotelChambreData() {
         totalPages: table.getPageCount(),
         paginationItemsToDisplay: 5,
     });
+   
+   
+   
 
     return (
         <div className="space-y-4">
