@@ -24,6 +24,9 @@ export const metadata:Metadata = {
   verification: {
     google: "_l9ejk4gq4RUP30Z65C0z_r73lbwWIVC26EDgZ6dIuE",
   },
+  icons: {
+    icon: '/logoBlanc.png',
+  },
 };
 
 

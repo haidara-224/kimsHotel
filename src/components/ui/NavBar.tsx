@@ -18,18 +18,25 @@ export function NavBar() {
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <span className="text-teal-600 text-2xl mr-2">
-                            <Link href="/" className="text-2xl">
-                                <Image src='/kims_hotel_logo2 (1).png' width={100} height={100} layout="intrinsic" alt="kims Hotel" />
+                            <Link href="/" className="block">
+                                <Image
+                                    src="/logoBlanc.png"
+                                    width={100}
+                                    height={100}
+                                    alt="Kims Hotel"
+                                    className="w-16 h-auto sm:w-16 md:w-16 lg:w-24 xl:w-24"
+                                />
                             </Link>
+
                         </span>
 
                     </div>
                     <div className="hidden md:flex justify-center items-center space-x-6">
-                 
+
                         <AnimatedLink href={`/dashboard/hotes/${user?.id || ''}`}>Mes Annonces</AnimatedLink>
                         <AnimatedLink href="/favorites">Mes Favoris</AnimatedLink>
                         <AnimatedLink href="/">Mes Reservations</AnimatedLink>
-                    
+
                     </div>
                     <div className="hidden md:flex  space-x-7  justify-center items-center rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2">
                         <SignedIn>
@@ -99,7 +106,7 @@ function AnimatedLink({ href, children }: { href: string, children: React.ReactN
             className="relative px-3 py-2 text-gray-600 hover:text-teal-600 text-md font-medium group"
         >
             <span>{children}</span>
- 
+
             <motion.span
                 className="absolute left-0 bottom-0 h-[2px] w-full bg-teal-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
             />
