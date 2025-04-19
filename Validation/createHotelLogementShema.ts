@@ -15,7 +15,7 @@ export const CreationSchema = z.object({
         .max(500, "La description est trop longue."),
 
     adresse: z.string()
-        .min(2, "L'adresse doit contenir au moins 5 caractères.")
+        .min(2, "L'adresse doit contenir au moins 2 caractères.")
         .max(200, "L'adresse est trop longue."),
 
     ville: z.string()
@@ -49,10 +49,10 @@ export const CreationSchema = z.object({
     price: z.number()
         .min(100000, "Le prix ne peut pas être inférieur a 100000"),
         images: z.array(
-            z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
-              message: "Chaque image doit être inférieure à 5 Mo.",
-            })
-          ).min(4, "Ajoutez au moins 4 images."), 
-       
+              z.any().refine(file => file?.size < 10 * 1024 * 1024, {
+                message: "Chaque image doit être inférieure à 5 Mo.",
+              })
+            ).min(4, "Ajoutez exactement 4 images.")
+             .max(10, "Ajoutez exactement 10 images."),
         
 });

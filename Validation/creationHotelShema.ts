@@ -11,7 +11,7 @@ export const CreationSchemaHotel = z.object({
     .min(10, "La description doit contenir au moins 10 caractères.")
     .max(500, "La description est trop longue."),
   adresse: z.string()
-    .min(5, "L'adresse doit contenir au moins 5 caractères.")
+    .min(2, "L'adresse doit contenir au moins 2 caractères.")
     .max(200, "L'adresse est trop longue."),
   ville: z.string()
     .min(2, "La ville doit contenir au moins 2 caractères.")
@@ -19,12 +19,23 @@ export const CreationSchemaHotel = z.object({
   telephone: z.string()
     .regex(/^\+?\d{7,15}$/, "Le numéro de téléphone n'est pas valide."),
   email: z.string().email("L'adresse e-mail n'est pas valide."),
-/*
-  images:z.array(z.instanceof(File)).min(4, "Ajoutez exactement 4 images.")
-    .max(4, "Ajoutez exactement 4 images."),
-    images_hotel: z.array(z.instanceof(File)).min(4, "Ajoutez exactement 4 images.")
-     .max(4, "Ajoutez exactement 4 images."),
-*/
+
+  images:  z.array(
+    z.any().refine(file => file?.size < 10 * 1024 * 1024, {
+      message: "Chaque image doit être inférieure à 5 Mo.",
+    })
+  ).min(4, "Ajoutez exactement 4 images.")
+    .max(10, "Ajoutez exactement 10 images."),
+    images_hotel: z.array(
+      z.any().refine(file => file?.size < 10 * 1024 * 1024, {
+        message: "Chaque image doit être inférieure à 5 Mo.",
+      })
+    ).min(4, "Ajoutez exactement 4 images.")
+     .max(10, "Ajoutez exactement 10 images."),
+    
+ 
+
+
   type_etoils: z.number().max(7, "Le nombre d'étoiles ne peut pas dépasser 7."),
   parking: z.boolean(),
   capacity: z.number()
