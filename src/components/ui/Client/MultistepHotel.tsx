@@ -42,8 +42,8 @@ interface FormLogement {
     extraBed: boolean;
     price: number;
     type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
-    images: File[],
-    images_hotel: File[]
+    //images: File[],
+    //images_hotel: File[]
 }
 
 const steps = [
@@ -109,8 +109,8 @@ export default function MultiformStepHotel() {
             price: 100000,
             surface: 9,
             extraBed: false,
-            images: [],
-            images_hotel: []
+           // images: [],
+            //images_hotel: []
         },
     });
 
@@ -134,10 +134,10 @@ export default function MultiformStepHotel() {
                 fieldValidate = ["nom", "description", "adresse", "ville", "telephone", "email"];
                 break;
             case 2:
-                fieldValidate = ["option", "parking", "type_etoils", "images_hotel"];
+                fieldValidate = ["option", "parking", "type_etoils",];
                 break;
             case 3:
-                fieldValidate = ["numero_chambre", "hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "surface", "price", "capacity", "type_chambre", "images"];
+                fieldValidate = ["numero_chambre", "hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "surface", "price", "capacity", "type_chambre",];
                 break;
         }
         const isValid = await trigger(fieldValidate);
@@ -163,7 +163,7 @@ export default function MultiformStepHotel() {
             const fileArray = Array.from(files);
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrl(fileUrls);
-            setValue("images", fileArray);
+            //setValue("images", fileArray);
 
         }
     };
@@ -173,7 +173,7 @@ export default function MultiformStepHotel() {
             const fileArray = Array.from(files);
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
             setImageUrlHotel(fileUrls);
-            setValue("images_hotel", fileArray);
+           // setValue("images_hotel", fileArray);
 
         }
     };
@@ -207,8 +207,8 @@ export default function MultiformStepHotel() {
             data.extraBed,
             data.price,
 
-            data.images,
-            data.images_hotel
+            (imageUrlHotel ? imageUrlHotel.map(url => new File([], url)) : []),
+            (imageUrl ? imageUrl.map(url => new File([], url)) : []),
         );
         if ('error' in response) {
             alert(response.error)
@@ -314,7 +314,7 @@ export default function MultiformStepHotel() {
                                     ))}
                                 </div>
                             </div>
-                            {errors.images_hotel && <span className="text-red-500">{errors.images_hotel.message}</span>}
+                            {/**errors.images_hotel && <span className="text-red-500">{errors.images_hotel.message}</span>**/}
                         </div>
 
                     </div>
@@ -416,11 +416,11 @@ export default function MultiformStepHotel() {
                                     ))}
                                 </div>
                             </div>
-                            {errors.images && (
+                            {/**errors.images && (
                                 <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
                                     {errors.images.message}
                                 </div>
-                            )}
+                            )**/}
                         </div>
                     </>
                 )}
