@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/src/lib/prisma";
 
-import { put } from "@vercel/blob";
+import { put,del } from "@vercel/blob";
 
 
 type ApiResponse = { success: true } | { error: string };
@@ -153,6 +153,8 @@ export async function getChambreById(id:string) {
 }
 
 
+// ⚠️ Assure-toi que t'as bien cette fonction dispo !
+
 export async function UpdateChambre(
     id: string,
     numero_chambre: string,
@@ -168,25 +170,13 @@ export async function UpdateChambre(
     images: File[]
 ): Promise<ApiResponse> {
     try {
-        const existingChambre = await prisma.chambre.findUnique({
-            where: { id },
-        });
+        const existingChambre = await prisma.chambre.findUnique({ where: { id } });
+        if (!existingChambre) return { error: "Chambre introuvable." };
 
-        if (!existingChambre) {
-            return { error: "Chambre introuvable." };
-        }
-
-        // Vérifie que le nouveau numéro n'est pas déjà utilisé par une autre chambre
         const chambreWithSameNumber = await prisma.chambre.findFirst({
-            where: {
-                numero_chambre,
-                NOT: { id }, // exclut la chambre actuelle
-            },
+            where: { numero_chambre, NOT: { id } },
         });
-
-        if (chambreWithSameNumber) {
-            return { error: "Une autre chambre utilise déjà ce numéro." };
-        }
+        if (chambreWithSameNumber) return { error: "Une autre chambre utilise déjà ce numéro." };
 
         await prisma.chambre.update({
             where: { id },
@@ -205,6 +195,24 @@ export async function UpdateChambre(
         });
 
         if (images.length > 0) {
+            // 🔥 Étape 1 : Récupérer les anciennes images
+            const oldImages = await prisma.imageChambre.findMany({ where: { chambreId: id } });
+
+            // 🔥 Étape 2 : Supprimer les fichiers de Vercel Blob
+            await Promise.allSettled(
+                oldImages.map(async (img) => {
+                    try {
+                        await del(img.urlImage); // ça supprime le blob
+                    } catch (err) {
+                        console.error("Erreur lors de la suppression d'un blob :", err);
+                    }
+                })
+            );
+
+            // 🔥 Étape 3 : Supprimer les enregistrements en base
+            await prisma.imageChambre.deleteMany({ where: { chambreId: id } });
+
+            // 🔥 Étape 4 : Uploader les nouvelles images
             const uploadedImages = await Promise.allSettled(
                 images.map(async (file) => {
                     try {
@@ -212,15 +220,15 @@ export async function UpdateChambre(
                         const blob = await put(file.name, fileBuffer, { access: 'public' });
                         return { chambreId: id, urlImage: blob.url };
                     } catch (err) {
-                        console.error("Erreur lors de l'upload d'une image :", err);
+                        console.error("Erreur upload image :", err);
                         return null;
                     }
                 })
             );
 
             const validImages = uploadedImages
-                .filter(result => result.status === "fulfilled" && result.value !== null)
-                .map(result => (result as PromiseFulfilledResult<{ chambreId: string; urlImage: string }>).value);
+                .filter(res => res.status === "fulfilled" && res.value !== null)
+                .map(res => (res as PromiseFulfilledResult<{ chambreId: string; urlImage: string }>).value);
 
             if (validImages.length > 0) {
                 await prisma.imageChambre.createMany({ data: validImages });
@@ -238,3 +246,5 @@ export async function UpdateChambre(
         };
     }
 }
+
+

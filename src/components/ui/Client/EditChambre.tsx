@@ -131,16 +131,10 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
                    setErrorChambre(response.error)
                 
                } else {
-                   toast("Chambre créée avec succès");
-                   setValue('numero_chambre','')
-                   
-                   setValue('capacity',0)
-                   setValue('extraBed',false)
-                   setValue('hasClim',false)
-                   setValue('hasWifi',false)
-                   setValue('images',[])
-                   setValue('price',0)
+                   toast("Information de la chambres modifier avec succès");
                   
+                   
+                 
                }
     };
 
