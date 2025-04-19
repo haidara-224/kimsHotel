@@ -42,8 +42,8 @@ interface FormLogement {
     extraBed: boolean;
     price: number;
     type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
-    images: File[],
-    images_hotel: File[]
+   // images: File[],
+    //images_hotel: File[]
 }
 
 const steps = [
@@ -62,8 +62,8 @@ export default function MultiformStepHotel() {
     const { user } = useUser()
     const [step, setStep] = useState(1);
     const router = useRouter()
-    const [imageUrl, setImageUrl] = useState<string[] | null>(null)
-    const [imageUrlHotel, setImageUrlHotel] = useState<string[] | null>(null)
+    const [imageUrl, setImageUrl] = useState<File[] | null>(null)
+    const [imageUrlHotel, setImageUrlHotel] = useState<File[] | null>(null)
     const [selectedOption, setSelectedOption] = useState<string[]>([]);
     const [option, setOption] = useState<Option[]>([])
     const [globalError, setGlobalError] = useState<string | null>(null);
@@ -111,8 +111,8 @@ export default function MultiformStepHotel() {
             price: 100000,
             surface: 9,
             extraBed: false,
-            images: [],
-            images_hotel: []
+            //images: [],
+            //images_hotel: []
         },
     });
 
@@ -124,17 +124,17 @@ export default function MultiformStepHotel() {
     }, [watch, selectedOption])
 
     const validationStep = async (nextStep: number) => {
-       
+
         let fieldValidate: (keyof FormLogement)[] = [];
         switch (step) {
             case 1:
                 fieldValidate = ["nom", "description", "adresse", "ville", "telephone", "email"];
                 break;
             case 2:
-                fieldValidate = ["option", "parking", "type_etoils", "images_hotel"];
+                fieldValidate = ["option", "parking", "type_etoils", ];
                 break;
             case 3:
-                fieldValidate = ["numero_chambre", "hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "surface", "price", "capacity", "type_chambre", "images"];
+                fieldValidate = ["numero_chambre", "hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "surface", "price", "capacity", "type_chambre"];
                 break;
         }
         const isValid = await trigger(fieldValidate);
@@ -142,10 +142,10 @@ export default function MultiformStepHotel() {
             setGlobalError("Veuillez corriger les erreurs avant de continuer.");
             return; // ne passe pas à l'étape suivante
         }
-    
+
         setGlobalError(null); // tout est bon
         if (isValid) {
-            
+
             setStep(nextStep);
         }
     };
@@ -163,9 +163,8 @@ export default function MultiformStepHotel() {
         const files = e.target.files;
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
-            const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrl(fileUrls);
-            setValue("images", fileArray);
+            setImageUrl(fileArray);
+            //setValue("images", fileArray);
 
         }
     };
@@ -173,9 +172,8 @@ export default function MultiformStepHotel() {
         const files = e.target.files;
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
-            const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrlHotel(fileUrls);
-            setValue("images_hotel", fileArray);
+            setImageUrlHotel(fileArray);
+            //setValue("images_hotel", fileArray);
 
         }
     };
@@ -209,8 +207,8 @@ export default function MultiformStepHotel() {
             data.extraBed,
             data.price,
 
-            data.images,
-            data.images_hotel
+            imageUrl ?? [],
+            imageUrlHotel ?? []
         );
         if ('error' in response) {
             alert(response.error)
@@ -224,14 +222,12 @@ export default function MultiformStepHotel() {
 
     return (
         <div className="mx-2xl mx-auto p-6 ">
-             <pre>{JSON.stringify(watch(), null, 2)}</pre>
+            {/**<pre>{JSON.stringify(watch(), null, 2)}</pre> */}
             {globalError && (
-    <div className="text-red-600 bg-red-100 border border-red-400 p-4 rounded-md text-center">
-        {globalError}
-    </div>
-)}
-
-
+                <div className="text-red-600 bg-red-100 border border-red-400 p-4 rounded-md text-center">
+                    {globalError}
+                </div>
+            )}
             <ProgresseBars curentstep={step} steps={steps} />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8  lg:px-32">
                 {step === 1 && (
@@ -312,7 +308,7 @@ export default function MultiformStepHotel() {
                                     {imageUrlHotel && imageUrlHotel.map((url, index) => (
                                         <Image
                                             key={index}
-                                            src={url}
+                                            src={URL.createObjectURL(url)}
                                             alt={`Preview ${index}`}
                                             className="rounded-md shadow object-cover w-full h-auto max-w-[100px] max-h-[100px] sm:max-w-[128px] sm:max-h-[128px]"
                                             width={128}
@@ -321,12 +317,9 @@ export default function MultiformStepHotel() {
                                     ))}
                                 </div>
                             </div>
-                            {errors.images_hotel  && (
-                                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
-                                    {errors.images_hotel .message}
-                                </div>
-                            )}
-                          
+                            
+                            
+
                         </div>
 
                     </div>
@@ -419,7 +412,7 @@ export default function MultiformStepHotel() {
                                     {imageUrl && imageUrl.map((url, index) => (
                                         <Image
                                             key={index}
-                                            src={url}
+                                            src={URL.createObjectURL(url)}
                                             alt={`Preview ${index}`}
                                             className="rounded-md shadow object-cover w-full h-auto max-w-[100px] max-h-[100px] sm:max-w-[128px] sm:max-h-[128px]"
                                             width={128}
@@ -428,11 +421,7 @@ export default function MultiformStepHotel() {
                                     ))}
                                 </div>
                             </div>
-                            {errors.images && (
-                                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
-                                    {errors.images.message}
-                                </div>
-                            )}
+                            
                         </div>
                     </>
                 )}
