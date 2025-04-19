@@ -21,15 +21,11 @@ export const CreationSchemaHotel = z.object({
   email: z.string().email("L'adresse e-mail n'est pas valide."),
 
   images: z.array(
-    z.any().refine(file => file?.size < 5 * 1024 * 1024, {
-      message: "Chaque image doit être inférieure à 5 Mo.",
-    })
+    z.any()
   ).min(4, "Ajoutez exactement 4 images.")
     .max(4, "Ajoutez exactement 4 images."),
     images_hotel: z.array(
-      z.any().refine(file => file?.size < 5 * 1024 * 1024, {
-        message: "Chaque image doit être inférieure à 5 Mo.",
-      })
+      z.any()
     ).min(4, "Ajoutez exactement 4 images.")
      .max(4, "Ajoutez exactement 4 images."),
     

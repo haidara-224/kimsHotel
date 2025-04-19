@@ -66,6 +66,8 @@ export default function MultiformStepHotel() {
     const [imageUrlHotel, setImageUrlHotel] = useState<string[] | null>(null)
     const [selectedOption, setSelectedOption] = useState<string[]>([]);
     const [option, setOption] = useState<Option[]>([])
+    const [globalError, setGlobalError] = useState<string | null>(null);
+
     const params = useParams()
     const categoryLogementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? ""
     const getOption = async () => {
@@ -136,7 +138,12 @@ export default function MultiformStepHotel() {
                 break;
         }
         const isValid = await trigger(fieldValidate);
-
+        if (!isValid) {
+            setGlobalError("Veuillez corriger les erreurs avant de continuer.");
+            return; // ne passe pas à l'étape suivante
+        }
+    
+        setGlobalError(null); // tout est bon
         if (isValid) {
             
             setStep(nextStep);
@@ -218,6 +225,11 @@ export default function MultiformStepHotel() {
     return (
         <div className="mx-2xl mx-auto p-6 ">
             {/** <pre>{JSON.stringify(watch(), null, 2)}</pre>*/}
+            {globalError && (
+    <div className="text-red-600 bg-red-100 border border-red-400 p-4 rounded-md text-center">
+        {globalError}
+    </div>
+)}
 
 
             <ProgresseBars curentstep={step} steps={steps} />
@@ -309,7 +321,12 @@ export default function MultiformStepHotel() {
                                     ))}
                                 </div>
                             </div>
-                            {errors.images_hotel && <span className="text-red-500">{errors.images_hotel.message}</span>}
+                            {errors.images_hotel  && (
+                                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
+                                    {errors.images_hotel .message}
+                                </div>
+                            )}
+                          
                         </div>
 
                     </div>
