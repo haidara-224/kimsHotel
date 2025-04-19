@@ -64,7 +64,7 @@ export default function HotelDataTableUser() {
 
         }
     }
-   
+
     useEffect(() => {
         chechIsAdmin()
         fetchRolesUser()
@@ -76,12 +76,7 @@ export default function HotelDataTableUser() {
 
     return (
         <div className="mt-10 overflow-x-auto">
-            {
-                roles.map((r) => (
-                    <p key={r.role.id} className=" float-right bg-green-600 p-3 text-white rounded-lg " >{r.role.name}</p>
-                ))
 
-            }
             {
                 isLoading ? <Loader /> :
                     <Table className="min-w-full">
@@ -95,6 +90,7 @@ export default function HotelDataTableUser() {
                                 <TableHead className="hidden lg:table-cell">Bloqué/Débloqué</TableHead>
                                 <TableHead className="hidden lg:table-cell">Etoils</TableHead>
                                 <TableHead className="hidden xl:table-cell">User</TableHead>
+                                <TableHead className="hidden xl:table-cell">Role</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -119,6 +115,16 @@ export default function HotelDataTableUser() {
                                         </div>
                                     </TableCell>
                                     <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
+                                    <TableCell className="hidden lg:table-cell">
+                                        {roles
+                                            .filter((r) => r.hotelId === lg.id) // ou r.hotel.id === lg.id selon ta structure
+                                            .map((r) => (
+                                                <p key={r.role.id} className="float-right bg-green-600 p-3 text-white rounded-lg">
+                                                    {r.role.name}
+                                                </p>
+                                            ))}
+                                    </TableCell>
+
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Link

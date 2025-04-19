@@ -19,18 +19,22 @@ export const CreationSchemaHotel = z.object({
   telephone: z.string()
     .regex(/^\+?\d{7,15}$/, "Le numéro de téléphone n'est pas valide."),
   email: z.string().email("L'adresse e-mail n'est pas valide."),
-  /*
+
   images: z.array(
-    z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
+    z.any().refine(file => file?.size < 5 * 1024 * 1024, {
       message: "Chaque image doit être inférieure à 5 Mo.",
     })
-  ).min(4, "Ajoutez au moins 4 images."),
-  images_hotel: z.array(
-    z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
-      message: "Chaque image doit être inférieure à 5 Mo.",
-    })
-  ).min(4, "Ajoutez au moins 4 images."),
-  */
+  ).min(4, "Ajoutez exactement 4 images.")
+    .max(4, "Ajoutez exactement 4 images."),
+    images_hotel: z.array(
+      z.any().refine(file => file?.size < 5 * 1024 * 1024, {
+        message: "Chaque image doit être inférieure à 5 Mo.",
+      })
+    ).min(4, "Ajoutez exactement 4 images.")
+     .max(4, "Ajoutez exactement 4 images."),
+    
+ 
+
 
   type_etoils: z.number().max(7, "Le nombre d'étoiles ne peut pas dépasser 7."),
   parking: z.boolean(),
