@@ -224,7 +224,7 @@ export default function MultiformStepHotel() {
 
     return (
         <div className="mx-2xl mx-auto p-6 ">
-            {/** <pre>{JSON.stringify(watch(), null, 2)}</pre>*/}
+             <pre>{JSON.stringify(watch(), null, 2)}</pre>
             {globalError && (
     <div className="text-red-600 bg-red-100 border border-red-400 p-4 rounded-md text-center">
         {globalError}
