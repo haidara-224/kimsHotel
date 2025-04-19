@@ -8,7 +8,7 @@ type ApiResponse = { success: true } | { error: string };
 
 export async function CreateChambre(
     numero_chambre: string,
-    description: string,
+ 
     hotelId: string,
     capacity: number,
     hasClim: boolean,
@@ -32,7 +32,6 @@ export async function CreateChambre(
         const chambre = await prisma.chambre.create({
             data: {
                 numero_chambre,
-                description,
                 hotelId,
                 capacity,
                 hasClim,
@@ -150,5 +149,92 @@ export async function getChambreById(id:string) {
         
     } catch (error) {
         throw new Error("Impossible d'afficher les donnees "+error)
+    }
+}
+
+
+export async function UpdateChambre(
+    id: string,
+    numero_chambre: string,
+    hotelId: string,
+    capacity: number,
+    hasClim: boolean,
+    hasWifi: boolean,
+    hasTV: boolean,
+    type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
+    surface: number,
+    extraBed: boolean,
+    price: number,
+    images: File[]
+): Promise<ApiResponse> {
+    try {
+        const existingChambre = await prisma.chambre.findUnique({
+            where: { id },
+        });
+
+        if (!existingChambre) {
+            return { error: "Chambre introuvable." };
+        }
+
+        // Vérifie que le nouveau numéro n'est pas déjà utilisé par une autre chambre
+        const chambreWithSameNumber = await prisma.chambre.findFirst({
+            where: {
+                numero_chambre,
+                NOT: { id }, // exclut la chambre actuelle
+            },
+        });
+
+        if (chambreWithSameNumber) {
+            return { error: "Une autre chambre utilise déjà ce numéro." };
+        }
+
+        await prisma.chambre.update({
+            where: { id },
+            data: {
+                numero_chambre,
+                hotelId,
+                capacity,
+                hasClim,
+                hasWifi,
+                hasTV,
+                type: type_chambre,
+                surface,
+                extraBed,
+                price,
+            },
+        });
+
+        if (images.length > 0) {
+            const uploadedImages = await Promise.allSettled(
+                images.map(async (file) => {
+                    try {
+                        const fileBuffer = Buffer.from(await file.arrayBuffer());
+                        const blob = await put(file.name, fileBuffer, { access: 'public' });
+                        return { chambreId: id, urlImage: blob.url };
+                    } catch (err) {
+                        console.error("Erreur lors de l'upload d'une image :", err);
+                        return null;
+                    }
+                })
+            );
+
+            const validImages = uploadedImages
+                .filter(result => result.status === "fulfilled" && result.value !== null)
+                .map(result => (result as PromiseFulfilledResult<{ chambreId: string; urlImage: string }>).value);
+
+            if (validImages.length > 0) {
+                await prisma.imageChambre.createMany({ data: validImages });
+            }
+        }
+
+        return { success: true };
+
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour de la chambre :", error);
+        return {
+            error: error instanceof Error
+                ? error.message
+                : "Une erreur inconnue est survenue"
+        };
     }
 }

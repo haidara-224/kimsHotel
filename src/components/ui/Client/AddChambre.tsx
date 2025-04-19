@@ -10,7 +10,6 @@ import { Checkbox } from "../checkbox";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../select";
 import { ChangeEvent, useState } from "react";
 import { Button } from "../button";
-import { Textarea } from "../textarea";
 import { CreateChambre } from "@/app/(action)/Chambre.action";
 import { toast } from "sonner";
 
@@ -19,7 +18,7 @@ interface FormChambre {
     numero_chambre: string
     type_chambre: TypeChambre,
     capacity: number,
-    description: string,
+
     hasWifi: boolean,
     hasTV: boolean,
     hasClim: boolean,
@@ -48,7 +47,7 @@ export default function AddChambre({ hotelId }: propsHotelId) {
             numero_chambre: '',
             type_chambre: "SIMPLE",
             capacity: 1,
-            description: '',
+      
             hasClim: false,
             hasKitchen: false,
             hasTV: false,
@@ -74,7 +73,7 @@ export default function AddChambre({ hotelId }: propsHotelId) {
     const onSubmit: SubmitHandler<FormChambre> = async (data) => {
         const response = await CreateChambre(
             data.numero_chambre,
-            data.description,
+     
             hotelId,
             data.capacity,
             data.hasClim,
@@ -96,7 +95,7 @@ export default function AddChambre({ hotelId }: propsHotelId) {
         } else {
             toast("Chambre créée avec succès");
             setValue('numero_chambre','')
-            setValue('description','')
+            
             setValue('capacity',0)
             setValue('extraBed',false)
             setValue('hasClim',false)
@@ -123,11 +122,7 @@ export default function AddChambre({ hotelId }: propsHotelId) {
                     {errorChambre && <span  className="text-red-500">{errorChambre}</span>}
                 {errors.numero_chambre && <span className="text-red-500">{errors.numero_chambre.message}</span>}
             </div>
-            <div>
-                <Label>Entrer Une Description </Label>
-                <Textarea {...register("description")} placeholder="description" id="message" className="h-32 mt-5" />
-                {errors.description && <span className="text-red-500">{errors?.description?.message}</span>}
-            </div>
+           
 
             <div className="grid grid-cols-2 gap-4">
 

@@ -19,15 +19,15 @@ export function NavBar() {
                 <div className="flex justify-between h-16">
                     <div className="flex items-center">
                         <span className="text-teal-600 text-2xl mr-2">
-                            <Link href="/" className="block">
-                                <Image
-                                    src="/logoBlanc.png"
-                                    width={100}
-                                    height={100}
-                                    alt="Kims Hotel"
-                                    className="w-16 h-auto sm:w-16 md:w-16 lg:w-24 xl:w-24"
-                                />
-                            </Link>
+                        <Link href="/" className="block group">
+          <Image
+            src="/logoSimple.png"
+            width={100}
+            height={100}
+            alt="Kims Hotel"
+            className="w-20 h-auto transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3"
+          />
+        </Link>
 
                         </span>
 

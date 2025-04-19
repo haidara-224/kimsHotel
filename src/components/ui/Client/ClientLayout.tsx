@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "../ThemeToggler";
+import Image from "next/image";
 
 export default function ClientLayouts({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -28,7 +29,15 @@ export default function ClientLayouts({ children }: { children: React.ReactNode 
         }`}
       >
         <div className="flex items-center justify-between p-6 border-b">
-          <Link href="/" className="text-2xl font-bold text-teal-700">Kims Hotel</Link>
+        <Link href="/" className="block group">
+          <Image
+            src="/logoSimple.png"
+            width={100}
+            height={100}
+            alt="Kims Hotel"
+            className="w-20 h-auto transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3"
+          />
+        </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden">
             <X className="w-6 h-6 text-gray-700" />
           </button>

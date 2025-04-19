@@ -1,5 +1,5 @@
 'use client'
-import { ChambreshemaUpdate } from "@/Validation/Chambres"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { Label } from "../label";
@@ -9,17 +9,17 @@ import { Snowflake, Tv, Utensils, Wifi } from "lucide-react";
 import { Checkbox } from "../checkbox";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Button } from "../button";
-import { Textarea } from "../textarea";
-import { getChambreById } from "@/app/(action)/Chambre.action";
+
+import { getChambreById, UpdateChambre } from "@/app/(action)/Chambre.action";
 import { toast } from "sonner";
 import { Chambre } from "@/types/types";
+import { ChambreSchemaUpdate } from "@/Validation/Chambres";
 
-type TypeChambre = "SIMPLE" | "DOUBLE" | "SUITE" | "APPARTEMENT";
+type TypeChambre = "SIMPLE" | "DOUBLE" | "SUITE";
 interface FormChambre {
     numero_chambre: string
     type_chambre: TypeChambre,
     capacity: number,
-    description: string,
     hasWifi: boolean,
     hasTV: boolean,
     hasClim: boolean,
@@ -27,7 +27,7 @@ interface FormChambre {
     price: number,
     surface: number,
     extraBed: boolean,
-    images: File[],
+    images?: File[] | undefined,
 }
 interface propsHotelId {
     hotelId: string,
@@ -45,13 +45,12 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
         reset,
         formState: { errors, isSubmitting },
     } = useForm<FormChambre>({
-        resolver: zodResolver(ChambreshemaUpdate),
+        resolver: zodResolver(ChambreSchemaUpdate),
         mode: "onChange",
         defaultValues: {
             numero_chambre: chambre?.numero_chambre,
-            type_chambre: chambre?.type ?? 'SIMPLE',
+            type_chambre: (chambre?.type as TypeChambre | undefined) ?? ('SIMPLE' as TypeChambre),
             capacity: chambre?.capacity,
-            description: chambre?.description ?? '',
             hasClim: chambre?.hasClim,
             hasKitchen: chambre?.hasKitchen,
             hasTV: chambre?.hasTV,
@@ -75,9 +74,9 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
             // 💡 Injecter les valeurs dans le formulaire
             reset({
                 numero_chambre: chambreData.numero_chambre,
-                type_chambre: chambreData.type ?? 'SIMPLE',
+                type_chambre: chambreData.type as TypeChambre | undefined,
                 capacity: chambreData.capacity,
-                description: chambreData.description ?? '',
+                
                 hasClim: chambreData.hasClim,
                 hasKitchen: chambreData.hasKitchen,
                 hasTV: chambreData.hasTV,
@@ -109,7 +108,40 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
         }
     };
     const onSubmit: SubmitHandler<FormChambre> = async (data) => {
-        console.log(data,setErrorChambre('error'),hotelId)
+        const response = await UpdateChambre(
+            chambreId,
+                   data.numero_chambre,
+            
+                   hotelId,
+                   data.capacity,
+                   data.hasClim,
+                   data.hasWifi,
+                   data.hasTV,
+                   data.type_chambre,
+                   data.surface,
+                   data.extraBed,
+                   data.price,
+                   data.images ?? []
+               );
+           
+               if ('error' in response) {
+                   toast.error("Error!", {
+                       description: "Verifier les erreur de validation.",
+                     })
+                   setErrorChambre(response.error)
+                
+               } else {
+                   toast("Chambre créée avec succès");
+                   setValue('numero_chambre','')
+                   
+                   setValue('capacity',0)
+                   setValue('extraBed',false)
+                   setValue('hasClim',false)
+                   setValue('hasWifi',false)
+                   setValue('images',[])
+                   setValue('price',0)
+                  
+               }
     };
 
 
@@ -128,11 +160,7 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
                 {errorChambre && <span className="text-red-500">{errorChambre}</span>}
                 {errors.numero_chambre && <span className="text-red-500">{errors.numero_chambre.message}</span>}
             </div>
-            <div>
-                <Label>Entrer Une Description </Label>
-                <Textarea {...register("description")} placeholder="description" id="message" className="h-32 mt-5" />
-                {errors.description && <span className="text-red-500">{errors?.description?.message}</span>}
-            </div>
+           
 
             <div className="grid grid-cols-2 gap-4">
 
