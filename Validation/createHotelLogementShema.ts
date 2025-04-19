@@ -48,11 +48,11 @@ export const CreationSchema = z.object({
 
     price: z.number()
         .min(100000, "Le prix ne peut pas être inférieur a 100000"),
-     images: z.array(
-         z.custom<File>((file) => file instanceof File && file.size < 5 * 1024 * 1024, {
-                message: "Chaque image doit être inférieure à 5 Mo.",
+        images: z.array(
+            z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
+              message: "Chaque image doit être inférieure à 5 Mo.",
             })
-        ).min(4, "Ajoutez au moins (4) images.")
-        
+          ).min(4, "Ajoutez au moins 4 images."), 
+       
         
 });

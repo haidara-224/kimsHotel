@@ -23,12 +23,12 @@ export const CreationSchemaHotel = z.object({
     z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
       message: "Chaque image doit être inférieure à 5 Mo.",
     })
-  ).min(1, "Ajoutez au moins 4 image."),
-  images_hotel:z.array(
+  ).min(4, "Ajoutez au moins 4 images."),
+  images_hotel: z.array(
     z.instanceof(File).refine(file => file.size < 5 * 1024 * 1024, {
       message: "Chaque image doit être inférieure à 5 Mo.",
     })
-  ).min(4, "Ajoutez au moins (4) images."),
+  ).min(4, "Ajoutez au moins 4 images."),
 
   type_etoils: z.number().max(7, "Le nombre d'étoiles ne peut pas dépasser 7."),
   parking: z.boolean(),

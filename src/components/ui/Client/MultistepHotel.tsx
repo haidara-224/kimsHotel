@@ -122,6 +122,12 @@ export default function MultiformStepHotel() {
     }, [watch, selectedOption])
 
     const validationStep = async (nextStep: number) => {
+        const scrollToErrors = () => {
+            const firstError = document.querySelector('.text-red-500');
+            if (firstError) {
+              firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          };
         let fieldValidate: (keyof FormLogement)[] = [];
         switch (step) {
             case 1:
@@ -137,6 +143,7 @@ export default function MultiformStepHotel() {
         const isValid = await trigger(fieldValidate);
 
         if (isValid) {
+            scrollToErrors();
             setStep(nextStep);
         }
     };
@@ -296,7 +303,14 @@ export default function MultiformStepHotel() {
                                 </label>
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                     {imageUrlHotel && imageUrlHotel.map((url, index) => (
-                                        <Image key={index} src={url} alt={`Preview ${index}`} className="rounded-md shadow w-32 h-32 object-cover" width={128} height={128} />
+                                        <Image
+                                            key={index}
+                                            src={url}
+                                            alt={`Preview ${index}`}
+                                            className="rounded-md shadow object-cover w-full h-auto max-w-[100px] max-h-[100px] sm:max-w-[128px] sm:max-h-[128px]"
+                                            width={128}
+                                            height={128}
+                                        />
                                     ))}
                                 </div>
                             </div>
@@ -391,11 +405,22 @@ export default function MultiformStepHotel() {
                                 </label>
                                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                                     {imageUrl && imageUrl.map((url, index) => (
-                                        <Image key={index} src={url} alt={`Preview ${index}`} className="rounded-md shadow w-32 h-32 object-cover" width={128} height={128} />
+                                        <Image
+                                            key={index}
+                                            src={url}
+                                            alt={`Preview ${index}`}
+                                            className="rounded-md shadow object-cover w-full h-auto max-w-[100px] max-h-[100px] sm:max-w-[128px] sm:max-h-[128px]"
+                                            width={128}
+                                            height={128}
+                                        />
                                     ))}
                                 </div>
                             </div>
-                            {errors.images && <span className="text-red-500">{errors.images.message}</span>}
+                            {errors.images && (
+                                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
+                                    {errors.images.message}
+                                </div>
+                            )}
                         </div>
                     </>
                 )}

@@ -10,6 +10,25 @@ body {
   height: 48px;
   position: relative;
 }
+
+@media (max-width: 640px) {
+  .mobile-validation-error {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: #fee2e2;
+    color: #dc2626;
+    z-index: 50;
+    animation: slide-up 0.3s ease;
+  }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
 .loaderCharge::before , .loader::after{
   content: '';
   position: absolute;
