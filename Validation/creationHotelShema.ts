@@ -20,17 +20,10 @@ export const CreationSchemaHotel = z.object({
     .regex(/^\+?\d{7,15}$/, "Le numéro de téléphone n'est pas valide."),
   email: z.string().email("L'adresse e-mail n'est pas valide."),
 
-  images: z.array(
-    z.any()
-  ).min(4, "Ajoutez exactement 4 images.")
+  images:z.array(z.instanceof(File)).min(4, "Ajoutez exactement 4 images.")
     .max(4, "Ajoutez exactement 4 images."),
-    images_hotel: z.array(
-      z.any()
-    ).min(4, "Ajoutez exactement 4 images.")
+    images_hotel: z.array(z.instanceof(File)).min(4, "Ajoutez exactement 4 images.")
      .max(4, "Ajoutez exactement 4 images."),
-    
- 
-
 
   type_etoils: z.number().max(7, "Le nombre d'étoiles ne peut pas dépasser 7."),
   parking: z.boolean(),
