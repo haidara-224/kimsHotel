@@ -1,6 +1,16 @@
 
 import { NavBar } from "@/src/components/ui/NavBar";
-
+import { Metadata } from "next";
+export const metadata:Metadata = {
+    title: "Confidentialité",
+    description: "Kims Hotel- Confidentialité ",
+    verification: {
+      google: "_l9ejk4gq4RUP30Z65C0z_r73lbwWIVC26EDgZ6dIuE",
+    },
+    icons: {
+      icon: '/logoBlanc.png',
+    },
+  };
 export default function Page() {
   return (
     <div className="w-full min-h-screen bg-background">

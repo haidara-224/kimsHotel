@@ -3,7 +3,17 @@ import { Input } from "@/src/components/ui/input";
 import { NavBar } from "@/src/components/ui/NavBar";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Mail, Phone, MapPin } from "lucide-react";
-
+import { Metadata } from "next";
+export const metadata:Metadata = {
+    title: "Contact",
+    description: "Kims Hotel- Nous Contacter",
+    verification: {
+      google: "_l9ejk4gq4RUP30Z65C0z_r73lbwWIVC26EDgZ6dIuE",
+    },
+    icons: {
+      icon: '/logoBlanc.png',
+    },
+  };
 export default function Page() {
   return (
     <div className="w-full min-h-screen bg-background">

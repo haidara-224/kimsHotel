@@ -3,7 +3,7 @@ import { Metadata } from "next";
 
 
 export const metadata: Metadata = {
-  title: "Kims Hotel",
+  title: "Kims Hotel Guinée",
   description: "Trouver des Hotels et Appartements partout en Guinée"
 };
 
