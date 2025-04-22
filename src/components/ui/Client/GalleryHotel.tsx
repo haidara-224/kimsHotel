@@ -17,7 +17,13 @@ const Gallery = ({ hotel }: HotelsProps) => {
 
     return (
         <>
-            <h1 className="text-2xl font-bold mb-4">{hotel.description}- ({hotel.nom})</h1>
+            <h1 className="text-2xl font-bold mb-4">
+  <span className="break-words">
+    {(hotel.description ?? '').split(' ').slice(0, 15).join(' ')}...
+  </span>
+  - ({hotel.nom})
+</h1>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 h-auto md:h-[300px]">
                 <div className="relative w-full h-[250px] md:h-full">
                     <Image
