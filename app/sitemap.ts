@@ -9,5 +9,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
       
     },
+    {
+      url: "https://kimshotel.net/contact",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://kimshotel.net/favorites",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://kimshotel.net/confidentialite",
+      lastModified: new Date(),
+    },
   ]
 }

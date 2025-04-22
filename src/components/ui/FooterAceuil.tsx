@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Separator } from "./separator";
 import { useUser } from "@clerk/nextjs";
-import { Heart, Home, CalendarCheck, Lock, Contact } from "lucide-react";
+import { Heart, Home, CalendarCheck, Lock, Contact, Hotel } from "lucide-react";
 import Image from "next/image";
 
 export function Footers() {
@@ -40,6 +40,12 @@ export function Footers() {
               className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2"
             >
               <CalendarCheck className="w-5 h-5" /> Mes Réservations
+            </Link>
+            <Link
+              href="/type-etablissement"
+              className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2"
+            >
+              <Hotel className="w-5 h-5" />  Ajouter Mon Etablissement
             </Link>
           </div>
 

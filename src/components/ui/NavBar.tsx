@@ -1,155 +1,171 @@
-'use client'
+"use client";
+
 import Link from "next/link";
-import { CalendarCheck, Heart, Home, LucideIcon } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { UserNav } from "./userNav";
-import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
-import { ModeToggle } from "./ThemeToggler";
 import Image from "next/image";
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignOutButton,
+  UserButton,
+} from "@clerk/nextjs";
+import { motion, AnimatePresence } from "framer-motion";
+import { CalendarCheck, Heart, Home, Hotel, LucideIcon } from "lucide-react";
 
+import { UserNav } from "./userNav";
+import { ModeToggle } from "./ThemeToggler";
 
 export function NavBar() {
-    const { user } = useUser()
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    return (
-        <>
-            <div className="max-w-7xl  mx-auto px-4 sm:px-6 lg:px-8 ">
-                <div className="flex justify-between h-16">
-                    <div className="flex items-center">
-                        <span className="text-teal-600 text-2xl mr-2">
-                        <Link href="/" className="block group">
-          <Image
-            src="/logoSimple.png"
-            width={100}
-            height={100}
-            alt="Kims Hotel"
-            className="w-20 h-auto transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3"
-          />
-        </Link>
+  return (
+    <>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link href="/" className="block group">
+              <Image
+                src="/logoSimple.png"
+                width={100}
+                height={100}
+                alt="Kims Hotel"
+                className="w-20 h-auto transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3"
+              />
+            </Link>
+          </div>
 
-                        </span>
+          {/* Menu principal (desktop) */}
+          <div className="hidden md:flex items-center space-x-6">
+            <AnimatedLink href={`/dashboard/hotes/${user?.id || ""}`} Icon={Home}>
+              Mes Annonces
+            </AnimatedLink>
+            <AnimatedLink href="/favorites" Icon={Heart}>
+              Mes Favoris
+            </AnimatedLink>
+            <AnimatedLink href="/" Icon={CalendarCheck}>
+              Mes Réservations
+            </AnimatedLink>
+            <AnimatedLink href="/type-etablissement" Icon={Hotel}>
+            Ajouter Mon Etablissement
+            </AnimatedLink>
 
-                    </div>
-                    <div className="hidden md:flex justify-center items-center space-x-6">
+            
+          </div>
 
-                        <AnimatedLink href={`/dashboard/hotes/${user?.id || ''}`} Icon={Home}>
-                            Mes Annonces
-                        </AnimatedLink>
-                        <AnimatedLink href="/favorites" Icon={Heart}>
-                            Mes Favoris
-                        </AnimatedLink>
-                        <AnimatedLink href="/" Icon={CalendarCheck}>
-                            Mes Réservations
-                        </AnimatedLink>
-                     
-                    </div>
-                    <div className="hidden md:flex  space-x-7  justify-center items-center rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2">
-                        <SignedIn>
-                            <UserButton />
-                        </SignedIn>
-                        <UserNav />
-                        <ModeToggle />
-                    </div>
-                    <div className="md:hidden flex items-center">
-                        <button
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="text-gray-600 hover:text-teal-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
-                        >
-                            <span className="sr-only">Open main menu</span>
-                            {isMenuOpen ? (
-                                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            ) : (
-                                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                            )}
-                        </button>
-                    </div>
-                </div>
+          {/* Options à droite */}
+          <div className="hidden md:flex items-center space-x-4">
+          <SignedOut>
+              <SignInButton>
+                <button className="w-full text-left">Se Connecter</button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <SignOutButton>
+                <button className="w-full text-left">Se Déconnecter</button>
+              </SignOutButton>
+            </SignedIn>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <UserNav />
+            <ModeToggle />
+          </div>
+
+          {/* Burger menu (mobile) */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-600 hover:text-teal-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
+            >
+              <span className="sr-only">Ouvrir le menu</span>
+              {isMenuOpen ? (
+                <svg className="h-6 w-6" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="h-6 w-6" viewBox="0 0 24 24" stroke="currentColor" fill="none">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Menu mobile */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3"
+          >
+          <AnimatedLink href={`/dashboard/hotes/${user?.id || ""}`} Icon={Home}>
+              Mes Annonces
+            </AnimatedLink>
+            <AnimatedLink href="/favorites" Icon={Heart}>
+              Mes Favoris
+            </AnimatedLink>
+            <AnimatedLink href="/" Icon={CalendarCheck}>
+              Mes Réservations
+            </AnimatedLink>
+            <AnimatedLink href="/type-etablissement" Icon={Hotel}>
+            Ajouter Mon Etablissement
+            </AnimatedLink>
+
+            <div className="flex items-center gap-4 px-3 py-2">
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <UserNav />
+              <ModeToggle />
             </div>
-            <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
-                <AnimatePresence>
-                    {isMenuOpen && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className="md:hidden"
-                        >
-                            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-  <Link
-    href={`/dashboard/hotes/${user?.id || ''}`}
-    className="text-gray-600 hover:text-teal-600 flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
-  >
-    <Home className="w-5 h-5" />
-    Mes Annonces
-  </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-  <Link
-    href="/favorites"
-    className="text-gray-600 hover:text-teal-600 flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
-  >
-    <Heart className="w-5 h-5" />
-    Mes Favoris
-  </Link>
-
-  <Link
-    href="/"
-    className="text-gray-600 hover:text-teal-600 flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
-  >
-    <CalendarCheck className="w-5 h-5" />
-    Mes Réservations
-  </Link>
-
-  <div className="space-x-7 flex justify-center items-center rounded-full border outline-none px-2 py-2 lg:px-4 lg:py-2">
-    <SignedIn>
-      <UserButton />
-    </SignedIn>
-    <UserNav />
-    <ModeToggle />
-  </div>
-</div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-
-        </>
-
-
-    )
+      <style jsx>{`
+        .menu-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.375rem;
+          font-size: 1rem;
+          font-weight: 500;
+          color: #4b5563;
+        }
+        .menu-item:hover {
+          color: #0d9488;
+        }
+      `}</style>
+    </>
+  );
 }
-
 
 interface AnimatedLinkProps {
-    href: string;
-    children: React.ReactNode;
-    Icon?: LucideIcon; // 👈 On accepte une icône en option
+  href: string;
+  children: React.ReactNode;
+  Icon?: LucideIcon;
 }
 
-export default function AnimatedLink({ href, children, Icon }: AnimatedLinkProps) {
-    return (
-        <Link
-            href={href}
-            className="relative px-3 py-2 text-gray-600 hover:text-teal-600 text-md font-medium group flex items-center gap-2"
-        >
-            {Icon && <Icon className="w-5 h-5" />} {/* Affiche l’icône si elle existe */}
-            <span>{children}</span>
-
-            <motion.span
-                className="absolute left-0 bottom-0 h-[2px] w-full bg-teal-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-            />
-            <motion.span
-                className="absolute right-0 top-0 h-[2px] w-full bg-teal-600 origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-            />
-        </Link>
-    );
+function AnimatedLink({ href, children, Icon }: AnimatedLinkProps) {
+  return (
+    <Link
+      href={href}
+      className="relative px-3 py-2 text-gray-600 hover:text-teal-600 text-md font-medium group flex items-center gap-2"
+    >
+      {Icon && <Icon className="w-5 h-5" />}
+      <span>{children}</span>
+      <motion.span className="absolute left-0 bottom-0 h-[2px] w-full bg-teal-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+      <motion.span className="absolute right-0 top-0 h-[2px] w-full bg-teal-600 origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+    </Link>
+  );
 }
-
-

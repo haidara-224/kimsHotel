@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useUser, SignInButton, SignedOut, SignOutButton } from "@clerk/nextjs";
+import React, { useState, useEffect, useMemo } from "react";
+import { useUser } from "@clerk/nextjs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,25 +17,22 @@ export function UserNav() {
   const { user } = useUser();
   const email = user?.primaryEmailAddress?.emailAddress;
   const fullname = user?.fullName;
-
-
-  const [userRoles, setUserRoles] = useState<string[]>([]);
-
+  const [userRoles, setUserRoles] = useState<string[] | null>(null); // null = en chargement
 
   useEffect(() => {
     const fetchUserRoles = async () => {
       const rolesData = await userHasRoles();
-      if (rolesData && rolesData.roles) {
+      if (rolesData?.roles) {
         setUserRoles(rolesData.roles);
-       
+      } else {
+        setUserRoles([]); // cas où y a pas de rôle
       }
-     
     };
+
     if (user) {
       fetchUserRoles();
     }
   }, [user]);
-
 
   useEffect(() => {
     const initUser = async () => {
@@ -46,11 +43,14 @@ export function UserNav() {
     initUser();
   }, [email, fullname]);
 
+  const hasDashboardAccess = useMemo(() => {
+    if (!userRoles) return false;
+    return userRoles.includes("ADMIN") || userRoles.includes("SUPER_ADMIN");
+  }, [userRoles]);
 
-  const hasRole = (roleName: string): boolean => {
-    
-    return userRoles.includes(roleName);
-  };
+  if (userRoles === null) return null; // ou un loader ici
+
+  if (!hasDashboardAccess) return null;
 
   return (
     <DropdownMenu>
@@ -59,47 +59,15 @@ export function UserNav() {
           <AlignRight className="dark:text-slate-600" />
         </div>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent align="end" className="w-[200px]">
-      <DropdownMenuItem>
-              <Link href="/type-etablissement" className="w-full text-md text-start">
-                Ajouter Mon Etablissement Chez Kims
-              </Link>
-            </DropdownMenuItem>
-           
-        {user ? (
-          <>
-            
-            {hasRole("ADMIN") && (
-              <DropdownMenuItem>
-                <Link href="/dashboard">Dashboard</Link>
-              </DropdownMenuItem>
-            )}
-            {hasRole("SUPER_ADMIN") && (
-              <DropdownMenuItem>
-                <Link href="/dashboard">Dashboard</Link>
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            
-            
-            <DropdownMenuItem>
-              <SignOutButton>
-                <button className="w-full text-left">Se déconnecter</button>
-              </SignOutButton>
-            </DropdownMenuItem>
-          </>
-        ) : (
-          <>
-            <SignedOut>
-              
-              <DropdownMenuItem>
-                <SignInButton>
-                  <button className="w-full text-left">Se Connecter</button>
-                </SignInButton>
-              </DropdownMenuItem>
-            </SignedOut>
-          </>
-        )}
+        <DropdownMenuItem>
+          <Link href="/dashboard">Dashboard</Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+     
       </DropdownMenuContent>
     </DropdownMenu>
   );
