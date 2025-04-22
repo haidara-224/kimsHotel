@@ -30,12 +30,12 @@ export async function createHotel(
         const user = await currentUser();
         if (!user) throw new Error("Utilisateur non authentifié");
 
-        if (!nom || !email || !ville || !adresse || !telephone || capacity <= 0 || price < 0) {
-            throw new Error("Données invalides, veuillez vérifier les champs requis.");
-        }
-
-        if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error("Email invalide");
-        if (!/^\+?\d{8,15}$/.test(telephone)) throw new Error("Numéro de téléphone invalide");
+        const existingHotelsEmail = await prisma.hotel.findFirst({
+            where: { email },
+            select: { id: true },
+          });
+      
+          if (existingHotelsEmail) return { error: "L'email est déjà utilisé" };
 
         const existingHotel = await prisma.hotel.findFirst({ where: { chambres: { some: { numero_chambre } } }, select: { id: true } });
         if (existingHotel) return { error: "Le numero est déjà utilisé" };

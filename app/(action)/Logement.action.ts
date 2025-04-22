@@ -34,19 +34,13 @@ export async function CreateLogement(
     const user = await currentUser();
     if (!user) throw new Error("Utilisateur non authentifié");
 
-
-    if (!nom || !email || !ville || !adresse || !telephone || capacity <= 0 || price < 0) {
-      throw new Error("Données invalides, veuillez vérifier les champs requis.");
-    }
-/*
-  
     const existingLogement = await prisma.logement.findFirst({
       where: { email },
       select: { id: true },
     });
 
     if (existingLogement) return { error: "L'email est déjà utilisé" };
-*/
+
    
     const createdLogement = await prisma.logement.create({
       data: {
