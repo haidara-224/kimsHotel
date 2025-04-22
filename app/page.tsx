@@ -3,8 +3,8 @@ import { Metadata } from "next";
 
 
 export const metadata: Metadata = {
-  title: "Trouver des Hotels et Appartements partout en Guinée",
-  description: "Trouver et réserver des hôtels et appartements en un clic avec Kims Hotel.",
+  title: "Kims Hotel",
+  description: "Trouver des Hotels et Appartements partout en Guinée"
 };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
