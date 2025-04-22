@@ -9,7 +9,7 @@ export const CreationSchemaHotel = z.object({
     .max(100, "Le nom est trop long."),
   description: z.string()
     .min(10, "La description doit contenir au moins 10 caractères.")
-    .max(15, "La description doit avoir au maximum 30 caractères."),
+    .max(30, "La description doit avoir au maximum 30 caractères."),
   adresse: z.string()
     .min(2, "L'adresse doit contenir au moins 2 caractères.")
     .max(200, "L'adresse est trop longue."),

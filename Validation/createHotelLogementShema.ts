@@ -12,7 +12,7 @@ export const CreationSchema = z.object({
 
     description: z.string()
         .min(10, "La description doit contenir au moins 10 caractères.")
-        .max(15, "La description doit avoir au maximum 30 caractères."),
+        .max(30, "La description doit avoir au maximum 30 caractères."),
 
     adresse: z.string()
         .min(2, "L'adresse doit contenir au moins 2 caractères.")
