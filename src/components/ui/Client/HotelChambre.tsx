@@ -4,7 +4,7 @@ import { Chambre, Hotele } from "@/types/types";
 import { useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../carousel";
 import Image from "next/image";
-import { Bed, CheckCircle, Tv2, Utensils, Wifi, XCircle } from "lucide-react";
+import { Bed, CheckCircle, Tv2, Utensils, Wifi, Wind, XCircle } from "lucide-react";
 import { CardReservationHotel } from "./CardReservationHotel";
 
 
@@ -74,7 +74,12 @@ export function HotelChambre({ hotel }: HotelProps) {
           <div className="grid grid-cols-1 my-3 space-y-4">
             {ch.hasClim && (
               <div className="group flex items-center gap-4 rounded-xl   transition-all duration-300 cursor-pointer">
-                <Wifi className="w-4 h-4 text-blue-500" /> Wi-Fi gratuit
+                <Wind className="w-4 h-4 text-blue-500" /> Wi-Fi gratuit
+              </div>
+            )}
+             {ch.hasWifi && (
+              <div className="group flex items-center gap-4 rounded-xl   transition-all duration-300 cursor-pointer">
+                <Wifi className="w-4 h-4 text-blue-500" /> Climatisation
               </div>
             )}
             {ch.hasTV && (
