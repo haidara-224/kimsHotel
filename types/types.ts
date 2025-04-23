@@ -275,6 +275,7 @@ export interface Hotel {
     reservations: Reservation[] 
   }[];
   avis: Avis[];
+ 
   favorites: Favorite[];
   isBlocked: boolean;
   latitude?: number;

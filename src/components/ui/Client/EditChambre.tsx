@@ -70,13 +70,10 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
             const data = await getChambreById(chambreId);
             const chambreData = data as unknown as Chambre;
             setChambre(chambreData);
-
-            // 💡 Injecter les valeurs dans le formulaire
             reset({
                 numero_chambre: chambreData.numero_chambre,
                 type_chambre: chambreData.type as TypeChambre | undefined,
-                capacity: chambreData.capacity,
-                
+                capacity: chambreData.capacity,  
                 hasClim: chambreData.hasClim,
                 hasKitchen: chambreData.hasKitchen,
                 hasTV: chambreData.hasTV,
@@ -84,7 +81,7 @@ export default function EditChambre({ hotelId, chambreId }: propsHotelId) {
                 price: chambreData.price,
                 surface: chambreData.surface ?? 0,
                 extraBed: chambreData.extraBed,
-                images: [], // si tu veux charger des images existantes plus tard, tu peux gérer ici
+                images: [], 
             });
         } catch (err) {
             toast.error("Erreur lors du chargement de la chambre");

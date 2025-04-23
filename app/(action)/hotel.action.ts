@@ -2,7 +2,7 @@
 import { prisma } from "@/src/lib/prisma";
 import { Hotel } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
-import { put } from '@vercel/blob'
+import { del, put } from '@vercel/blob'
 export async function createHotel(
     categoryLogementId: string,
     numero_chambre: string,
@@ -447,5 +447,116 @@ export async function getChambreHotels(hotelId: string) {
         throw new Error("Impossible de récupérer les chambres");
     }
 }
+export async function getShowHotel(id: string) {
+    try {
+      const hotel = await prisma.hotel.findUnique({
+        where: { id },
+        include: {
+          hotelOptions: true,
+          images: true,
+        },
+      });
+  
+      if (!hotel) {
+        throw new Error("Aucun hôtel trouvé avec cet identifiant.");
+      }
+  
+      return hotel;
+    } catch (error) {
+      throw new Error("Impossible de récupérer cet hôtel : " + error);
+    }
+  }
+  
+  export async function updateHotel(
+    id: string,
+    option: string[],
+    nom: string,
+    description: string,
+    adresse: string,
+    ville: string,
+    telephone: string,
+    email: string,
+    parking: boolean,
+    etoils: number,
+    imagesHotel: File[]
+  ) {
+    try {
+      const user = await currentUser();
+      if (!user) throw new Error("Utilisateur non authentifié");
+  
+      const hotel = await prisma.hotel.findUnique({
+        where: { id },
+        include: { chambres: true }
+      });
+  
+      if (!hotel) throw new Error("Hôtel non trouvé");
+  
+      const existingEmail = await prisma.hotel.findFirst({
+        where: { email, NOT: { id } }
+      });
+      if (existingEmail) return { error: "L'email est déjà utilisé" };
 
+      await prisma.hotelOptionOnHotel.deleteMany({ where: { hotelId: id } });
+  
+      if (imagesHotel.length > 0) {
+        const oldImages = await prisma.imageHotel.findMany({ where: { hotelId: id } });
+  
+        await Promise.allSettled(
+          oldImages.map(async (img) => {
+            try {
+              await del(img.urlImage);
+            } catch (err) {
+              console.error("Erreur suppression blob hôtel :", err);
+            }
+          })
+        );
+  
+        await prisma.imageHotel.deleteMany({ where: { hotelId: id } });
+  
+        const uploadedImagesHotel = await Promise.allSettled(
+          imagesHotel.map(async (file) => {
+            try {
+              const fileBuffer = Buffer.from(await file.arrayBuffer());
+              const blob = await put(file.name, fileBuffer, { access: "public" });
+              return { hotelId: id, urlImage: blob.url };
+            } catch (err) {
+              console.error("Erreur upload image hôtel :", err);
+              return null;
+            }
+          })
+        );
+  
+        const validImagesHotel = uploadedImagesHotel
+          .filter((res) => res.status === "fulfilled" && res.value !== null)
+          .map((res) => (res as PromiseFulfilledResult<{ hotelId: string; urlImage: string }>).value);
+  
+        if (validImagesHotel.length > 0) {
+          await prisma.imageHotel.createMany({ data: validImagesHotel });
+        }
+      }
+  
+    
+      await prisma.hotel.update({
+        where: { id },
+        data: { nom, description, adresse, ville, telephone, email, parking, etoils }
+      });
+  
+    
+      await prisma.hotelOptionOnHotel.deleteMany({ where: { hotelId: id } });
+
+      if (option.length > 0) {
+        await prisma.hotelOptionOnHotel.createMany({
+          data: option.map((optionId) => ({ hotelId: id, optionId })),
+        });
+      }
+  
+      return { success: true, message: "Hôtel mis à jour avec succès" };
+  
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour du logement :", error);
+      throw new Error(error instanceof Error ? error.message : "Une erreur inconnue est survenue");
+    }
+  }
+  
+  
 
