@@ -19,6 +19,23 @@ export async function getRolesUserHotel() {
         throw new Error("Impossible d'afficher les roles des utilisateur"+ error)
     }
 }
+export async function getRolesUserLogement() {
+    const user = await currentUser();
+    try {
+        const roles=await prisma.userRoleAppartement.findMany({
+            where:{
+                userId:user?.id
+            },
+            include:{
+                role:true
+            }
+        })
+        if (!roles) return
+        return roles
+    } catch (error) {
+        throw new Error("Impossible d'afficher les roles des utilisateur"+ error)
+    }
+}
 export async function isAdminUserHotel() {
     const user = await currentUser();
     try {

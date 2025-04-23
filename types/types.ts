@@ -550,3 +550,13 @@ export interface RoleUserHotel {
   createdAt: Date;
   updatedAt: Date;
 }
+export interface RoleUserLogement {
+  userId: string;
+  user?: User;      
+  roleId: string;
+  role: Role;
+  logementId: string;
+  logement?: Logement; 
+  createdAt: Date;
+  updatedAt: Date;
+}

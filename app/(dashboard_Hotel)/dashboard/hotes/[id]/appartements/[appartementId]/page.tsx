@@ -8,6 +8,7 @@ import { DetailsLogement } from "@/src/components/ui/Dashboard/DetailsLogement";
 
 import { DetailsCardLogement } from "@/src/components/ui/Dashboard/DetailsLogementCard";
 import {  CategoryLogement, Reservation, User } from "@/types/types";
+import { useUser } from "@clerk/nextjs";
 
 import { NotepadText, Star, Heart } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -32,12 +33,11 @@ interface Logement {
     reservations: { id: string }[];
     avis: { id: string; comment: string }[];
     favorites: { id: string; userId: string }[];
-    // Définissez un type pour les favoris si nécessaire
     isBlocked: boolean;
     latitude: number;
     longitude: number;
     note: number;
-    etoils?: number;  // Facultatif si disponible
+    etoils?: number;  
     price: number;
     nbChambres: number;
     surface: number;
@@ -53,7 +53,7 @@ interface Logement {
   }
 export default function Page() {
     const params = useParams();
-    const logementId = Array.isArray(params.id) ? params.id[0] : params.id || "";
+    const logementId = Array.isArray(params.appartementId) ? params.appartementId[0] : params.appartementId || "";
 
   
 
@@ -78,10 +78,11 @@ export default function Page() {
 
         fetchData();
     }, [logementId,fetchData]);
+    const {user}=useUser()
 
     return (
         <>
-            <BackButton text="Logement" link="/dashboard/logement" />
+            <BackButton text="Logement" link={`/dashboard/hotes/${user?.id}/appartements`}  />
             <div className="w-full grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-5">
                 {
                     calculateRate && (

@@ -389,3 +389,27 @@ export async function getDetailsAppartement(logementId:string){
   }
 }
 
+export async function getLogementWithUser() {
+  const user_id = await currentUser()
+  try {
+      const hotel = await prisma.logement.findMany({
+          orderBy: { createdAt: "desc" },
+          where: {
+              userId: user_id?.id
+          },
+          include: {
+              user: true,
+              categoryLogement: true
+
+          },
+
+      });
+
+
+      return hotel;
+
+  } catch (error) {
+      console.error("Erreur lors de la récupération des hotels :", error);
+      return null;
+  }
+}

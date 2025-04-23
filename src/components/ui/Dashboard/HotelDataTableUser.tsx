@@ -1,32 +1,21 @@
-"use client"; // Si le composant doit gérer de l'interactivité
-
+"use client";
 import { useState, useEffect, useCallback } from "react";
-
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Bed, Check, Eye, PencilLine, Star, Trash2, X } from "lucide-react";
+import { Bed, Check, Eye, PencilLine, Star, X } from "lucide-react";
 import Link from "next/link";
-
 import { Hotel, RoleUserHotel } from "@/types/types";
-
-
-import { useToast } from "@/src/hooks/use-toast";
-import { DeleteHotel, getHotelWithUser } from "@/app/(action)/hotel.action";
+import { getHotelWithUser } from "@/app/(action)/hotel.action";
 import Loader from "../Client/Loader";
 import { getRolesUserHotel } from "@/app/(action)/Roles.action";
-import { userIsAdmin } from "@/app/(action)/user.action";
+
 import { useUser } from "@clerk/nextjs";
 export default function HotelDataTableUser() {
     const [hotels, setHotels] = useState<Hotel[]>([]);
     const [isLoading, setIsloading] = useState(false)
     const [roles, setRoles] = useState<RoleUserHotel[]>([])
-    const [isAdmin, setIsAdmin] = useState(false)
-    const { user } = useUser()
-    const chechIsAdmin = async () => {
-        const isSuper = await userIsAdmin()
-        setIsAdmin(isSuper)
 
-    }
-    const { toast } = useToast();
+    const { user } = useUser()
+
     const fetchData = useCallback(async () => {
         try {
             setIsloading(true)
@@ -38,41 +27,22 @@ export default function HotelDataTableUser() {
         } finally {
             setIsloading(false)
         }
-
-
-
     }, []);
     const fetchRolesUser = async () => {
         try {
             const data = await getRolesUserHotel()
-            console.log(data)
+
             setRoles(data as unknown as RoleUserHotel[])
         } catch (error) {
             console.log(error)
         }
     }
 
-    const onDeleteLogement = async (lg: Hotel) => {
-        const confirmed = window.confirm("Êtes-vous sûr de vouloir supprimer ce Logement ?")
-        if (confirmed) {
-            await DeleteHotel(lg)
-            fetchData()
-            toast({
-                title: "Suppression Logement",
-                description: "Logement Supprimé avec succès.",
-            });
-
-        }
-    }
-
     useEffect(() => {
-        chechIsAdmin()
+
         fetchRolesUser()
         fetchData();
     }, [fetchData])
-
-
-
 
     return (
         <div className="mt-10 overflow-x-auto">
@@ -87,7 +57,7 @@ export default function HotelDataTableUser() {
                                 <TableHead className="hidden md:table-cell">Category</TableHead>
                                 <TableHead className="hidden lg:table-cell">Address</TableHead>
                                 <TableHead className="hidden lg:table-cell">City</TableHead>
-                                <TableHead className="hidden lg:table-cell">Bloqué/Débloqué</TableHead>
+                                <TableHead className="hidden lg:table-cell">Dispo/Occupée</TableHead>
                                 <TableHead className="hidden lg:table-cell">Etoils</TableHead>
                                 <TableHead className="hidden xl:table-cell">User</TableHead>
                                 <TableHead className="hidden xl:table-cell">Role</TableHead>
@@ -117,9 +87,9 @@ export default function HotelDataTableUser() {
                                     <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
                                     <TableCell className="hidden lg:table-cell">
                                         {roles
-                                            .filter((r) => r.hotelId === lg.id) // ou r.hotel.id === lg.id selon ta structure
+                                            .filter((r) => r.hotelId === lg.id)
                                             .map((r) => (
-                                                <p key={r.role.id} className="float-right bg-green-600 p-3 text-white rounded-lg">
+                                                <p key={r.role.id} className="text-slate-800 dark:text-white">
                                                     {r.role.name}
                                                 </p>
                                             ))}
@@ -142,20 +112,13 @@ export default function HotelDataTableUser() {
                                             </Link>
 
                                             <Link
-                                                href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg.id}`}
+                                                href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg.id}`}
                                                 className="text-yellow-600 hover:text-yellow-800 transition-colors"
                                             >
                                                 <PencilLine className="w-5 h-5" />
                                             </Link>
 
-                                            {isAdmin && (
-                                                <button
-                                                    onClick={() => onDeleteLogement(lg)}
-                                                    className="text-red-500 hover:text-red-700 transition-colors"
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
-                                            )}
+
                                         </div>
                                     </TableCell>
 

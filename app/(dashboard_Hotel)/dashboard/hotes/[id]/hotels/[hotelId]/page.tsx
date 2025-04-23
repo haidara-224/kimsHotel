@@ -45,7 +45,7 @@ export default function Page() {
                 {
                     calculateRate && (
                         <>
-                            {/* Carte du taux de réservation */}
+                        
                             <DetailsCardLogement
                                 title="Taux de Réservation"
                                 icon={<NotepadText className="dark:text-slate-800 text-black" size={60} />}
@@ -58,7 +58,7 @@ export default function Page() {
 
                             </DetailsCardLogement>
 
-                            {/* Carte du taux d'avis */}
+                     
                             <DetailsCardLogement
                                 title="Taux d'Avis"
                                 icon={<Star className="dark:text-slate-800 text-black" size={60} />}

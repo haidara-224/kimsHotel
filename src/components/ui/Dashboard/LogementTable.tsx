@@ -1,4 +1,4 @@
-"use client"; // Si le composant doit gérer de l'interactivité
+"use client"; 
 
 import { useState, useEffect, useCallback } from "react";
 import { DeleteLogement, getLogement } from "@/app/(action)/Logement.action";
@@ -19,13 +19,10 @@ interface LogementTableProps {
 
 export function LogementTable({ limit, title }: LogementTableProps) {
   const [logements, setLogements] = useState<Logement[]>([]);
-    const [isSuperAdmin,setIsSuperAdmin]=useState(false)
-  
+    const [isSuperAdmin,setIsSuperAdmin]=useState(false)  
     const chechIsSuperAdmin =async()=>{
       const isSuper=await userIsSuperAdmin()
-      console.log(isSuper)
-      setIsSuperAdmin(isSuper)
-      
+      setIsSuperAdmin(isSuper)  
     }
     const { toast } = useToast();
     const fetchData = useCallback(async () => {
