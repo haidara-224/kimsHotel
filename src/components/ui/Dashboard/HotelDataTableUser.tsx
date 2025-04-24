@@ -112,7 +112,7 @@ export default function HotelDataTableUser() {
                                             </Link>
 
                                             <Link
-                                                href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg.id}`}
+                                                href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg.id}`}
                                                 className="text-yellow-600 hover:text-yellow-800 transition-colors"
                                             >
                                                 <PencilLine className="w-5 h-5" />
