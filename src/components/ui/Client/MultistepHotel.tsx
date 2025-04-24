@@ -445,9 +445,9 @@ export default function MultiformStepHotel() {
                             Suivant
                         </Button>
                     ) : (
-                        <Button type="submit" className="w-32" disabled={isSubmitting}>
-                            {isSubmitting ? 'Création ....' : ' Valider'}
-                        </Button>
+                        <button type="submit" className="w-32 bg-primary p-2 rounded-md text-white" disabled={isSubmitting}>
+                        {isSubmitting ? 'Création ....' : ' Valider'}
+                    </button>
                     )}
                 </div>
             </form>

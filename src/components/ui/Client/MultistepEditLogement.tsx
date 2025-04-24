@@ -1,14 +1,13 @@
 'use client'
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, ChangeEvent } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { CreationSchema } from "@/Validation/createHotelLogementShema";
+import { useEffect, useState, ChangeEvent, useCallback } from "react";
+import { EditSchemaLogement } from "@/Validation/createHotelLogementShema";
 
 import ProgresseBars from "./progresseBar";
 import { Input } from "../input";
 
-import { CreateLogement } from "@/app/(action)/Logement.action";
+import {  getshowLogement, updateLogement } from "@/app/(action)/Logement.action";
 import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
 import { toast } from "sonner"
 
@@ -19,7 +18,7 @@ import { Snowflake, Tv, Wifi, Utensils, ParkingCircle } from "lucide-react";
 
 import Image from "next/image";
 import { Textarea } from "../textarea";
-import { useUser } from "@clerk/nextjs";
+
 
 interface FormLogement {
     option: [string, ...string[]];
@@ -39,7 +38,7 @@ interface FormLogement {
     extraBed: boolean;
     nbChambres: number;
     price: number;
-    images: File[]
+    images?: File[];
 }
 
 const steps = [
@@ -53,16 +52,17 @@ interface Option {
     title: string,
     imageUrl: string
 }
+interface propsLogement {
+    logementId: string;
+}
+export default function MultiformStepEditLogement({ logementId }: propsLogement) {
 
-export default function MultiformStep() {
-    const { user } = useUser()
     const [step, setStep] = useState(1);
-    const router = useRouter()
     const [imageUrl, setImageUrl] = useState<string[] | null>(null)
     const [selectedOption, setSelectedOption] = useState<string[]>([]);
     const [option, setOption] = useState<Option[]>([])
-    const params = useParams()
-    const categoryLogementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? ""
+    
+    
     const getOption = async () => {
         const data = await getLogementOptionIdName();
         if (data) {
@@ -70,9 +70,6 @@ export default function MultiformStep() {
         }
     };
 
-    useEffect(() => {
-        getOption()
-    }, [])
 
     const {
         register,
@@ -80,9 +77,10 @@ export default function MultiformStep() {
         trigger,
         formState: { errors, isSubmitting },
         watch,
+        reset,
         setValue,
     } = useForm<FormLogement>({
-        resolver: zodResolver(CreationSchema),
+        resolver: zodResolver(EditSchemaLogement),
         mode: "onChange",
         defaultValues: {
             option: [],
@@ -105,7 +103,51 @@ export default function MultiformStep() {
             images: []
         },
     });
+    const getShowLogementById = useCallback(async () => {
+        try {
+          const [options, logementData] = await Promise.all([
+            getLogementOptionIdName(),
+            getshowLogement(logementId),
+          ]);
+      
+          if (options) setOption(options);
+      
+          if (logementData) {
+            const logementOptions = logementData.logementOptions?.map((op) => op.optionId) ?? [];
+            reset({
+              nom: logementData.nom,
+              description: logementData.description ?? '',
+              ville: logementData.ville ?? '',
+              adresse: logementData.adresse ?? '',
+              telephone: logementData.telephone ?? '',
+              email: logementData.email ?? '',
+              capacity: logementData.capacity,
+              nbChambres: logementData.nbChambres,
+              surface: logementData.surface ?? 9,
+              price: logementData.price,
+              hasClim: logementData.hasClim,
+              hasKitchen: logementData.hasKitchen,
+              hasTV: logementData.hasTV,
+              hasWifi: logementData.hasWifi,
+              extraBed:logementData.extraBed,
+              parking: logementData.parking,
+              option: logementOptions,
+            });
+            setSelectedOption(logementOptions);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }, [logementId, reset]);
+      
 
+    useEffect(() => {
+        getOption()
+    }, [])
+    useEffect(() => {
+        getShowLogementById()
+
+    }, [getShowLogementById])
     useEffect(() => {
         const watchedOption = watch('option')
         if (watchedOption && watchedOption.length > 0 && selectedOption.length === 0) {
@@ -146,8 +188,8 @@ export default function MultiformStep() {
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
             const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrl(fileUrls); 
-            setValue("images", fileArray); 
+            setImageUrl(fileUrls);
+            setValue("images", fileArray);
         }
     };
 
@@ -159,8 +201,8 @@ export default function MultiformStep() {
 
     const onSubmit = async (data: FormLogement) => {
 
-        const response = await CreateLogement(
-            categoryLogementId,
+        const response = await updateLogement(
+            logementId,
             data.option,
             data.nom,
             data.description,
@@ -178,22 +220,21 @@ export default function MultiformStep() {
             data.extraBed,
             data.nbChambres,
             data.price,
-            data.images
+            data.images || []
         );
         if ('error' in response) {
             alert(response.error)
-        } else {
-            toast("Logement créé avec success")
+        } else if('success' in response) {
+            toast("Appartement mis à jour avec succès")
 
-            setTimeout(() => {
-                router.push(`/dashboard/hotes/${user?.id}`)
-            }, 1000);
+           
         }
 
     }
 
     return (
         <div className="mx-2xl mx-auto p-6 ">
+               
             <ProgresseBars curentstep={step} steps={steps} />
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8  lg:px-32">
                 {step === 1 && (
@@ -262,7 +303,17 @@ export default function MultiformStep() {
                                 { id: "extraBed", label: "Lit supplémentaire", icon: "🛏️", field: "extraBed" },
                             ].map(({ id, label, icon, field }) => (
                                 <div key={id} className="flex items-center space-x-3 p-2">
-                                    <Checkbox id={id}  {...register(field as keyof FormLogement)} onCheckedChange={(checked) => setValue(field as keyof FormLogement, checked)} />
+
+                                    <Checkbox
+                                        id={id}
+                                        checked={!!watch(field as keyof FormLogement)}
+
+                                        {...register(field as keyof FormLogement)}
+                                        onCheckedChange={(checked) =>
+                                            setValue(field as keyof FormLogement, !!checked)
+                                        }
+                                    />
+
                                     <label htmlFor={id} className="flex items-center text-sm font-medium cursor-pointer space-x-2">
                                         {icon} <span>{label}</span>
                                     </label>

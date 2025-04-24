@@ -3,7 +3,7 @@ import { prisma } from "@/src/lib/prisma";
 import { Logement } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import {put} from '@vercel/blob'
+import {del, put} from '@vercel/blob'
 
 
 
@@ -411,5 +411,126 @@ export async function getLogementWithUser() {
   } catch (error) {
       console.error("Erreur lors de la récupération des hotels :", error);
       return null;
+  }
+}
+export async function getshowLogement(logementId:string)
+{
+  try{
+    const logement=await prisma.logement.findUnique({
+      where:{
+        id:logementId
+      },include:{
+        logementOptions:true,
+        images:true
+      }
+    })
+    if(!logement) return
+    return logement
+
+  }catch(e){
+    console.error(e)
+  }
+}
+export async function updateLogement(
+  id: string,
+  option: string[],
+  nom: string,
+  description: string,
+  adresse: string,
+  ville: string,
+  telephone: string,
+  email: string,
+  capacity: number,
+  hasClim: boolean,
+  hasWifi: boolean,
+  hasTV: boolean,
+  hasKitchen: boolean,
+  parking: boolean,
+  surface: number,
+  extraBed: boolean,
+  nbChambres: number,
+  price: number,
+  images: File[]
+) {
+  try {
+    const user = await currentUser();
+    if (!user) throw new Error("Utilisateur non authentifié");
+
+    const logement = await prisma.logement.findUnique({ where: { id } });
+    if (!logement) throw new Error("Logement non trouvé");
+
+    const existingEmail = await prisma.logement.findFirst({
+      where: { email, NOT: { id } },
+    });
+    if (existingEmail) return { error: "L'email est déjà utilisé" };
+    await prisma.logementOptionOnLogement.deleteMany({ where: { logementId: id } });
+    if (images.length > 0) {
+      const oldImages = await prisma.imageLogement.findMany({ where: { logementId: id } });
+      await Promise.allSettled(
+        oldImages.map(async (img) => {
+          try {
+            await del(img.urlImage);
+          } catch (err) {
+            console.error("Erreur suppression blob logement :", err);
+          }
+        })
+      );
+      await prisma.imageLogement.deleteMany({ where: { logementId: id } });
+      const uploadedImages = await Promise.allSettled(
+        images.map(async (file) => {
+          try {
+            const fileBuffer = Buffer.from(await file.arrayBuffer());
+            const blob = await put(file.name, fileBuffer, { access: "public" });
+            return { logementId: id, urlImage: blob.url };
+          } catch (err) {
+            console.error("Erreur upload image logement :", err);
+            return null;
+          }
+        })
+      );
+
+      const validImages = uploadedImages
+        .filter((res) => res.status === "fulfilled" && res.value !== null)
+        .map((res) => (res as PromiseFulfilledResult<{ logementId: string; urlImage: string }>).value);
+
+      if (validImages.length > 0) {
+        await prisma.imageLogement.createMany({ data: validImages });
+      }
+    }
+
+    await prisma.logement.update({
+      where: { id },
+      data: {
+        nom,
+        description,
+        adresse,
+        ville,
+        telephone,
+        email,
+        parking,
+        capacity,
+        hasClim,
+        hasKitchen,
+        hasTV,
+        hasWifi,
+        surface,
+        extraBed,
+        nbChambres,
+        price,
+      },
+    });
+
+    if (option.length > 0) {
+      await prisma.logementOptionOnLogement.createMany({
+        data: option.map((optionId) => ({ logementId: id, optionId })),
+      });
+    }
+
+    return { success: true, message: "Appartement mis à jour avec succès" };
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du logement :", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Une erreur inconnue est survenue"
+    );
   }
 }
