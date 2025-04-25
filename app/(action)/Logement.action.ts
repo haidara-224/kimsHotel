@@ -392,14 +392,15 @@ export async function getDetailsAppartement(logementId:string){
 export async function getLogementWithUser() {
   const user_id = await currentUser()
   try {
-      const hotel = await prisma.logement.findMany({
+      const hotel = await prisma.userRoleAppartement.findMany({
           orderBy: { createdAt: "desc" },
           where: {
               userId: user_id?.id
           },
           include: {
-              user: true,
-              categoryLogement: true
+       
+              logement: true,
+              role:true
 
           },
 

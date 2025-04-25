@@ -7,31 +7,22 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { Check, Eye, PencilLine, X } from "lucide-react";
 import Link from "next/link";
 
-import { Logement, RoleUserLogement } from "@/types/types";
+import { RoleUserLogement } from "@/types/types";
 import { useUser } from "@clerk/nextjs";
-import { getRolesUserLogement } from "@/app/(action)/Roles.action";
+
 export function LogementTableUser() {
-    const [logements, setLogements] = useState<Logement[]>([]);
-    const [roles, setRoles] = useState<RoleUserLogement[]>([])
+    const [logements, setLogements] = useState<RoleUserLogement[]>([]);
+
     const { user } = useUser()
     const fetchData = useCallback(async () => {
         const data = await getLogementWithUser();
-        setLogements(data as Logement[]);
+        setLogements(data as  unknown as RoleUserLogement[]);
     }, []);
 
-    const fetchRolesUser = async () => {
-        try {
-            const data = await getRolesUserLogement()
-
-            setRoles(data as unknown as RoleUserLogement[])
-        } catch (error) {
-            console.log(error)
-        }
-    }
     useEffect(() => {
 
         fetchData();
-        fetchRolesUser()
+       
     }, [fetchData])
 
 
@@ -44,44 +35,38 @@ export function LogementTableUser() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
-                        <TableHead className="hidden md:table-cell">Category</TableHead>
+                       
                         <TableHead className="hidden lg:table-cell">Address</TableHead>
                         <TableHead className="hidden lg:table-cell">City</TableHead>
                         <TableHead className="hidden lg:table-cell">Dispo/Occupée</TableHead>
-                        <TableHead className="hidden xl:table-cell">User</TableHead>
+                       
                         <TableHead className="hidden xl:table-cell">Role</TableHead>
                         <TableHead>Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {logements.map((lg) => (
-                        <TableRow key={lg.id}>
-                            <TableCell>{lg.nom}</TableCell>
-                            <TableCell className="hidden md:table-cell">{lg.categoryLogement.name}</TableCell>
-                            <TableCell className="hidden lg:table-cell">{lg.adresse}</TableCell>
-                            <TableCell className="hidden lg:table-cell">{lg.ville}</TableCell>
+                        <TableRow key={lg?.logement?.id}>
+                            <TableCell>{lg?.logement?.nom}</TableCell>
+                            
+                            <TableCell className="hidden lg:table-cell">{lg?.logement?.adresse}</TableCell>
+                            <TableCell className="hidden lg:table-cell">{lg?.logement?.ville}</TableCell>
 
                             <TableCell className="hidden lg:table-cell">
                                         {
-                                            lg.isBlocked ? <X className="text-red-800" /> : <Check className="text-green-600" />
+                                            lg?.logement?.isBlocked ? <X className="text-red-800" /> : <Check className="text-green-600" />
                                         }
                                     </TableCell>
 
-                            <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
+                           
                             <TableCell className="hidden lg:table-cell">
-                                {roles
-                                    .filter((r) => r.logementId === lg.id)
-                                    .map((r) => (
-                                        <p key={r.role.id} className="text-slate-800 dark:text-white">
-                                            {r.role.name}
-                                        </p>
-                                    ))}
+                            <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
                             </TableCell>
                             <TableCell className="flex gap-3">
-                                <Link href={`/dashboard/hotes/${user?.id}/appartements/${lg.id}`}><Eye /></Link>
+                                <Link href={`/dashboard/hotes/${user?.id}/appartements/${lg?.logement?.id}`}><Eye /></Link>
 
                                 <Link
-                                                href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg.id}`}
+                                                href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg?.logement?.id}`}
                                                 className="text-yellow-600 hover:text-yellow-800 transition-colors"
                                             >
                                                 <PencilLine className="w-5 h-5" />

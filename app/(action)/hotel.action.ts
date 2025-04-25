@@ -407,20 +407,21 @@ export async function getDetailsHotel(hotel: string) {
 export async function getHotelWithUser() {
     const user_id = await currentUser()
     try {
-        const hotel = await prisma.hotel.findMany({
+        const hotel = await prisma.userRoleHotel.findMany({
             orderBy: { createdAt: "desc" },
             where: {
                 userId: user_id?.id
             },
             include: {
-                user: true,
-                categoryLogement: true
+         
+                hotel:true,
+                role:true
 
             },
 
         });
 
-
+        
         return hotel;
 
     } catch (error) {
