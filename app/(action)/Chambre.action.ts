@@ -110,7 +110,7 @@ export async function DeleteChambre(chambreId: string) {
             where: { id: chambreId },
             include: {
                 reservations: {
-                    where: { status: "CONFIRMED" }, 
+                    where: { status: "CONFIRMED"}, 
                 },
             },
         });

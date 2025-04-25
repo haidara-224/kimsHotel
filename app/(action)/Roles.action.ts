@@ -36,6 +36,49 @@ export async function getRolesUserLogement() {
         throw new Error("Impossible d'afficher les roles des utilisateur"+ error)
     }
 }
+export async function getRolesUserHotelId(hotelId: string) {
+    try {
+      const user = await currentUser();
+      if (!user) throw new Error("Utilisateur non authentifié");
+  
+      const role = await prisma.userRoleHotel.findFirst({
+        where: {
+          hotelId,
+          userId: user.id,
+        },
+        select: {
+          role: true, 
+        },
+      });
+  
+      return role; 
+    } catch (error) {
+      console.error("Erreur dans getRolesUserHotelId :", error);
+      throw new Error("Impossible de récupérer le rôle de l'utilisateur pour cet hôtel.");
+    }
+  }
+  export async function getRolesUserLogementId(logementId: string) {
+    try {
+      const user = await currentUser();
+      if (!user) throw new Error("Utilisateur non authentifié");
+  
+      const role = await prisma.userRoleAppartement.findFirst({
+        where: {
+          logementId,
+          userId: user.id,
+        },
+        select: {
+          role: true, 
+        },
+      });
+  
+      return role; 
+    } catch (error) {
+      console.error("Erreur dans getRolesUserHotelId :", error);
+      throw new Error("Impossible de récupérer le rôle de l'utilisateur pour cet hôtel.");
+    }
+  }
+  
 export async function isAdminUserHotel() {
     const user = await currentUser();
     try {

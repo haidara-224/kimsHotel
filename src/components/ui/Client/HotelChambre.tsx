@@ -1,11 +1,13 @@
 'use client';
 
-import { Chambre, Hotele } from "@/types/types";
-import { useState } from "react";
+import { Chambre, Hotele,} from "@/types/types";
+import {   useState } from "react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../carousel";
 import Image from "next/image";
 import { Bed, CheckCircle, Tv2, Utensils, Wifi, Wind, XCircle } from "lucide-react";
 import { CardReservationHotel } from "./CardReservationHotel";
+
+
 
 
 interface HotelProps {
@@ -22,6 +24,7 @@ export function HotelChambre({ hotel }: HotelProps) {
             setSelectedChambre(chambre)
         setOpenChange(true)
     }
+   
   return (
     <>
       {hotel.chambres.map((ch, index) => (

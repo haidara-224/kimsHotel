@@ -1,13 +1,16 @@
 'use client'
 import { getHotelById } from "@/app/(action)/hotel.action";
+import { getRolesUserHotelId } from "@/app/(action)/Roles.action";
+import { Button } from "@/src/components/ui/button";
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { MonthlyChart } from "@/src/components/ui/Dashboard/ChartReportReservationHotel";
 import { ChartReservation } from "@/src/components/ui/Dashboard/chartReservationHotel";
 import { DetailsHotel } from "@/src/components/ui/Dashboard/DetailsHotel";
 import { DetailsCardLogement } from "@/src/components/ui/Dashboard/DetailsLogementCard";
-import { Hotels } from "@/types/types";
+import { Hotels, RoleUserHotel} from "@/types/types";
 import { useUser } from "@clerk/nextjs";
-import { Heart, NotepadText, Star } from "lucide-react";
+
+import { Heart, NotepadText, Star, Trash2Icon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -16,7 +19,7 @@ export default function Page() {
     const params = useParams();
     const HotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
 
-
+    const [isAdmin,setIsAdmin]=useState<RoleUserHotel | null>(null)
 
     const [calculateRate, setCalculateRate] = useState<Hotels | null>(null);
 
@@ -32,15 +35,30 @@ export default function Page() {
             console.error("Erreur lors du chargement du logement :", error);
         }
     }, [HotelId]);
+    const userIsAdminHotel=useCallback(async()=>{
+        try{
+            const roleData = await getRolesUserHotelId(HotelId);
+            setIsAdmin(roleData as unknown as  RoleUserHotel)
 
+        }catch(e){
+            console.log(e)
+        }
+    },[HotelId])
     useEffect(() => {
         fetchData();
-    }, [HotelId, fetchData]);
+        userIsAdminHotel()
+    }, [HotelId, fetchData,userIsAdminHotel]);
     return (
 
         <>
+           <div className="flex justify-between">
+            
+           <BackButton text="Tableau" link={`/dashboard/hotes/${user?.id}/hotels`} />
+           {isAdmin?.role.name==="ADMIN"
+           &&  <Button type="submit" variant={'destructive'}><Trash2Icon/></Button>
+           }
            
-            <BackButton text="Tableau" link={`/dashboard/hotes/${user?.id}/hotels`} />
+           </div>
             <div className="w-full grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-5">
                 {
                     calculateRate && (

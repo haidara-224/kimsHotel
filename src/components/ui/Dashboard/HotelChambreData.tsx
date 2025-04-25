@@ -18,7 +18,7 @@ import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } fro
 import { Button } from "../button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../select";
 import { usePagination } from "@/src/hooks/use-pagination";
-import { Chambres } from "@/types/types";
+import { Chambres} from "@/types/types";
 import { getChambreHotels } from "@/app/(action)/hotel.action";
 import { useParams } from "next/navigation";
 import Loader from "../Client/Loader";
@@ -27,6 +27,7 @@ import Image from "next/image";
 import ToggleDisponibiliteCell from "./Toggledisponibility";
 import { ActionRow } from "./ActionRow";
 import { useUser } from "@clerk/nextjs";
+
 
 
 
@@ -40,6 +41,8 @@ export default function HotelChambreData() {
     });
     const params = useParams();
     const HotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
+
+    
     const [sorting, setSorting] = useState<SortingState>([
         {
             id: "numero_chambre",
@@ -48,7 +51,7 @@ export default function HotelChambreData() {
     ]);
 
     const [data, setData] = useState<Chambres[]>([]);
-    const fetchPost =useCallback(async () => {
+    const fetchPost = useCallback(async () => {
         try {
             setIsLoading(true)
 
@@ -63,13 +66,13 @@ export default function HotelChambreData() {
         } finally {
             setIsLoading(false)
         }
-    },[HotelId])
+    }, [HotelId])
     useEffect(() => {
 
         fetchPost()
 
     }, [fetchPost]);
-    const {user}=useUser()
+    const { user } = useUser()
     const columns: ColumnDef<Chambres>[] = [
         {
             accessorKey: "numero_chambre",
@@ -205,9 +208,9 @@ export default function HotelChambreData() {
         totalPages: table.getPageCount(),
         paginationItemsToDisplay: 5,
     });
-   
-   
-   
+
+
+
 
     return (
         <div className="space-y-4">
