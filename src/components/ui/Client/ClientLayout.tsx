@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, Hotel, House, Users } from "lucide-react";
+import { Menu, X, Hotel, House } from "lucide-react";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
@@ -16,7 +16,7 @@ export default function ClientLayouts({ children }: { children: React.ReactNode 
   const navItems = [
     { icon: Hotel, label: "Hotels", href: `/dashboard/hotes/${user?.id}/hotels` },
     { icon: House, label: "Appartements", href: `/dashboard/hotes/${user?.id}/appartements` },
-    { icon: Users, label: "Utilisateurs", href: `/dashboard/hotes/${user?.id}/appartements` },
+
   ];
 
   return (

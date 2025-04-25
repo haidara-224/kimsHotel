@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Bed, Check, Eye, PencilLine, Star, X } from "lucide-react";
+import { Bed, Check, Eye, PencilLine, Star, User, X } from "lucide-react";
 import Link from "next/link";
 import { RoleUserHotel } from "@/types/types";
 import { getHotelWithUser } from "@/app/(action)/hotel.action";
@@ -48,6 +48,7 @@ export default function HotelDataTableUser() {
                                 <TableHead className="hidden lg:table-cell">City</TableHead>
                                 <TableHead className="hidden lg:table-cell">Dispo/Occupée</TableHead>
                                 <TableHead className="hidden lg:table-cell">Etoils</TableHead>
+                                <TableHead className="hidden lg:table-cell">Hotes</TableHead>
                                 <TableHead className="hidden xl:table-cell">Role</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
@@ -68,12 +69,17 @@ export default function HotelDataTableUser() {
                                     ))}
                                   </div>
                                 </TableCell>
-                                
+                                <TableCell className="hidden lg:table-cell">
+                            <p className="text-slate-800 dark:text-white">{lg.hotel?.user?.nom}</p>
+                            </TableCell>
                                 <TableCell className="hidden lg:table-cell">
                                   <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-3">
+                                  <Link href={`/dashboard/hotes/${user?.id}/hotels/users/${lg?.hotel?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
+                                      <User className="w-5 h-5" />
+                                    </Link>
                                     <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg?.hotel?.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
                                       <Eye className="w-5 h-5" />
                                     </Link>
@@ -83,6 +89,7 @@ export default function HotelDataTableUser() {
                                     <Link href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg?.hotel?.id}`} className="text-yellow-600 hover:text-yellow-800 transition-colors">
                                       <PencilLine className="w-5 h-5" />
                                     </Link>
+                                   
                                   </div>
                                 </TableCell>
                               </TableRow>

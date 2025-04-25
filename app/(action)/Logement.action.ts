@@ -399,7 +399,10 @@ export async function getLogementWithUser() {
           },
           include: {
        
-              logement: true,
+              logement: {
+                include:{
+                    user:true
+                }},
               role:true
 
           },

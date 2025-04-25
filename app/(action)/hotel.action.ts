@@ -414,7 +414,11 @@ export async function getHotelWithUser() {
             },
             include: {
          
-                hotel:true,
+                hotel:{
+                    include:{
+                        user:true
+                    }
+                },
                 role:true
 
             },

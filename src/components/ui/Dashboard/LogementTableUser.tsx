@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { getLogementWithUser } from "@/app/(action)/Logement.action";
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table";
-import { Check, Eye, PencilLine, X } from "lucide-react";
+import { Check, Eye, PencilLine, Users, X } from "lucide-react";
 import Link from "next/link";
 
 import { RoleUserLogement } from "@/types/types";
@@ -16,13 +16,13 @@ export function LogementTableUser() {
     const { user } = useUser()
     const fetchData = useCallback(async () => {
         const data = await getLogementWithUser();
-        setLogements(data as  unknown as RoleUserLogement[]);
+        setLogements(data as unknown as RoleUserLogement[]);
     }, []);
 
     useEffect(() => {
 
         fetchData();
-       
+
     }, [fetchData])
 
 
@@ -35,11 +35,12 @@ export function LogementTableUser() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Name</TableHead>
-                       
+
                         <TableHead className="hidden lg:table-cell">Address</TableHead>
                         <TableHead className="hidden lg:table-cell">City</TableHead>
                         <TableHead className="hidden lg:table-cell">Dispo/Occupée</TableHead>
-                       
+                        <TableHead className="hidden lg:table-cell">Hotes</TableHead>
+
                         <TableHead className="hidden xl:table-cell">Role</TableHead>
                         <TableHead>Action</TableHead>
                     </TableRow>
@@ -48,29 +49,35 @@ export function LogementTableUser() {
                     {logements.map((lg) => (
                         <TableRow key={lg?.logement?.id}>
                             <TableCell>{lg?.logement?.nom}</TableCell>
-                            
+
                             <TableCell className="hidden lg:table-cell">{lg?.logement?.adresse}</TableCell>
                             <TableCell className="hidden lg:table-cell">{lg?.logement?.ville}</TableCell>
 
                             <TableCell className="hidden lg:table-cell">
-                                        {
-                                            lg?.logement?.isBlocked ? <X className="text-red-800" /> : <Check className="text-green-600" />
-                                        }
-                                    </TableCell>
+                                {
+                                    lg?.logement?.isBlocked ? <X className="text-red-800" /> : <Check className="text-green-600" />
+                                }
+                            </TableCell>
 
-                           
                             <TableCell className="hidden lg:table-cell">
-                            <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
+                                <p className="text-slate-800 dark:text-white">{lg.logement?.user?.nom}</p>
+                            </TableCell>
+                            <TableCell className="hidden lg:table-cell">
+                                <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
                             </TableCell>
                             <TableCell className="flex gap-3">
+                            <Link href={`/dashboard/hotes/${user?.id}/hotels/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
+                                      <Users className="w-5 h-5" />
+                                    </Link>
                                 <Link href={`/dashboard/hotes/${user?.id}/appartements/${lg?.logement?.id}`}><Eye /></Link>
 
                                 <Link
-                                                href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg?.logement?.id}`}
-                                                className="text-yellow-600 hover:text-yellow-800 transition-colors"
-                                            >
-                                                <PencilLine className="w-5 h-5" />
-                                            </Link>
+                                    href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg?.logement?.id}`}
+                                    className="text-yellow-600 hover:text-yellow-800 transition-colors"
+                                >
+                                    <PencilLine className="w-5 h-5" />
+                                </Link>
+                               
                             </TableCell>
                         </TableRow>
                     ))}
