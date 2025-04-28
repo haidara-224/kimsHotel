@@ -562,6 +562,22 @@ export async function getShowHotel(id: string) {
       throw new Error(error instanceof Error ? error.message : "Une erreur inconnue est survenue");
     }
   }
-  
+  export async function getUsersWithHotel(hotelId:string) {
+    try {
+        const hotel=await prisma.userRoleHotel.findMany({
+            where:{
+                hotelId:hotelId
+            },
+            include:{
+                user:true,
+                role:true
+            }
+        })
+        if(!hotel) return
+        return hotel
+    } catch (error) {
+       console.log(error) 
+    }
+  }
   
 

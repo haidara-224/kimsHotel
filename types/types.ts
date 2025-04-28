@@ -547,6 +547,7 @@ export interface RoleUserHotel {
   role: Role;
   hotelId: string;
   hotel?: Hotel; 
+  active: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -557,6 +558,7 @@ export interface RoleUserLogement {
   role: Role;
   logementId: string;
   logement?: Logement; 
+  active: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

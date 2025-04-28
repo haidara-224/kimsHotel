@@ -66,7 +66,7 @@ export function LogementTableUser() {
                                 <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
                             </TableCell>
                             <TableCell className="flex gap-3">
-                            <Link href={`/dashboard/hotes/${user?.id}/hotels/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
+                            <Link href={`/dashboard/hotes/${user?.id}/appartements/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
                                       <Users className="w-5 h-5" />
                                     </Link>
                                 <Link href={`/dashboard/hotes/${user?.id}/appartements/${lg?.logement?.id}`}><Eye /></Link>

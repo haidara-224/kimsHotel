@@ -538,3 +538,20 @@ export async function updateLogement(
     );
   }
 }
+export async function getUsersWithLogement(logementId:string) {
+  try {
+      const hotel=await prisma.userRoleAppartement.findMany({
+          where:{
+              logementId:logementId
+          },
+          include:{
+              user:true,
+              role:true
+          }
+      })
+      if(!hotel) return
+      return hotel
+  } catch (error) {
+     console.log(error) 
+  }
+}

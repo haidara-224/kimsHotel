@@ -324,7 +324,7 @@ model UserRoleAppartement {
   roleId     String
   role       Role      @relation("RoleUsersLogement", fields: [roleId], references: [id], onDelete: Cascade)
   userId     String
-
+  active     Boolean @default(true)
   user      User     @relation("UserLogement", fields: [userId], references: [clerkUserId], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -337,7 +337,7 @@ model UserRoleHotel {
   roleId  String
   role    Role    @relation("RoleUsersHotel", fields: [roleId], references: [id], onDelete: Cascade)
   userId  String
-
+  active   Boolean @default(true)
   user      User     @relation("UserHotel", fields: [userId], references: [clerkUserId], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
