@@ -555,3 +555,26 @@ export async function getUsersWithLogement(logementId:string) {
      console.log(error) 
   }
 }
+export async function UpdateStatusUserLogement(logementId:string,userLogementId:string) {
+  try {
+    const userRole = await prisma.userRoleAppartement.findUnique({
+        where: { id: userLogementId }, 
+    });
+    
+    console.log(userRole);
+    if (!userRole || userRole.logementId !== logementId) {
+        console.error("userRoleAppartement not found or hotelId mismatch");
+        return;
+    }
+
+    const update = await prisma.userRoleAppartement.update({
+        where: { id: userLogementId },
+        data: { active: !userRole.active }, 
+    });
+
+    console.log("User status updated:", update);
+    return update;
+} catch (error) {
+    console.log(error);
+}
+}

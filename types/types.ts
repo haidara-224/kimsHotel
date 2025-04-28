@@ -541,6 +541,7 @@ export interface homeTypes {
   updatedAt: Date;
 }
 export interface RoleUserHotel {
+  id:string;
   userId: string;
   user?: User;      
   roleId: string;
@@ -552,6 +553,7 @@ export interface RoleUserHotel {
   updatedAt: Date;
 }
 export interface RoleUserLogement {
+  id:string;
   userId: string;
   user?: User;      
   roleId: string;

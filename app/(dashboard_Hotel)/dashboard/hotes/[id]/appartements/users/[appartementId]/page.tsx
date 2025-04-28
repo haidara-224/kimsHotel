@@ -9,7 +9,7 @@ export default function Page(){
           
         <>
         <UserLogementDataTable logement={logementId} />
-        <p>Here you can manage the users associated with the hotel.</p>
+       
         </>
     )
 }

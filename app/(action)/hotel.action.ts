@@ -579,5 +579,45 @@ export async function getShowHotel(id: string) {
        console.log(error) 
     }
   }
+  export async function UpdateStatusUserHotel(hotelId: string, userRoleHotelId: string) {
+    try {
+        const userRole = await prisma.userRoleHotel.findUnique({
+            where: { id: userRoleHotelId },
+        });
+        
+        console.log(userRole);
+        if (!userRole || userRole.hotelId !== hotelId) {
+            console.error("UserRoleHotel not found or hotelId mismatch");
+            return;
+        }
+
+        const update = await prisma.userRoleHotel.update({
+            where: { id: userRoleHotelId },
+            data: { active: !userRole.active }, 
+        });
+
+        console.log("User status updated:", update);
+        return update;
+    } catch (error) {
+        console.log(error);
+    }
+}
+export async function userIsBloquedHotel(hotelId: string, userRoleHotelId: string) {
+    try {
+        const userRoleIsBloked = await prisma.userRoleHotel.findUnique({
+            where: { id: userRoleHotelId },
+        });
+        if (!userRoleIsBloked || userRoleIsBloked.hotelId !== hotelId) {
+            console.error("UserRoleHotel not found or hotelId mismatch");
+            return null;
+        }
+        return userRoleIsBloked.active;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des hôtels :", error);
+        return null;
+    }
+}
+
+  
   
 

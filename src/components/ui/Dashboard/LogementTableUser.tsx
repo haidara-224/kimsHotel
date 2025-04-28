@@ -46,7 +46,7 @@ export function LogementTableUser() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {logements.map((lg) => (
+                    {logements.filter((lg) => lg.active).map((lg)=> (
                         <TableRow key={lg?.logement?.id}>
                             <TableCell>{lg?.logement?.nom}</TableCell>
 
@@ -65,10 +65,16 @@ export function LogementTableUser() {
                             <TableCell className="hidden lg:table-cell">
                                 <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
                             </TableCell>
+
                             <TableCell className="flex gap-3">
-                            <Link href={`/dashboard/hotes/${user?.id}/appartements/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
-                                      <Users className="w-5 h-5" />
-                                    </Link>
+                                {
+                                    lg.role.name === "ADMIN" && (
+                                        <Link href={`/dashboard/hotes/${user?.id}/appartements/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
+                                            <Users className="w-5 h-5" />
+                                        </Link>
+                                    )
+                                }
+
                                 <Link href={`/dashboard/hotes/${user?.id}/appartements/${lg?.logement?.id}`}><Eye /></Link>
 
                                 <Link
@@ -77,7 +83,7 @@ export function LogementTableUser() {
                                 >
                                     <PencilLine className="w-5 h-5" />
                                 </Link>
-                               
+
                             </TableCell>
                         </TableRow>
                     ))}
