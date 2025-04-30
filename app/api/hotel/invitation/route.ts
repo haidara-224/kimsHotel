@@ -17,7 +17,7 @@ export async function POST(request: Request) {
         }
     });
   
-    const html = await render(EmailTemplate({email, hotelId}) as ReactElement);
+    const html = await render(EmailTemplate({ email, hotelId }) as unknown as ReactElement);
     
     await transporter.sendMail({
         from: process.env.GMAIL_USER,

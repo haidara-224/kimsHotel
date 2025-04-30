@@ -15,7 +15,12 @@ export function HearderSection() {
   ];
   const [currentImage, setCurrentImage] = useState(0);
   const [destination, setDestination] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  interface Suggestion {
+    place_id: string;
+    description: string;
+  }
+
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,14 +29,12 @@ export function HearderSection() {
 
     return () => clearInterval(interval);
   }, []);
-
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (destination.length > 1) {
         try {
-          const response = await fetch(
-            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&components=country:gn&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
-          );
+          const response = await fetch(`/api/googleapi?input=${destination}`);
+          if (!response.ok) throw new Error("Bad response");
           const data = await response.json();
           if (data.status === "OK") {
             setSuggestions(data.predictions);
@@ -46,13 +49,15 @@ export function HearderSection() {
         setSuggestions([]);
       }
     };
+    
 
     const timer = setTimeout(fetchSuggestions, 300); // debounce 300ms
     return () => clearTimeout(timer);
   }, [destination]);
 
-  const handleSuggestionClick = (place: any) => {
-    setDestination(place.description);
+
+  const handleSuggestionClick = (place: unknown) => {
+    setDestination((place as { description: string }).description);
     setSuggestions([]);
   };
 
@@ -113,11 +118,11 @@ export function HearderSection() {
                   <div className="absolute top-full left-0 right-0 bg-white border rounded shadow-md z-10 mt-1">
                     {suggestions.map((suggestion) => (
                       <div
-                        key={suggestion.place_id}
+                        key={suggestion?.place_id}
                         className="p-2 hover:bg-gray-100 cursor-pointer text-gray-700"
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        {suggestion.description}
+                        {suggestion?.description}
                       </div>
                     ))}
                   </div>
