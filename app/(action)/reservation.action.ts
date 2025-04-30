@@ -19,14 +19,13 @@ export async function getReservation() {
             }
         });
         
-        // Si aucune donnée n'est trouvée, retourne un tableau vide pour éviter des erreurs dans le rendu
         if (!data) return [];
 
         return data;
 
     } catch (error) {
         console.error(error);
-        return []; // En cas d'erreur, retourne un tableau vide pour éviter des problèmes de rendu
+        return []; 
     }
 }
 
@@ -55,36 +54,29 @@ export async function deleteReservation(id: string) {
 }
 export async function countedReservation() {
     try {
-        // Nombre total de réservations
         const totalReservations = await prisma.reservation.count();
-
-        // Nombre de logements distincts réservés
         const countLogements = await prisma.reservation.count({
             where: {
                 logement: {
-                    isNot: null, // Vérifie qu'un logement est bien associé
+                    isNot: null,
                 },
             },
         });
-
-        // Nombre de chambres distinctes réservées
         const countChambres = await prisma.reservation.count({
             where: {
                 chambre: {
-                    isNot: null, // Vérifie qu'une chambre est bien associée
+                    isNot: null,
                 },
             },
         });
-
-        // Calcul des pourcentages
         const logementPercentage = totalReservations > 0 ? (countLogements / totalReservations) * 100 : 0;
         const chambrePercentage = totalReservations > 0 ? (countChambres / totalReservations) * 100 : 0;
         return {
             total: totalReservations,
             logements: countLogements,
             chambres: countChambres,
-            logementPercentage: logementPercentage.toFixed(2), // Arrondi à 2 décimales
-            chambrePercentage: chambrePercentage.toFixed(2), // Arrondi à 2 décimales
+            logementPercentage: logementPercentage.toFixed(2),
+            chambrePercentage: chambrePercentage.toFixed(2),
         };
     } catch (error) {
         console.error("Erreur lors du comptage des réservations :", error);

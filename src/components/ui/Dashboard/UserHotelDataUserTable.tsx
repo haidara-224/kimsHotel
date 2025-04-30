@@ -8,10 +8,7 @@ import { getUsersWithHotel, UpdateStatusUserHotel } from "@/app/(action)/hotel.a
 import { Button } from "../button"
 import { CheckCheck, X } from "lucide-react"
 import { Switch } from "../switch"
-
-
-
-
+import { toast } from "sonner"
 interface tableProps {
     hotel: string
 }
@@ -42,6 +39,7 @@ export default function UserHotelDataTable({ hotel }: tableProps) {
             try {
                 await UpdateStatusUserHotel(hotel, userHotelId);
                 await fetchData(); 
+                toast("Statut mis à jour avec succès")
             } catch (error) {
                 console.error(error);
             }finally{

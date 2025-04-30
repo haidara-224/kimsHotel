@@ -617,6 +617,76 @@ export async function userIsBloquedHotel(hotelId: string, userRoleHotelId: strin
         return null;
     }
 }
+export async function acceptInvitationHotel(userId: string, hotelId: string) {
+    try {
+      
+      const existingUserRole = await prisma.userRoleHotel.findUnique({
+        where: {
+          userId_hotelId: {
+            userId,
+            hotelId,
+          },
+        },
+      });
+  
+      if (existingUserRole) {
+        return {
+          success: false,
+          message: "Vous êtes déjà membre de cet hôtel.",
+        };
+      }
+  
+   
+      const roleHotelier = await prisma.role.findUnique({
+        where: { name: "HOTELIER" },
+      });
+  
+      if (!roleHotelier) {
+        return {
+          success: false,
+          message: "Le rôle 'HOTELIER' n'existe pas.",
+        };
+      }
+  
+      const newUserRole = await prisma.userRoleHotel.create({
+        data: {
+          userId,
+          hotelId,
+          roleId: roleHotelier.id,
+          active: true,
+        },
+      });
+  
+      return {
+        success: true,
+        message: "Invitation acceptée avec succès.",
+        data: newUserRole,
+      };
+  
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation de l'invitation :", error);
+      return {
+        success: false,
+        message: "Erreur lors de l'acceptation de l'invitation.",
+      };
+    }
+  }
+  export async function UserIsInHotel(hotelId: string, userId: string) {
+    try {
+      const userRole = await prisma.userRoleHotel.findFirst({
+        where: {
+          hotelId,
+          userId,
+        },
+      });
+  
+      return !!userRole; 
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'utilisateur dans l'hôtel :", error);
+      return false;
+    }
+  }
+  
 
   
   

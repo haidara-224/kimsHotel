@@ -7,6 +7,7 @@ import { getUsersWithLogement, UpdateStatusUserLogement } from "@/app/(action)/L
 import { Button } from "../button"
 import { Switch } from "../switch"
 import Image from "next/image"
+import { toast } from "sonner"
 
 
 interface tableProps {
@@ -38,6 +39,7 @@ export default function UserLogementDataTable({ logement }: tableProps) {
                 try {
                     await UpdateStatusUserLogement(logement, userLogementId);
                     await fetchData(); 
+                    toast("Statut mis à jour avec succès")
                 } catch (error) {
                     console.error(error);
                 }finally{

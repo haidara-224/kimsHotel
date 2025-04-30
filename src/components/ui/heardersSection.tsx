@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./tabs";
@@ -6,16 +6,16 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { motion, AnimatePresence } from "framer-motion";
 
-
-
 export function HearderSection() {
   const images = [
     "https://plus.unsplash.com/premium_photo-1675745329954-9639d3b74bbf?w=1600&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8SG90ZWx8ZW58MHx8MHx8fDA%3D",
-    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fEhvdGVsfGVufDB8fDB8fHww",
-    "https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8SG90ZWx8ZW58MHx8MHx8fDA%3D",
+    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&auto=format&fit=crop&q=60",
+    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&auto=format&fit=crop&q=60",
+    "https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&auto=format&fit=crop&q=60",
   ];
   const [currentImage, setCurrentImage] = useState(0);
+  const [destination, setDestination] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,6 +24,37 @@ export function HearderSection() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (destination.length > 1) {
+        try {
+          const response = await fetch(
+            `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${destination}&components=country:gn&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
+          );
+          const data = await response.json();
+          if (data.status === "OK") {
+            setSuggestions(data.predictions);
+          } else {
+            setSuggestions([]);
+          }
+        } catch (error) {
+          console.error(error);
+          setSuggestions([]);
+        }
+      } else {
+        setSuggestions([]);
+      }
+    };
+
+    const timer = setTimeout(fetchSuggestions, 300); // debounce 300ms
+    return () => clearTimeout(timer);
+  }, [destination]);
+
+  const handleSuggestionClick = (place: any) => {
+    setDestination(place.description);
+    setSuggestions([]);
+  };
 
   return (
     <section
@@ -66,28 +97,44 @@ export function HearderSection() {
               <TabsTrigger value="hotels">Hôtels</TabsTrigger>
               <TabsTrigger value="Appartements">Appartements</TabsTrigger>
             </TabsList>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="w-full">
-                <Input placeholder="De" className="flex-1 text-slate-700 p-3 lg:p-0" />
-
+            <div className="flex flex-col md:flex-row gap-4 relative">
+              <div className="w-full relative">
+                <Input placeholder="D'où partez-vous ?" className="flex-1 text-slate-700 p-3 lg:p-0" />
               </div>
-              <div className="w-full">
-                <Input placeholder="À" className="flex-1 text-slate-700 p-3 lg:p-0" />
 
+              <div className="w-full relative">
+                <Input
+                  placeholder="Où allez-vous ?"
+                  className="flex-1 text-slate-700 p-3 lg:p-0"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                />
+                {suggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 bg-white border rounded shadow-md z-10 mt-1">
+                    {suggestions.map((suggestion) => (
+                      <div
+                        key={suggestion.place_id}
+                        className="p-2 hover:bg-gray-100 cursor-pointer text-gray-700"
+                        onClick={() => handleSuggestionClick(suggestion)}
+                      >
+                        {suggestion.description}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className=" w-full">
+
+              <div className="w-full">
                 <Input
                   type="date"
                   className="w-full p-6 lg:p-3 pr-10 text-slate-600"
                 />
-
               </div>
 
               <Button className="bg-teal-600 hover:bg-teal-700">Rechercher</Button>
             </div>
           </Tabs>
         </div>
-
       </div>
     </section>
   );

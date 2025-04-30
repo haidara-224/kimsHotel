@@ -578,3 +578,73 @@ export async function UpdateStatusUserLogement(logementId:string,userLogementId:
     console.log(error);
 }
 }
+
+export async function acceptInvitationLogement(userId: string, logementId: string) {
+    try {
+      
+      const existingUserRole = await prisma.userRoleAppartement.findUnique({
+        where: {
+          userId_logementId: {
+            userId,
+            logementId,
+          },
+        },
+      });
+  
+      if (existingUserRole) {
+        return {
+          success: false,
+          message: "Vous êtes déjà membre de cet appartement.",
+        };
+      }
+  
+   
+      const roleHotelier = await prisma.role.findUnique({
+        where: { name: "HOTELIER" },
+      });
+  
+      if (!roleHotelier) {
+        return {
+          success: false,
+          message: "Le rôle 'HOTELIER' n'existe pas.",
+        };
+      }
+  
+      const newUserRole = await prisma.userRoleAppartement.create({
+        data: {
+          userId,
+          logementId,
+          roleId: roleHotelier.id,
+          active: true,
+        },
+      });
+  
+      return {
+        success: true,
+        message: "Invitation acceptée avec succès.",
+        data: newUserRole,
+      };
+  
+    } catch (error) {
+      console.error("Erreur lors de l'acceptation de l'invitation :", error);
+      return {
+        success: false,
+        message: "Erreur lors de l'acceptation de l'invitation.",
+      };
+    }
+  }
+  export async function UserIsInLogement(userId: string, logementId: string) { 
+    try {
+      const userRole = await prisma.userRoleAppartement.findFirst({
+        where: {
+          logementId,
+          userId,
+        },
+      });
+  
+      return !!userRole; 
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'utilisateur dans l'hôtel :", error);
+      return false;
+    }
+  }
