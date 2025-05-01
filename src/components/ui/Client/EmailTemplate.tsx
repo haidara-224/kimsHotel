@@ -42,7 +42,7 @@ export default async function EmailTemplate({ email, hotelId }: Props) {
             Vous avez été invité à être hôtelier dans l&apos;hôtel <strong>{hotel?.nom || 'Inconnu'}</strong>.
           </Text>
           <Button
-            href={`http://localhost:3000/invitation/hotel/${hotelId}`}
+            href={`https://kimshotel.net/invitation/hotel/${hotelId}`}
             style={{
               backgroundColor: '#0d9488',
               color: '#fff',
@@ -55,7 +55,7 @@ export default async function EmailTemplate({ email, hotelId }: Props) {
             Rejoindre maintenant
           </Button>
           <Text style={{ marginTop: '24px' }}>
-            <Link href={`http://localhost:3000/confidentialite`} style={{ color: '#0d9488' }}>
+            <Link href={`https://kimshotel.net/confidentialite`} style={{ color: '#0d9488' }}>
               Conditions d&apos;utilisation
             </Link>
           </Text>
