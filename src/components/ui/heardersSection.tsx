@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./tabs";
 import { Input } from "./input";
 import { Button } from "./button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLoadScript } from "@react-google-maps/api";
 
 export function HearderSection() {
   const images = [
@@ -13,60 +14,50 @@ export function HearderSection() {
     "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&auto=format&fit=crop&q=60",
     "https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&auto=format&fit=crop&q=60",
   ];
+
   const [currentImage, setCurrentImage] = useState(0);
   const [destination, setDestination] = useState("");
-  interface Suggestion {
-    place_id: string;
-    description: string;
-  }
 
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  // Reference to the destination input for Google Autocomplete
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Load Google Maps script with Places library
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries: ["places"],
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 4000);
-
     return () => clearInterval(interval);
   }, []);
+
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (destination.length > 1) {
-        try {
-          const response = await fetch(`/api/googleapi?input=${destination}`);
-          if (!response.ok) throw new Error("Bad response");
-          const data = await response.json();
-          if (data.status === "OK") {
-            setSuggestions(data.predictions);
-          } else {
-            setSuggestions([]);
-          }
-        } catch (error) {
-          console.error(error);
-          setSuggestions([]);
-        }
-      } else {
-        setSuggestions([]);
+    if (!isLoaded || loadError) return;
+
+    const autocomplete = new google.maps.places.Autocomplete(inputRef.current! as HTMLInputElement, {
+      componentRestrictions: { country: "gn" },
+      fields: ["place_id", "description"],
+    });
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        setDestination(place.formatted_address);
       }
+    });
+
+    return () => {
+      google.maps.event.clearInstanceListeners(autocomplete);
     };
-    
-
-    const timer = setTimeout(fetchSuggestions, 300); // debounce 300ms
-    return () => clearTimeout(timer);
-  }, [destination]);
-
-
-  const handleSuggestionClick = (place: unknown) => {
-    setDestination((place as { description: string }).description);
-    setSuggestions([]);
-  };
+  }, [isLoaded, loadError]);
 
   return (
     <section
       className="relative h-[500px] bg-cover bg-center transition-all duration-1000 pt-[105px] lg:pt-[80px]"
-      style={{
-        backgroundImage: `url('${images[currentImage]}')`,
-      }}
+      style={{ backgroundImage: `url('${images[currentImage]}')` }}
     >
       <div className="absolute inset-0 bg-black/30" />
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
@@ -97,15 +88,13 @@ export function HearderSection() {
         </div>
 
         <div className="lg:w-full w-[95%] max-w-3xl bg-white rounded-lg p-4 shadow-lg">
-          <Tabs defaultValue="flights" className="w-full">
+          <Tabs defaultValue="hotels" className="w-full">
             <TabsList className="grid grid-cols-2 mb-4">
               <TabsTrigger value="hotels">Hôtels</TabsTrigger>
-              <TabsTrigger value="Appartements">Appartements</TabsTrigger>
+              <TabsTrigger value="appartements">Appartements</TabsTrigger>
             </TabsList>
-            <div className="flex flex-col md:flex-row gap-4 relative">
-              <div className="w-full relative">
-                <Input placeholder="D'où partez-vous ?" className="flex-1 text-slate-700 p-3 lg:p-0" />
-              </div>
+            <div className="flex flex-col md:flex-row gap-4">
+              <Input placeholder="D'où partez-vous ?" className="flex-1 text-slate-700 p-3 lg:p-0" />
 
               <div className="w-full relative">
                 <Input
@@ -113,28 +102,11 @@ export function HearderSection() {
                   className="flex-1 text-slate-700 p-3 lg:p-0"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
+                  ref={inputRef}
                 />
-                {suggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 bg-white border rounded shadow-md z-10 mt-1">
-                    {suggestions.map((suggestion) => (
-                      <div
-                        key={suggestion?.place_id}
-                        className="p-2 hover:bg-gray-100 cursor-pointer text-gray-700"
-                        onClick={() => handleSuggestionClick(suggestion)}
-                      >
-                        {suggestion?.description}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
 
-              <div className="w-full">
-                <Input
-                  type="date"
-                  className="w-full p-6 lg:p-3 pr-10 text-slate-600"
-                />
-              </div>
+              <Input type="date" className="w-full p-6 lg:p-3 pr-10 text-slate-600" />
 
               <Button className="bg-teal-600 hover:bg-teal-700">Rechercher</Button>
             </div>
