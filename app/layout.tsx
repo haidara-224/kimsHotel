@@ -30,30 +30,22 @@ export const metadata:Metadata = {
 };
 
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider
-    appearance={{
-      layout: {
-        unsafe_disableDevelopmentModeWarnings: true,
-      },
-    }}
-    >
-      <CommentProvider>  
-        <CommentHotelProvider>
-        <html lang="en">
-          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              {children}
-              <Toaster />
-            </ThemeProvider>
-          </body>
-        </html>
-        </CommentHotelProvider>
-        
-      </CommentProvider>
-    </ClerkProvider>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ClerkProvider appearance={{ layout: { unsafe_disableDevelopmentModeWarnings: true } }}>
+          <CommentProvider>
+            <CommentHotelProvider>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                {children}
+                <Toaster />
+              </ThemeProvider>
+            </CommentHotelProvider>
+          </CommentProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
+

@@ -201,3 +201,13 @@ export async function deletedUser(id: string) {
     return false;
   }
 }
+export async function DeleteUser()
+{
+  
+  const user = await currentUser();
+  await prisma.user.delete({
+    where: {
+      clerkUserId: user?.id
+    }
+  });
+}
