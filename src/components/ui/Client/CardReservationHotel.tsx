@@ -82,12 +82,16 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                     <Label className="text-muted-foreground">Arrivée</Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button variant={"outline"} className="w-full justify-start text-left font-normal">
+                                            <Button variant="outline" className="w-full justify-start text-left font-normal">
                                                 <CalendarIcon />
                                                 {dateA ? format(dateA, "PPP") : <span>{format(new Date(), "PPP")}</span>}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
+                                        <PopoverContent
+                                            className="w-auto p-0"
+                                            align="start"
+                                            forceMount
+                                        >
                                             <Calendar
                                                 mode="single"
                                                 selected={dateA}
@@ -95,9 +99,9 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                                 initialFocus
                                                 disabled={(date) => date < new Date()}
                                             />
-
                                         </PopoverContent>
                                     </Popover>
+
                                 </span>
 
                                 <span className="space-y-1">
@@ -109,7 +113,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                                 {dateD ? format(dateD, "PPP") : <span>{format(new Date(), "PPP")}</span>}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
+                                        <PopoverContent className="w-auto p-0" align="start" forceMount>
                                             <Calendar
                                                 mode="single"
                                                 selected={dateD}

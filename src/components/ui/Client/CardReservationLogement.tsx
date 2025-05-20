@@ -164,7 +164,7 @@ export function CardReservationLogement({ logement }: logementProps) {
 
                             </form>
                         )
-                      
+
                     }
 
 
@@ -174,7 +174,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                             <span className="font-medium">{formatPrice(logement.price * getNumberOfNights())} </span>
                         </div>
 
- <span className="text-sm text-muted-foreground italic">
+                        <span className="text-sm text-muted-foreground italic">
                             {voyageurs} {voyageurs === "1" ? "voyageur" : "voyageurs"} – {getNumberOfNights()} nuit(s)
                         </span>
                         <div className="flex justify-between text-sm">
@@ -192,11 +192,11 @@ export function CardReservationLogement({ logement }: logementProps) {
                         <span className="font-medium">
                             {formatPrice(logement.price * getNumberOfNights())}
                         </span>
-                          {dateA && dateD && (
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {getNumberOfNights()} nuit(s) du {format(dateA, "PPP")} au {format(dateD, "PPP")}
-                                                    </p>
-                                                )}
+                        {dateA && dateD && (
+                            <p className="text-sm text-muted-foreground">
+                                {getNumberOfNights()} nuit(s) du {format(dateA, "PPP")} au {format(dateD, "PPP")}
+                            </p>
+                        )}
                     </div>
 
 
