@@ -2,7 +2,7 @@ import { Separator } from "@/src/components/ui/separator";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { Label } from "@/src/components/ui/label";
-import { ArrowRight,  } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { format } from "date-fns";
 
@@ -73,7 +73,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
 
                     <span className="space-y-3">
                         <span className="grid grid-cols-1 gap-4">
-                            <span className="space-y-3 w-full flex flex-col">
+                            <span className="space-y-3 w-full">
                                 <Label className="text-muted-foreground">Arrivée</Label>
                                 <input
                                     type="date"
@@ -83,7 +83,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                     min={new Date().toISOString().split("T")[0]}
                                 />
                             </span>
-                            <span className="space-y-3 w-full flex flex-col">
+                            <span className="space-y-3 w-full">
                                 <Label className="text-muted-foreground">Départ</Label>
                                 <input
                                     type="date"
@@ -117,19 +117,10 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                     {chambre?.disponible && (
                         <form action="https://mapaycard.com/epay/" method="POST">
                             <input type="hidden" name="c" value="NTY4Nzk1MTU" />
-                            {/**
-                             *  <input
+                            <input
                                 type="hidden"
                                 name="paycard-amount"
                                 value={(chambre?.price ?? 0) * getNumberOfNights()}
-                                readOnly
-                            />
-                             */
-                            }
-                              <input
-                                type="hidden"
-                                name="paycard-amount"
-                                value="1000"
                                 readOnly
                             />
                             <input type="hidden" name="paycard-description" value={`reservation de chambre ${chambre.numero_chambre}`} />
