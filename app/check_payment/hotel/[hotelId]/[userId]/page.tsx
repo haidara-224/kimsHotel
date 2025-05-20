@@ -1,5 +1,5 @@
-"use client"
-import { useEffect } from 'react';
+
+
 
 interface Props {
   params: {
@@ -17,13 +17,7 @@ export default function CheckPaymentPage({ params, searchParams }: Props) {
   const { hotelId, userId } = params;
   const { c, ['paycard-operation-reference']: operationRef, ['transaction-reference']: transactionRef } = searchParams;
 
-  useEffect(() => {
-    // Appelle ton API pour vérifier le paiement ici
-    console.log("Hôtel ID:", hotelId);
-    console.log("User ID:", userId);
-    console.log("Paramètres supplémentaires:", { c, operationRef, transactionRef });
-  }, [hotelId, userId, c, operationRef, transactionRef]);
-
+ 
   return (
     <div className="p-6">
       <h1 className="text-xl font-bold">Vérification du paiement</h1>
