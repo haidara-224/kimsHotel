@@ -132,13 +132,24 @@ export function CardReservationLogement({ logement }: logementProps) {
                         logement.disponible && (
                             <form action="https://mapaycard.com/epay/" method="POST">
                                 <input type="hidden" name="c" value="NTY4Nzk1MTU" />
-                                <input
+                                {
+                                    /**
+                                     *                                 <input
                                     type="hidden"
                                     name="paycard-amount"
                                     value={(logement.price ?? 0) * getNumberOfNights()}
                                     readOnly
                                 />
+                                     * 
+                                     */
+                                }
 
+                                <input
+                                    type="hidden"
+                                    name="paycard-amount"
+                                    value="1000"
+                                    readOnly
+                                />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
                                 <input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${logement.id}/${user?.id}`} />
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
