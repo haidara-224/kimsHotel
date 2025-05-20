@@ -121,11 +121,22 @@ export function NavBar() {
             </AnimatedLink>
 
             <div className="flex items-center gap-4 px-3 py-2">
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-              <UserNav />
-              <ModeToggle />
+              <SignedOut>
+              <SignInButton>
+                <button className="w-full text-left">Se Connecter</button>
+              </SignInButton>
+            </SignedOut>
+
+            <SignedIn>
+              <SignOutButton>
+                <button className="w-full text-left">Se Déconnecter</button>
+              </SignOutButton>
+            </SignedIn>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+            <UserNav />
+            <ModeToggle />
             </div>
           </motion.div>
         )}

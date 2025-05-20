@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Logement } from "@/types/types";
 import { useState } from "react";
 import React from "react";
+import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 interface logementProps {
     logement: Logement
@@ -24,12 +26,12 @@ export function CardReservationLogement({ logement }: logementProps) {
 
     const [dateD, setDateD] = React.useState<Date>()
     const [dateA, setDateA] = React.useState<Date>()
-
+    const { user } = useUser()
     const [voyageurs, setVoyageurs] = useState<string>("1");
     const getNumberOfNights = () => {
         if (!dateA || !dateD) return 0;
         const diffTime = dateD.getTime() - dateA.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays > 0 ? diffDays : 0;
     };
     return (
@@ -42,7 +44,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                             <p className="text-sm text-muted-foreground">par nuit</p>
                         </div>
                         <Badge variant="outline" className="border-emerald-500 text-emerald-500">
-                        {logement?.disponible ? '⚡ Disponible' : '⛔ Occupée'}
+                            {logement?.disponible ? '⚡ Disponible' : '⛔ Occupée'}
                         </Badge>
                     </div>
 
@@ -70,6 +72,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                                                 selected={dateA}
                                                 onSelect={setDateA}
                                                 initialFocus
+                                                disabled={(date) => date < new Date()}
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -97,7 +100,9 @@ export function CardReservationLogement({ logement }: logementProps) {
                                                 selected={dateD}
                                                 onSelect={setDateD}
                                                 initialFocus
+                                                disabled={(date) => !dateA || date < dateA}
                                             />
+
                                         </PopoverContent>
                                     </Popover>
                                 </div>
@@ -123,21 +128,55 @@ export function CardReservationLogement({ logement }: logementProps) {
                             </Select>
                         </div>
                     </div>
-                                    {
-                                        logement.disponible && (   <Button className="w-full h-12 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all">
-                                            Réserver maintenant
-                                            <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Button>)
-                                    }
-                 
+                    {
+                        logement.disponible && (
+                            <form action="https://mapaycard.com/epay/" method="POST">
+                                <input type="hidden" name="c" value="NTY4Nzk1MTU" />
+                                <input
+                                    type="hidden"
+                                    name="paycard-amount"
+                                    value={(logement.price ?? 0) * getNumberOfNights()}
+                                    readOnly
+                                />
+
+                                <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
+                                <input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${logement.id}/${user?.id}`} />
+                                <input type="hidden" name="paycard-redirect-with-get" value="on" />
+                                <input type="hidden" name="paycard-auto-redirect" value="off" />
+                                <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
+
+                                <SignedIn>
+                                    <Button
+
+                                        className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
+                                        disabled={!dateA || !dateD}
+                                    >
+                                        Réserver maintenant
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </SignedIn>
+                                <SignedOut>
+                                    <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
+
+                                    <Link href="/sign-in" className="w-full text-left text-primary">Se Connecter</Link>
+
+                                </SignedOut>
+
+                            </form>
+                        )
+                      
+                    }
+
 
                     <div className="space-y-4 pt-4">
                         <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">{formatPrice(logement.price)}  ×  {getNumberOfNights()} nuits</span>
                             <span className="font-medium">{formatPrice(logement.price * getNumberOfNights())} </span>
                         </div>
-                      
 
+ <span className="text-sm text-muted-foreground italic">
+                            {voyageurs} {voyageurs === "1" ? "voyageur" : "voyageurs"} – {getNumberOfNights()} nuit(s)
+                        </span>
                         <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Frais de service de Kims</span>
                             <span className="font-medium">{formatPrice(logement.price * getNumberOfNights() * 0.02)}</span>
@@ -153,6 +192,11 @@ export function CardReservationLogement({ logement }: logementProps) {
                         <span className="font-medium">
                             {formatPrice(logement.price * getNumberOfNights())}
                         </span>
+                          {dateA && dateD && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {getNumberOfNights()} nuit(s) du {format(dateA, "PPP")} au {format(dateD, "PPP")}
+                                                    </p>
+                                                )}
                     </div>
 
 

@@ -24,11 +24,14 @@ export function HotelChambre({ hotel }: HotelProps) {
             setSelectedChambre(chambre)
         setOpenChange(true)
     }
+
+
    
   return (
     <>
       {hotel.chambres.map((ch, index) => (
         <div key={ch.id} className="overflow-hidden duration-300">
+         
           <div
             className="relative h-52 w-full overflow-hidden"
             onMouseEnter={() => setHoveredCarousel(index)}
