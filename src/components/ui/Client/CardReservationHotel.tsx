@@ -2,12 +2,10 @@ import { Separator } from "@/src/components/ui/separator";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
 import { Label } from "@/src/components/ui/label";
-import { ArrowRight, CalendarIcon } from "lucide-react";
+import { ArrowRight,  } from "lucide-react";
 
 import { format } from "date-fns";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/components/ui/popover";
 
-import { Calendar } from "@/src/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Chambre } from "@/types/types";
 import { useEffect, useState } from "react";
