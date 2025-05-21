@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 export default function Page(){
      const params = useParams();
      const { user } = useUser();
-    const hotelId = typeof params.hotelId === "string" ? params.hotelId : params.hotelId?.[0] || "";
+    const hotelId = typeof params?.hotelId === "string" ? params.hotelId : params?.hotelId?.[0] || "";
     return (
         <>
           <BackButton text="Chambres" link={`/dashboard/hotes/${user?.id}/hotels/${hotelId}/chambres`} />

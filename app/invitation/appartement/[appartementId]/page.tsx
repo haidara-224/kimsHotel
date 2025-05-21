@@ -14,7 +14,7 @@ import { toast } from "sonner";
 export default function Page() {
   const { user } = useUser();
   const params = useParams();
-  const appartementId = typeof params.appartementId === 'string' ? params.appartementId : '';
+  const appartementId = typeof params?.appartementId === 'string' ? params.appartementId : '';
   const [logement, setLogement] = useState<Logement | null>(null);
   const [accepted, setAccepted] = useState(false);
   const router = useRouter()

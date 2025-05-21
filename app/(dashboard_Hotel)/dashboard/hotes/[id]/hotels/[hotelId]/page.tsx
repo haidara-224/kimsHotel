@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 export default function Page() {
     const {user} =useUser()
     const params = useParams();
-    const HotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
+    const HotelId = Array.isArray(params?.hotelId) ? params.hotelId[0] : params?.hotelId || "";
 
     const [isAdmin,setIsAdmin]=useState<RoleUserHotel | null>(null)
 

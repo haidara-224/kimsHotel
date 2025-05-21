@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 export default function MapFilterItems() {
   const searchParams = useSearchParams();
-  const search = searchParams.get("filter");
+  const search = searchParams?.get("filter");
   const pathName = usePathname();
   const router = useRouter();
 
@@ -18,7 +18,7 @@ export default function MapFilterItems() {
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParams?.toString());
       params.set(name, value);
       return params.toString();
     },

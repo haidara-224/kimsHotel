@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 export default function Page() {
     const [reseration, setReservation] = useState<Reservation | null>(null)
     const params = useParams()
-    const reservationId = Array.isArray(params.id) ? params.id[0] : params.id || "";
+    const reservationId = Array.isArray(params?.id) ? params.id[0] : params?.id || "";
     useEffect(() => {
         async function fetchData() {
             const data = await getReservationById(reservationId) as unknown as Reservation; 

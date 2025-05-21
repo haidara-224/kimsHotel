@@ -10,8 +10,8 @@ export default function Page(){
     const {user} =useUser()
     const params = useParams();
   
-    const hotelId = typeof params.hotelId === "string" ? params.hotelId : params.hotelId?.[0] || "";
-    const chambreId = typeof params.chambreId === "string" ? params.chambreId : params.chambreId?.[0] || "";
+    const hotelId = typeof params?.hotelId === "string" ? params.hotelId : params?.hotelId?.[0] || "";
+    const chambreId = typeof params?.chambreId === "string" ? params.chambreId : params?.chambreId?.[0] || "";
     return(
         <>
           <BackButton text="Tableau" link={`/dashboard/hotes/${user?.id}/hotels`} />

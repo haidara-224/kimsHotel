@@ -40,7 +40,7 @@ export default function HotelChambreData() {
         pageSize: pageSize,
     });
     const params = useParams();
-    const HotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
+    const HotelId = Array.isArray(params?.hotelId) ? params.hotelId[0] : params?.hotelId || "";
 
     
     const [sorting, setSorting] = useState<SortingState>([

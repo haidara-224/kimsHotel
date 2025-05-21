@@ -10,7 +10,7 @@ export default function Page(){
     
     const {user}=useUser()
      const params = useParams();
-                const hotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
+                const hotelId = Array.isArray(params?.hotelId) ? params.hotelId[0] : params?.hotelId || "";
     const handdleSubmit=async(email:string)=>{
         try{
             console.log(email)

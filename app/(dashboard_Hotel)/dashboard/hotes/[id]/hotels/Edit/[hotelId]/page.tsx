@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 export default function Page() {
     const {user}=useUser()
      const params = useParams();
-        const hotelId = Array.isArray(params.hotelId) ? params.hotelId[0] : params.hotelId || "";
+        const hotelId = Array.isArray(params?.hotelId) ? params.hotelId[0] : params?.hotelId || "";
     
     return(
         <>

@@ -8,7 +8,7 @@ import { useParams } from "next/navigation";
 export default function Page(){
     const {user}=useUser()
      const params = useParams();
-    const logementId = Array.isArray(params.appartementId) ? params.appartementId[0] : params.appartementId || "";
+    const logementId = Array.isArray(params?.appartementId) ? params.appartementId[0] : params?.appartementId || "";
     const handleSubmit=async(email:string)=>{
         try{
             console.log(email)

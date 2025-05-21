@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export default function Page() {
     const params = useParams();
-    const HotelId = Array.isArray(params.id) ? params.id[0] : params.id || "";
+    const HotelId = Array.isArray(params?.id) ? params.id[0] : params?.id || "";
 
 
 

@@ -12,7 +12,7 @@ export default function Page() {
   const { user } = useUser();
   const params = useParams();
 
-  const hotelId = typeof params.hotelId === "string" ? params.hotelId : params.hotelId?.[0] || "";
+  const hotelId = typeof params?.hotelId === "string" ? params.hotelId : params?.hotelId?.[0] || "";
 
   const addChambrePath = () => {
     

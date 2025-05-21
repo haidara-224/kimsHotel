@@ -13,7 +13,7 @@ import { toast } from "sonner";
 export default function Page() {
   const { user } = useUser();
   const params = useParams();
-  const hotelId = typeof params.hotelId === 'string' ? params.hotelId : '';
+  const hotelId = typeof params?.hotelId === 'string' ? params.hotelId : '';
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [accepted, setAccepted] = useState(false);
   const router = useRouter()
