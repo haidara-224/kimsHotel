@@ -4,9 +4,10 @@ import { Star, Trash } from "lucide-react";
 
 import Image from "next/image";
 import { useCommentContext } from "@/contexte/userCommentHotelContext";
-import { useUser } from "@clerk/nextjs";
+
 import { DeleteCommentUser } from "@/app/(action)/AvisHotel";
 import { toast } from "sonner";
+import { useSession } from "@/src/lib/auth-client";
 
 
 interface PropsId {
@@ -18,7 +19,7 @@ export function HotelComment({ hotelId }: PropsId) {
   const [isPending, startTransition] = useTransition();
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const { user } = useUser();
+  const { data: session} = useSession();
   useEffect(() => {
     fetchComments(hotelId); 
   }, [hotelId,fetchComments]); 
@@ -51,7 +52,7 @@ export function HotelComment({ hotelId }: PropsId) {
                   className="rounded-full object-cover border border-gray-300"
                 />
                 <div className="text-lg font-medium">
-                  {comment.user?.prenom} {comment.user?.nom}
+                  {comment.user?.name} 
                 </div>
               </div>
 
@@ -72,7 +73,7 @@ export function HotelComment({ hotelId }: PropsId) {
 
             <div className="flex">
                 <span className="text-gray-600">{comment.comment}</span>
-                {user?.id === comment.user?.id && (
+                {session?.user?.id === comment.user?.id && (
                   <button
                     type="button"
                     onClick={() => handleDelete(comment.id)}

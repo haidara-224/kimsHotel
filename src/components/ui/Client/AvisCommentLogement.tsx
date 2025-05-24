@@ -7,7 +7,8 @@ import { Textarea } from "../textarea";
 import { createAvis, createComment, getAvisByUser } from "@/app/(action)/createAvisLogement";
 import { toast } from "sonner";
 import { useCommentContext } from "@/contexte/CommenteContexte";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 
 
 export default function AvisCommentLogement({ logementId }: { logementId: string }) {
@@ -19,7 +20,7 @@ export default function AvisCommentLogement({ logementId }: { logementId: string
   const [isRatingPending, startRatingTransition] = useTransition();
   const [isCommentPending, startCommentTransition] = useTransition();
   const router = useRouter();
-const {user}=useUser()
+const { data: session } = useSession();
   useEffect(() => {
     async function fetchAvis() {
       const avis = await getAvisByUser(logementId);
@@ -74,10 +75,10 @@ const {user}=useUser()
           comment,
           createdAt: new Date(), 
           user: {
-            id: user?.id || "", 
-            nom: user?.firstName || "", 
-            prenom: user?.lastName || "",  
-            profileImage: user?.imageUrl || null,
+            id: session?.user?.id || "", 
+            name: session?.user?.name || "", 
+            
+            profileImage: session?.user?.image || null,
             avis: [{ start: rating }],
           },
         },

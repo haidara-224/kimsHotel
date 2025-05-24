@@ -3,15 +3,22 @@
 import { acceptInvitationHotel, getHotelById, UserIsInHotel } from "@/app/(action)/hotel.action";
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
+import { useSession } from "@/src/lib/auth-client";
 import { Hotel } from "@/types/types";
-import { useUser } from "@clerk/nextjs";
+
 
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { user } = useUser();
+ const { data: session, isPending } = useSession();
+   
+ 
+   
+   const isUnauthenticated = !session && !isPending;
+ 
+    
   const params = useParams();
   const hotelId = typeof params?.hotelId === 'string' ? params.hotelId : '';
   const [hotel, setHotel] = useState<Hotel | null>(null);
@@ -22,14 +29,19 @@ export default function Page() {
     setHotel(data as unknown as Hotel);
   }, [hotelId]);
   const [message,setMesssage]=useState<string>("")
+    useEffect(()=>{
+         if(isUnauthenticated){
+           router.push("/auth/signin")
+         }
+       },[isUnauthenticated, router])
   useEffect(() => {
     async function checkUserInHotel() {
-      if (!user?.id) {
+      if (!session?.user?.id) {
         toast("Vous devez être connecté pour accepter l'invitation.");
         return;
       }
   
-      const isInHotel = await UserIsInHotel(hotelId, user.id);
+      const isInHotel = await UserIsInHotel(hotelId, session?.user.id);
       
       if (isInHotel) {
         setMesssage("Vous êtes déjà membre de cet hôtel.");
@@ -42,26 +54,26 @@ export default function Page() {
     }
   
     checkUserInHotel();
-  }, [user?.id, hotelId, router]);
+  }, [session?.user.id, hotelId, router]);
   
   useEffect(() => {
     getHotel();
   }, [getHotel]);
 
   const handleAcceptInvitation = async () => {
-    if (!user?.id) {
+    if (!session?.user?.id) {
       toast("Vous devez être connecté pour accepter l'invitation.");
       return;
     }
   
     setAccepted(true);
     try {
-      const response = await acceptInvitationHotel(user.id, hotelId);
+      const response = await acceptInvitationHotel(session?.user.id, hotelId);
   
       if (response?.success) {
         toast(response.message || "Invitation acceptée avec succès !");
         setTimeout(() => {
-          router.push(`/dashboard/hotes/${user.id}/hotels/${hotelId}`);
+          router.push(`/dashboard/hotes/${session?.user.id}/hotels/${hotelId}`);
         }, 2000); 
       } else {
         alert(response?.message || "Impossible d'accepter l'invitation.");
@@ -84,7 +96,7 @@ export default function Page() {
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">Invitation à rejoindre un hôtel</h1>
     {message && <p className="text-red-500 text-3xl">{message}</p>}
-      <h1>Bonjour {user?.fullName}</h1>
+      <h1>Bonjour {session?.user?.name}</h1>
       <h1>Bienvenue chez Kims Hotel, vous avez été invité à rejoindre l’hôtel {hotel?.nom} :</h1>
       <Separator className="my-4" />
       <h1>Voici les informations de l’hôtel :</h1>

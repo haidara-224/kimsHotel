@@ -1,9 +1,12 @@
 'use server'
 import { prisma } from "@/src/lib/prisma";
 import { Logement } from "@/types/types";
-import { currentUser } from "@clerk/nextjs/server";
+
 import { revalidatePath } from "next/cache";
 import {del, put} from '@vercel/blob'
+import { getUser } from "@/src/lib/auth.session";
+
+
 
 
 
@@ -29,9 +32,10 @@ export async function CreateLogement(
   price: number,
   images: File[]
 ) {
+   const user=await getUser()
   try {
 
-    const user = await currentUser();
+
     if (!user) throw new Error("Utilisateur non authentifié");
 
     const existingLogement = await prisma.logement.findFirst({
@@ -390,12 +394,12 @@ export async function getDetailsAppartement(logementId:string){
 }
 
 export async function getLogementWithUser() {
-  const user_id = await currentUser()
+   const user=await getUser()
   try {
       const hotel = await prisma.userRoleAppartement.findMany({
           orderBy: { createdAt: "desc" },
           where: {
-              userId: user_id?.id
+              userId: user?.id
           },
           include: {
        
@@ -456,8 +460,9 @@ export async function updateLogement(
   price: number,
   images: File[]
 ) {
+   const user=await getUser()
   try {
-    const user = await currentUser();
+
     if (!user) throw new Error("Utilisateur non authentifié");
 
     const logement = await prisma.logement.findUnique({ where: { id } });

@@ -1,6 +1,7 @@
-import { UserButton } from "@clerk/nextjs";
+
 import Link from "next/link";
 import { ModeToggle } from "../ThemeToggler";
+import { UserButton } from "../UserButton";
 
 
 export function NavBar(){

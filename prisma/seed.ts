@@ -25,12 +25,11 @@ const generateUser = () => {
   const uuid = faker.string.uuid();
   return {
     id: uuid,
-    clerkUserId: uuid,
-    prenom: faker.person.firstName(),
-    nom: faker.person.lastName(),
+
+    name: faker.person.lastName(),
     email: faker.internet.email(),
     profileImage: faker.image.avatar(),
-    telephone: faker.phone.number(),
+  
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
   };
@@ -179,12 +178,15 @@ async function main() {
   // Création des utilisateurs
 
 
-  const users = Array.from({ length: 5 }, generateUser);
+  const users = Array.from({ length: 5 }, generateUser).map(user => ({
+    ...user,
+    emailVerified: false, // or set to true if you want
+  }));
   await prisma.user.createMany({ data: users });
   console.log("✅ Utilisateurs insérés");
 
   // Création des logements
-  const logements = await Promise.all(users.map(user => generateLogement(user.clerkUserId)));
+  const logements = await Promise.all(users.map(user => generateLogement(user.id)));
   const hotel = await Promise.all(users.map(user => generateHotel(user.id)));
   await prisma.logement.createMany({ data: logements });
   await prisma.hotel.createMany({ data: hotel });
@@ -192,10 +194,10 @@ async function main() {
 
   // Création des avis
   const avis = logements.flatMap(logement =>
-    users.map(user => generateAvisLogement(user.clerkUserId, logement.id))
+    users.map(user => generateAvisLogement(user.id, logement.id))
   );
   const avisHotel = hotel.flatMap(hotel =>
-    users.map(user => generateAvisHotel(user.clerkUserId, hotel.id))
+    users.map(user => generateAvisHotel(user.id, hotel.id))
   );
 
   await prisma.avis.createMany({ data: avis });
@@ -204,7 +206,7 @@ async function main() {
 
   // Création des réservations
   const reservations = logements.flatMap(logement =>
-    users.map(user => generateReservationLogement(user.clerkUserId, logement.id))
+    users.map(user => generateReservationLogement(user.id, logement.id))
   );
 
   console.log("✅ Réservations insérées");
@@ -245,7 +247,7 @@ async function main() {
   await prisma.chambre.createMany({ data: dataChambre });
 
   const reservationsChambre = dataChambre.flatMap(chambre =>
-    users.map(user => generateReservationChambre(user.clerkUserId, chambre.id))
+    users.map(user => generateReservationChambre(user.id, chambre.id))
   );
 
   await prisma.reservation.createMany({ data: reservationsChambre });

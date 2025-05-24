@@ -6,14 +6,15 @@ import Link from "next/link";
 import { RoleUserHotel } from "@/types/types";
 import { getHotelWithUser, } from "@/app/(action)/hotel.action";
 import Loader from "../Client/Loader";
+import { useSession } from "@/src/lib/auth-client";
 
-import { useUser } from "@clerk/nextjs";
+
 export default function HotelDataTableUser() {
   const [hotels, setHotels] = useState<RoleUserHotel[]>([]);
   const [isLoading, setIsloading] = useState(false)
 
 
-  const { user } = useUser()
+   const { data: session } = useSession();
 
   const fetchData = useCallback(async () => {
     try {
@@ -72,7 +73,7 @@ export default function HotelDataTableUser() {
                     </div>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
-                    <p className="text-slate-800 dark:text-white">{lg.hotel?.user?.nom}</p>
+                    <p className="text-slate-800 dark:text-white">{lg.hotel?.user?.name}</p>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell">
                     <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
@@ -80,19 +81,19 @@ export default function HotelDataTableUser() {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {lg.role.name === "ADMIN" ? (
-                        <Link href={`/dashboard/hotes/${user?.id}/hotels/users/${lg?.hotel?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
+                        <Link href={`/dashboard/hotes/${session?.user?.id}/hotels/users/${lg?.hotel?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
                           <User className="w-5 h-5" />
                         </Link>
                       ) : (
                         <X className="text-red-800" />
                       )}
-                      <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg?.hotel?.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                      <Link href={`/dashboard/hotes/${session?.user?.id}/hotels/${lg?.hotel?.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
                         <Eye className="w-5 h-5" />
                       </Link>
-                      <Link href={`/dashboard/hotes/${user?.id}/hotels/${lg?.hotel?.id}/chambres`} className="text-green-600 hover:text-green-800 transition-colors">
+                      <Link href={`/dashboard/hotes/${session?.user?.id}/hotels/${lg?.hotel?.id}/chambres`} className="text-green-600 hover:text-green-800 transition-colors">
                         <Bed className="w-5 h-5" />
                       </Link>
-                      <Link href={`/dashboard/hotes/${user?.id}/hotels/Edit/${lg?.hotel?.id}`} className="text-yellow-600 hover:text-yellow-800 transition-colors">
+                      <Link href={`/dashboard/hotes/${session?.user?.id}/hotels/Edit/${lg?.hotel?.id}`} className="text-yellow-600 hover:text-yellow-800 transition-colors">
                         <PencilLine className="w-5 h-5" />
                       </Link>
                     </div>

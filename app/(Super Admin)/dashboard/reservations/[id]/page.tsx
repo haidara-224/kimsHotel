@@ -60,16 +60,13 @@ export default function Page() {
                     <TableBody>
                         <TableRow>
                             <TableHead className="font-semibold">Nom</TableHead>
-                            <TableCell>{reseration?.user.nom}</TableCell>
+                            <TableCell>{reseration?.user.name}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableHead className="font-semibold">Email</TableHead>
                             <TableCell>{reseration?.user.email}</TableCell>
                         </TableRow>
-                        <TableRow>
-                            <TableHead className="font-semibold">Téléphone</TableHead>
-                            <TableCell>{reseration?.user.telephone}</TableCell>
-                        </TableRow>
+                        
 
 
 

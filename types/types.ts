@@ -54,14 +54,13 @@ export interface CommentaireLogement{
 
 export interface User {
   id: string;
-  prenom: string;
-  nom: string;
-  clerkUserId: string;
+  name: string;
+  image?:string;
   email: string;
   roles?: Role[]
   commentUser: CommentaireLogement[]
   profileImage?: string | null;
-  telephone?: string | null
+  emailVerified?:boolean
   createdAt: Date;
   updatedAt: Date;
 }

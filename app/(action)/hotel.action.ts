@@ -1,7 +1,9 @@
 'use server';
 import { prisma } from "@/src/lib/prisma";
 import { Hotel } from "@/types/types";
-import { currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/src/lib/auth.session";
+
+
 import { del, put } from '@vercel/blob'
 export async function createHotel(
     categoryLogementId: string,
@@ -26,8 +28,9 @@ export async function createHotel(
     images: File[],
     imagesHotel: File[]
 ) {
+     const user=await getUser()
     try {
-        const user = await currentUser();
+    
         if (!user) throw new Error("Utilisateur non authentifié");
 
         const existingHotelsEmail = await prisma.hotel.findFirst({
@@ -405,12 +408,12 @@ export async function getDetailsHotel(hotel: string) {
     }
 }
 export async function getHotelWithUser() {
-    const user_id = await currentUser()
+     const user=await getUser()
     try {
         const hotel = await prisma.userRoleHotel.findMany({
             orderBy: { createdAt: "desc" },
             where: {
-                userId: user_id?.id
+                userId: user?.id
             },
             include: {
          
@@ -485,8 +488,9 @@ export async function getShowHotel(id: string) {
     etoils: number,
     imagesHotel: File[]
   ) {
+     const user=await getUser()
     try {
-      const user = await currentUser();
+     
       if (!user) throw new Error("Utilisateur non authentifié");
   
       const hotel = await prisma.hotel.findUnique({

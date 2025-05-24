@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { Button } from '../button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
+
 import {
     AddFavorisHotelWithUser,
     AddFavorisLogementWithUser,
@@ -15,6 +15,7 @@ import {
     isFavoriteLogementUser,
 } from '@/app/(action)/favoris.action';
 import { toast } from 'sonner';
+import { useSession } from '@/src/lib/auth-client';
 
 
 interface getPropsHome {
@@ -39,7 +40,7 @@ export default function ListingCardHome({
     hotelId,
 }: getPropsHome) {
     const router = useRouter();
-    const { isSignedIn } = useUser();
+    const { data: session } = useSession();
     const [adding, setAdding] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [current, setCurrent] = useState(0);
@@ -52,7 +53,7 @@ export default function ListingCardHome({
 
     useEffect(() => {
         const checkFavorite = async () => {
-            if (!isSignedIn) return;
+            if (!session) return;
             if (type === 'logement' && logementId) {
                 setIsFavorite(await isFavoriteLogementUser(logementId));
             } else if (type === 'hotel' && hotelId) {
@@ -60,33 +61,37 @@ export default function ListingCardHome({
             }
         };
         checkFavorite();
-    }, [logementId, hotelId, type, isSignedIn]);
+    }, [logementId, hotelId, type, session]);
 
-    const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (!isSignedIn) {
-            router.push('/sign-in');
-            return;
+   const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!session) {
+        router.push('/sign-in');
+        return;
+    }
+    event.preventDefault();
+    setAdding(true);
+
+    try {
+        let response: { message: string; success: boolean } = { message: '', success: false };
+        if (type === 'logement' && logementId) {
+            response = await AddFavorisLogementWithUser(logementId);
+        } else if (type === 'hotel' && hotelId) {
+            response = await AddFavorisHotelWithUser(hotelId);
         }
-        event.preventDefault();
-        setAdding(true);
 
-        try {
-            let response: { message: string; success: boolean } = { message: '', success: false };
-            if (type === 'logement' && logementId) {
-                response = await AddFavorisLogementWithUser(logementId);
-            } else if (type === 'hotel' && hotelId) {
-                response = await AddFavorisHotelWithUser(hotelId);
-            }
-
-            toast(response.message);
-            setIsFavorite(response.success);
-        } catch (error) {
-            toast.error((error as Error).message || "Erreur lors de l'ajout aux favoris");
-        } finally {
-            setAdding(false);
+        if (!response.success) {
+            throw new Error(response.message || "Action échouée");
         }
-    };
 
+        toast.success(response.message);
+        setIsFavorite(response.success);
+    } catch (error) {
+        console.error("Erreur AddFavoris:", error); // Log détaillé
+        toast.error((error as Error).message || "Erreur lors de l'ajout aux favoris");
+    } finally {
+        setAdding(false);
+    }
+};
     return (
         
              

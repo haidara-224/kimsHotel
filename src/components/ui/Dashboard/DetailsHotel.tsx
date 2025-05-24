@@ -38,7 +38,7 @@ export function DetailsHotel({ hotelId }: HotelProps) {
                                 <TableHead className="lg:table-cell">Status</TableHead>
                                 <TableHead className="lg:table-cell">Nom</TableHead>
                                 <TableHead className="lg:table-cell">Email</TableHead>
-                                <TableHead className="lg:table-cell">Tel</TableHead>
+                               
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -62,9 +62,9 @@ export function DetailsHotel({ hotelId }: HotelProps) {
                                                 })}
                                         </TableCell>
                                         <TableCell>{reservation.status}</TableCell>
-                                        <TableCell>{reservation.user.nom}</TableCell>
+                                        <TableCell>{reservation.user.name}</TableCell>
                                         <TableCell>{reservation.user.email}</TableCell>
-                                        <TableCell>{reservation.user.telephone}</TableCell>
+                                        
                                     </TableRow>
                                 ))
                             ))}
@@ -112,9 +112,9 @@ export function DetailsHotel({ hotelId }: HotelProps) {
                             <TableRow>
 
                                 <TableHead className="lg:table-cell">Nom</TableHead>
-                                <TableHead className="lg:table-cell">Prenom</TableHead>
+                        
                                 <TableHead className="lg:table-cell">Email</TableHead>
-                                <TableHead className="lg:table-cell">Tel</TableHead>
+                               
 
                             </TableRow>
                         </TableHeader>
@@ -122,10 +122,9 @@ export function DetailsHotel({ hotelId }: HotelProps) {
 
                             <TableRow key={hotel?.id}>
 
-                                <TableCell>{hotel?.user.nom}</TableCell>
+                                <TableCell>{hotel?.user.name}</TableCell>
                                 <TableCell>{hotel?.user.email}</TableCell>
-                                <TableCell>{hotel?.user.prenom}</TableCell>
-                                <TableCell>{hotel?.user.telephone ? hotel?.user.telephone : '-----'}</TableCell>
+                               
                             </TableRow>
                         </TableBody>
                     </Table>

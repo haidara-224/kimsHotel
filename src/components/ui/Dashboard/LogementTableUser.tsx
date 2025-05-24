@@ -8,12 +8,13 @@ import { Check, Eye, PencilLine, Users, X } from "lucide-react";
 import Link from "next/link";
 
 import { RoleUserLogement } from "@/types/types";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 
 export function LogementTableUser() {
     const [logements, setLogements] = useState<RoleUserLogement[]>([]);
 
-    const { user } = useUser()
+    const { data: session } = useSession();
     const fetchData = useCallback(async () => {
         const data = await getLogementWithUser();
         setLogements(data as unknown as RoleUserLogement[]);
@@ -60,7 +61,7 @@ export function LogementTableUser() {
                             </TableCell>
 
                             <TableCell className="hidden lg:table-cell">
-                                <p className="text-slate-800 dark:text-white">{lg.logement?.user?.nom}</p>
+                                <p className="text-slate-800 dark:text-white">{lg.logement?.user?.name}</p>
                             </TableCell>
                             <TableCell className="hidden lg:table-cell">
                                 <p className="text-slate-800 dark:text-white">{lg.role.name}</p>
@@ -69,16 +70,16 @@ export function LogementTableUser() {
                             <TableCell className="flex gap-3">
                                 {
                                     lg.role.name === "ADMIN" && (
-                                        <Link href={`/dashboard/hotes/${user?.id}/appartements/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
+                                        <Link href={`/dashboard/hotes/${session?.user?.id}/appartements/users/${lg?.logement?.id}`} className="text-indigo-500 hover:text-indigo-800 transition-colors">
                                             <Users className="w-5 h-5" />
                                         </Link>
                                     )
                                 }
 
-                                <Link href={`/dashboard/hotes/${user?.id}/appartements/${lg?.logement?.id}`}><Eye /></Link>
+                                <Link href={`/dashboard/hotes/${session?.user?.id}/appartements/${lg?.logement?.id}`}><Eye /></Link>
 
                                 <Link
-                                    href={`/dashboard/hotes/${user?.id}/appartements/Edit/${lg?.logement?.id}`}
+                                    href={`/dashboard/hotes/${session?.user?.id}/appartements/Edit/${lg?.logement?.id}`}
                                     className="text-yellow-600 hover:text-yellow-800 transition-colors"
                                 >
                                     <PencilLine className="w-5 h-5" />

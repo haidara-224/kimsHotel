@@ -79,13 +79,13 @@ export default function ViewHotel() {
               <div className="flex items-center gap-4 p-4 ">
                 <Image
                   src={hotel.user?.profileImage ?? '/user_default.jpg'}
-                  alt={`${hotel.user.nom}`}
+                  alt={`${hotel.user.name}`}
                   className="w-14 h-14 rounded-full object-cover"
                   width={56}
                   height={56}
                 />
                 <div>
-                  <p className="text-lg font-semibold">Hôte : {hotel.user.nom} {hotel.user.prenom}</p>
+                  <p className="text-lg font-semibold">Hôte : {hotel.user.name} </p>
                   <p className="text-sm text-gray-500">Membre depuis {dateAnnes} ans</p>
                 </div>
               </div>

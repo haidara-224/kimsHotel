@@ -14,10 +14,11 @@ import {
 
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 
 export default function Page() {
-    const { user } = useUser();
+  const { data: session, } = useSession();
 
     const incomingOccupants = [
         {
@@ -47,11 +48,11 @@ export default function Page() {
                 <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
                     <div className="flex items-center gap-3">
                         <Avatar className="h-12 w-12">
-                            <AvatarImage src={user?.imageUrl} alt={user?.firstName || "User"} />
-                            <AvatarFallback>{user?.firstName?.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={session?.user.image ?? undefined} alt={session?.user.name || "User"} />
+                            <AvatarFallback>{session?.user?.name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className="font-semibold text-xl text-gray-800 dark:text-white">
-                            {user?.firstName}
+                            {session?.user.name}
                         </span>
                     </div>
 

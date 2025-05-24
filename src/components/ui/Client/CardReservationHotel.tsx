@@ -11,8 +11,9 @@ import { Chambre } from "@/types/types";
 import { useEffect, useState } from "react";
 import React from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../dialog";
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+
 import Link from "next/link";
+import { useSession } from "@/src/lib/auth-client";
 
 interface HotelProps {
     chambre: Chambre | null,
@@ -23,7 +24,9 @@ interface HotelProps {
 export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps) {
     const [dateD, setDateD] = React.useState<string>("");
     const [dateA, setDateA] = React.useState<string>("");
-    const { user } = useUser()
+   const { data: session ,isPending} = useSession();
+   const isAuthenticated = !!session;
+  const isUnauthenticated = !session && !isPending;
     const [voyageurs, setVoyageurs] = useState<string>("1");
 
     const formatPrice = (price: number) => {
@@ -134,12 +137,13 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                     readOnly
                                 />
                             <input type="hidden" name="paycard-description" value={`reservation de chambre ${chambre.numero_chambre}`} />
-                            <input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${chambre.id}/${user?.id}`} />
+                            <input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${chambre.id}/${session?.user.id}`} />
                             <input type="hidden" name="paycard-redirect-with-get" value="on" />
                             <input type="hidden" name="paycard-auto-redirect" value="off" />
                             <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
 
-                            <SignedIn>
+                          {
+                            isAuthenticated && (
                                 <Button
                                     className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
                                     disabled={!dateA || !dateD}
@@ -147,11 +151,22 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                     Réserver maintenant
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
-                            </SignedIn>
-                            <SignedOut>
-                                <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
-                                <Link href="/sign-in" className="w-full text-left text-primary">Se Connecter</Link>
-                            </SignedOut>
+
+                            )
+                          }
+                                
+                          
+                           {
+                            isUnauthenticated && (
+                                <>
+                                     <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
+                                <Link href="/auth/signin" className="w-full text-left text-primary">Se Connecter</Link>
+                                </>
+                               
+                            )
+                           }
+                                
+                            
                         </form>
                     )}
 

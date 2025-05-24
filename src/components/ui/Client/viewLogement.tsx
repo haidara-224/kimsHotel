@@ -70,13 +70,13 @@ export default function ViewLogement() {
             <div className="flex items-center gap-4 p-4 ">
               <Image
                 src={logement.user?.profileImage ?? '/user_default.jpg'}
-                alt={`${logement.user.nom}`}
+                alt={`${logement.user.name}`}
                 className="w-14 h-14 rounded-full object-cover"
                 width={56}
                 height={56}
               />
               <div>
-                <p className="text-lg font-semibold">Hôte : {logement.user.nom} {logement.user.prenom}</p>
+                <p className="text-lg font-semibold">Hôte : {logement.user.name} </p>
                 <p className="text-sm text-gray-500">Membre depuis {dateAnnes} ans</p>
               </div>
             </div>

@@ -51,9 +51,9 @@ export function UserDataTable({ title, limit }: UserTableProps) {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Nom</TableHead>
-                        <TableHead>Prenom</TableHead>
+                      
                         <TableHead className="md:table-cell">Email</TableHead>
-                        <TableHead className="md:table-cell" >Telephone</TableHead>
+                     
                         <TableHead className="md:table-cell" >Roles</TableHead>
 
                         <TableHead>Action</TableHead>
@@ -62,10 +62,10 @@ export function UserDataTable({ title, limit }: UserTableProps) {
                 <TableBody>
                     {user.map((ct) => (
                         <TableRow key={ct.id}>
-                            <TableCell> {ct.nom}</TableCell>
-                            <TableCell> {ct.prenom}</TableCell>
+                            <TableCell> {ct.name}</TableCell>
+                         
                             <TableCell> {ct.email}</TableCell>
-                            <TableCell> {ct.telephone}</TableCell>
+                            
                             <TableCell>
                                 {ct.roles?.map((role) => (
                                     <p key={role.id}>{role.name}</p>

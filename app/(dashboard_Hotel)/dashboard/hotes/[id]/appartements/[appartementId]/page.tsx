@@ -7,8 +7,9 @@ import { ChartReservation } from "@/src/components/ui/Dashboard/ChartReservation
 import { DetailsLogement } from "@/src/components/ui/Dashboard/DetailsLogement";
 
 import { DetailsCardLogement } from "@/src/components/ui/Dashboard/DetailsLogementCard";
+import { useSession } from "@/src/lib/auth-client";
 import {  CategoryLogement, Reservation, User } from "@/types/types";
-import { useUser } from "@clerk/nextjs";
+
 
 import { NotepadText, Star, Heart } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -52,6 +53,7 @@ interface Logement {
     updatedAt: Date;
   }
 export default function Page() {
+      const { data: session } = useSession();
     const params = useParams();
     const logementId = Array.isArray(params?.appartementId) ? params.appartementId[0] : params?.appartementId || "";
 
@@ -78,11 +80,11 @@ export default function Page() {
 
         fetchData();
     }, [logementId,fetchData]);
-    const {user}=useUser()
+ 
 
     return (
         <>
-            <BackButton text="Logement" link={`/dashboard/hotes/${user?.id}/appartements`}  />
+            <BackButton text="Logement" link={`/dashboard/hotes/${session?.user?.id}/appartements`}  />
             <div className="w-full grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-5">
                 {
                     calculateRate && (

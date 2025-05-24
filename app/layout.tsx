@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
+
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommentProvider } from "@/contexte/CommenteContexte";
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ClerkProvider appearance={{ layout: { unsafe_disableDevelopmentModeWarnings: true } }}>
+        
           <CommentProvider>
             <CommentHotelProvider>
               <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </ThemeProvider>
             </CommentHotelProvider>
           </CommentProvider>
-        </ClerkProvider>
+       
       </body>
     </html>
   );

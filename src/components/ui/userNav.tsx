@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useUser } from "@clerk/nextjs";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +11,14 @@ import {
 } from "./dropdown-menu";
 import Link from "next/link";
 import { AlignRight } from "lucide-react";
-import { CreateAddUser, userHasRoles } from "@/app/(action)/user.action";
+import {  userHasRoles } from "@/app/(action)/user.action";
+import { useSession } from "@/src/lib/auth-client";
 
 export function UserNav() {
-  const { user } = useUser();
-  const email = user?.primaryEmailAddress?.emailAddress;
-  const fullname = user?.fullName;
-  const [userRoles, setUserRoles] = useState<string[] | null>(null); // null = en chargement
+   const { data: session } = useSession();
+  const email = session?.user.email;
+  const fullname = session?.user.name;
+  const [userRoles, setUserRoles] = useState<string[] | null>(null); 
 
   useEffect(() => {
     const fetchUserRoles = async () => {
@@ -25,19 +26,20 @@ export function UserNav() {
       if (rolesData?.roles) {
         setUserRoles(rolesData.roles);
       } else {
-        setUserRoles([]); // cas où y a pas de rôle
+        setUserRoles([]); 
       }
     };
 
-    if (user) {
+    if (session?.user) {
       fetchUserRoles();
     }
-  }, [user]);
+  }, [session?.user]);
 
   useEffect(() => {
     const initUser = async () => {
       if (email && fullname) {
-        await CreateAddUser();
+        //await CreateAddUser();
+        console.log('hello')
       }
     };
     initUser();

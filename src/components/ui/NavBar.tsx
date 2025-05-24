@@ -3,23 +3,22 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  UserButton,
-} from "@clerk/nextjs";
+
+
 import { motion, AnimatePresence } from "framer-motion";
 import { CalendarCheck, Heart, Home, Hotel, LucideIcon } from "lucide-react";
 
 import { UserNav } from "./userNav";
 import { ModeToggle } from "./ThemeToggler";
+import { signOut, useSession } from "@/src/lib/auth-client";
+import { UserButton } from "./UserButton";
 
 export function NavBar() {
-  const { user } = useUser();
+  const { data: session, isPending } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const isAuthenticated = !!session;
+  const isUnauthenticated = !session && !isPending;
 
   return (
     <>
@@ -40,7 +39,7 @@ export function NavBar() {
 
           {/* Menu principal (desktop) */}
           <div className="hidden md:flex items-center space-x-6">
-            <AnimatedLink href={`/dashboard/hotes/${user?.id || ""}`} Icon={Home}>
+            <AnimatedLink href={`/dashboard/hotes/${session?.user?.id || ""}`} Icon={Home}>
               Mes Annonces
             </AnimatedLink>
             <AnimatedLink href="/favorites" Icon={Heart}>
@@ -50,30 +49,40 @@ export function NavBar() {
               Mes Réservations
             </AnimatedLink>
             <AnimatedLink href="/type-etablissement" Icon={Hotel}>
-            Ajouter Mon Etablissement
+              Ajouter Mon Etablissement
             </AnimatedLink>
 
-            
+
           </div>
 
           {/* Options à droite */}
           <div className="hidden md:flex items-center space-x-4">
-          <SignedOut>
-              <SignInButton>
-                <button className="w-full text-left">Se Connecter</button>
-              </SignInButton>
-            </SignedOut>
 
-            <SignedIn>
-              <SignOutButton>
-                <button className="w-full text-left">Se Déconnecter</button>
-              </SignOutButton>
-            </SignedIn>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-            <UserNav />
-            <ModeToggle />
+            {isUnauthenticated && (
+              <Link href="/auth/signin" className="w-full text-left">
+                Se Connecter
+              </Link>
+            )}
+
+            {isAuthenticated && (
+              <button onClick={() => signOut()} className="w-full text-left">
+                Se Déconnecter
+              </button>
+            )}
+
+
+
+            <>
+
+
+
+              <UserNav />
+              <ModeToggle />
+              {
+                isAuthenticated && (
+                  <UserButton />
+                )
+              }</>
           </div>
 
           {/* Burger menu (mobile) */}
@@ -107,7 +116,7 @@ export function NavBar() {
             transition={{ duration: 0.3 }}
             className="md:hidden px-2 pt-2 pb-3 space-y-1 sm:px-3"
           >
-          <AnimatedLink href={`/dashboard/hotes/${user?.id || ""}`} Icon={Home}>
+            <AnimatedLink href={`/dashboard/hotes/${session?.user.id || ""}`} Icon={Home}>
               Mes Annonces
             </AnimatedLink>
             <AnimatedLink href="/favorites" Icon={Heart}>
@@ -117,26 +126,28 @@ export function NavBar() {
               Mes Réservations
             </AnimatedLink>
             <AnimatedLink href="/type-etablissement" Icon={Hotel}>
-            Ajouter Mon Etablissement
+              Ajouter Mon Etablissement
             </AnimatedLink>
 
             <div className="flex items-center gap-4 px-3 py-2">
-              <SignedOut>
-              <SignInButton>
-                <button className="w-full text-left">Se Connecter</button>
-              </SignInButton>
-            </SignedOut>
 
-            <SignedIn>
-              <SignOutButton>
-                <button className="w-full text-left">Se Déconnecter</button>
-              </SignOutButton>
-            </SignedIn>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-            <UserNav />
-            <ModeToggle />
+
+              {isUnauthenticated && (
+                <Link href="/auth/signin" className="w-full text-left">
+                  Se Connecter
+                </Link>
+              )}
+
+              {isAuthenticated && (
+                <button onClick={() => signOut()} className="w-full text-left">
+                  Se Déconnecter
+                </button>
+              )}
+
+
+
+              <UserNav />
+              <ModeToggle />
             </div>
           </motion.div>
         )}

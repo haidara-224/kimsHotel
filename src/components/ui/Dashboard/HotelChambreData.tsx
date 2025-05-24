@@ -26,7 +26,8 @@ import Image from "next/image";
 
 import ToggleDisponibiliteCell from "./Toggledisponibility";
 import { ActionRow } from "./ActionRow";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 
 
 
@@ -72,7 +73,7 @@ export default function HotelChambreData() {
         fetchPost()
 
     }, [fetchPost]);
-    const { user } = useUser()
+    const { data: session } = useSession();
     const columns: ColumnDef<Chambres>[] = [
         {
             accessorKey: "numero_chambre",
@@ -182,7 +183,7 @@ export default function HotelChambreData() {
                     id={row.original.id}
                     reload={fetchPost}
                     hotelId={HotelId}
-                    userId={user?.id}
+                    userId={session?.user?.id}
 
                 />
             ),

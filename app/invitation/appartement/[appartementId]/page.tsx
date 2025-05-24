@@ -4,15 +4,21 @@
 import { acceptInvitationLogement, getLogementById, UserIsInLogement } from "@/app/(action)/Logement.action";
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
+import { useSession } from "@/src/lib/auth-client";
 import {  Logement } from "@/types/types";
-import { useUser } from "@clerk/nextjs";
+
 
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function Page() {
-  const { user } = useUser();
+ const { data: session, isPending } = useSession();
+    
+  
+    
+    const isUnauthenticated = !session && !isPending;
+  
   const params = useParams();
   const appartementId = typeof params?.appartementId === 'string' ? params.appartementId : '';
   const [logement, setLogement] = useState<Logement | null>(null);
@@ -23,14 +29,19 @@ export default function Page() {
     setLogement(data as unknown as Logement);
   }, [appartementId]);
   const [message,setMessage]=useState<string>("")
+      useEffect(()=>{
+           if(isUnauthenticated){
+             router.push("/auth/signin?redirect=favorites")
+           }
+         },[isUnauthenticated,router])
   useEffect(() => {
     async function checkUserInLogement() {
-      if (!user?.id) {
+      if (!session?.user?.id) {
         toast("Vous devez être connecté pour accepter l'invitation.");
         return;
       }
   
-      const isInLogement = await UserIsInLogement(appartementId, user.id);
+      const isInLogement = await UserIsInLogement(appartementId, session?.user.id);
       
       if (isInLogement) {
         setMessage("Vous êtes déjà membre de cet hôtel.");
@@ -43,26 +54,26 @@ export default function Page() {
     }
   
     checkUserInLogement();
-  }, [user?.id, appartementId, router]);
+  }, [session?.user?.id, appartementId, router]);
   
   useEffect(() => {
     getLogement();
   }, [getLogement]);
 
   const handleAcceptInvitation = async () => {
-    if (!user?.id) {
+    if (!session?.user?.id) {
       toast("Vous devez être connecté pour accepter l'invitation.");
       return;
     }
   
     setAccepted(true);
     try {
-      const response = await acceptInvitationLogement(user.id, appartementId);
+      const response = await acceptInvitationLogement(session?.user.id, appartementId);
   
       if (response?.success) {
         toast(response.message || "Invitation acceptée avec succès !");
         setTimeout(() => {
-          router.push(`/dashboard/hotes/${user.id}/appartements/${appartementId}`);
+          router.push(`/dashboard/hotes/${session?.user.id}/appartements/${appartementId}`);
         }, 2000); 
       } else {
         alert(response?.message || "Impossible d'accepter l'invitation.");
@@ -85,7 +96,7 @@ export default function Page() {
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <h1 className="text-2xl font-bold mb-4">Invitation à rejoindre un Appartement</h1>
     {message && <p className="text-red-500 text-3xl">{message}</p>}
-      <h1>Bonjour {user?.fullName}</h1>
+      <h1>Bonjour {session?.user?.name}</h1>
       <h1>Bienvenue chez Kims Hotel, vous avez été invité à rejoindre l’appartement {logement?.nom} :</h1>
       <Separator className="my-4" />
       <h1>Voici les informations de l’appartement :</h1>

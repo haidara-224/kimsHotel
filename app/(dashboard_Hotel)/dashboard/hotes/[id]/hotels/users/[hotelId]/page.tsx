@@ -3,12 +3,13 @@
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { InvitationUserHotelDialogue } from "@/src/components/ui/Dashboard/IvitationUserHotel";
 import UserHotelDataTable from "@/src/components/ui/Dashboard/UserHotelDataUserTable";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 
 import { useParams } from "next/navigation";
 export default function Page(){
     
-    const {user}=useUser()
+    const { data: session } = useSession();
      const params = useParams();
                 const hotelId = Array.isArray(params?.hotelId) ? params.hotelId[0] : params?.hotelId || "";
     const handdleSubmit=async(email:string)=>{
@@ -34,7 +35,7 @@ export default function Page(){
     return (         
         <>
         <div className="flex justify-between items-center">
-        <BackButton text="Tableau" link={`/dashboard/hotes/${user?.id}/hotels`} />
+        <BackButton text="Tableau" link={`/dashboard/hotes/${session?.user?.id}/hotels`} />
         <InvitationUserHotelDialogue onSubmit={handdleSubmit} />
         </div>
         <UserHotelDataTable hotel={hotelId} />

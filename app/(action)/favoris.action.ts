@@ -1,10 +1,12 @@
 "use server"
 
 import { prisma } from "@/src/lib/prisma"
-import { currentUser } from "@clerk/nextjs/server"
+import { getUser } from "@/src/lib/auth.session";
+
+
 
 export async function AddFavorisLogementWithUser(logementId: string) {
-    const user = await currentUser();
+  const user=await getUser()
     if (!user) throw new Error("Utilisateur non connecté");
 
   
@@ -29,7 +31,7 @@ export async function AddFavorisLogementWithUser(logementId: string) {
 
 
 export async function AddFavorisHotelWithUser(hotelId: string) {
-    const user = await currentUser();
+ const user=await getUser()
     if (!user)  return { success: false, message: "Utilisateur non connecté" }
     const alreadyFavorite = await prisma.favorite.findFirst({
         where: { userId: user.id, hotelId }
@@ -51,7 +53,7 @@ export async function AddFavorisHotelWithUser(hotelId: string) {
 
 
 export async function isFavoriteLogementUser(logementId: string) {
-    const user = await currentUser();
+   const user=await getUser()
     if (!user) return false;
 
     const isFavorite = await prisma.favorite.findFirst({
@@ -62,7 +64,7 @@ export async function isFavoriteLogementUser(logementId: string) {
 }
 
 export async function isFavoriteHotelUser(hotelId: string) {
-    const user = await currentUser();
+ const user=await getUser()
     if (!user) return false;
 
     const isFavorite = await prisma.favorite.findFirst({
@@ -73,7 +75,7 @@ export async function isFavoriteHotelUser(hotelId: string) {
 }
 
 export async function getFavorisByUserId() {
-    const user = await currentUser();
+    const user=await getUser()
     if (!user) return [];
 
     const favorites = await prisma.favorite.findMany({
@@ -111,7 +113,7 @@ export async function getFavorisByUserId() {
 
 
 export async function deleteFavorisById(favorisId: string) {
-    const user = await currentUser();
+  const user=await getUser()
     if (!user) return null;
 
     const deletedFavoris = await prisma.favorite.delete({

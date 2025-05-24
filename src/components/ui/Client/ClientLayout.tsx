@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { Menu, X, Hotel, House } from "lucide-react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { ModeToggle } from "../ThemeToggler";
 import Image from "next/image";
+import { useSession } from "@/src/lib/auth-client";
 
 export default function ClientLayouts({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { user } = useUser();
+  const { data: session, } = useSession();
   const pathname = usePathname();
 
   const navItems = [
-    { icon: Hotel, label: "Hotels", href: `/dashboard/hotes/${user?.id}/hotels` },
-    { icon: House, label: "Appartements", href: `/dashboard/hotes/${user?.id}/appartements` },
+    { icon: Hotel, label: "Hotels", href: `/dashboard/hotes/${session?.user?.id}/hotels` },
+    { icon: House, label: "Appartements", href: `/dashboard/hotes/${session?.user?.id}/appartements` },
 
   ];
 

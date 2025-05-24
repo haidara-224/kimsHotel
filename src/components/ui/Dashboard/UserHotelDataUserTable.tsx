@@ -61,7 +61,7 @@ export default function UserHotelDataTable({ hotel }: tableProps) {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Name</TableHead>
-                                <TableHead>Prenom</TableHead>
+                                
                                 <TableHead>Email</TableHead>
                                 <TableHead>Role</TableHead>
                                 <TableHead>Bloqué/Debloqué</TableHead>
@@ -72,11 +72,9 @@ export default function UserHotelDataTable({ hotel }: tableProps) {
                         <TableBody>
                             {users.map((lg) => (
                                 <TableRow key={lg?.user?.id}>
+                                 
                                     <TableCell>
-                                        <p className="text-slate-800 dark:text-white">{lg.user?.prenom}</p>
-                                    </TableCell>
-                                    <TableCell>
-                                        <p className="text-slate-800 dark:text-white">{lg.user?.nom}</p>
+                                        <p className="text-slate-800 dark:text-white">{lg.user?.name}</p>
                                     </TableCell>
                                     <TableCell>
                                         <p className="text-slate-800 dark:text-white">{lg.user?.email}</p>

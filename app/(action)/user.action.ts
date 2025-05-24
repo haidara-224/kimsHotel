@@ -2,7 +2,9 @@
 
 import { prisma } from "@/src/lib/prisma";
 
-import { currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/src/lib/auth.session";
+
+
 
 export async function getUsers() {
   try {
@@ -31,71 +33,14 @@ export async function getUsers() {
   }
 }
 
-
-export async function CreateAddUser() {
-  const user = await currentUser()
-if(!user){
-  return null
-}
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      clerkUserId: user?.id
-    }
-  });
-
-  if(existingUser){
-   // console.log(existingUser)
-    return existingUser
-  }
-  if (!existingUser && user?.firstName) {
-    const createUser = await prisma.user.create({
-      data: {
-        id: user?.id || "Inconnu",
-        clerkUserId:user?.id,
-        prenom: user?.lastName || "Inconnu",
-        nom: user?.firstName || "Inconnu",
-        email: user?.primaryEmailAddress?.emailAddress || "Inconnu",
-        profileImage: user?.imageUrl,
-        telephone: user?.primaryPhoneNumber?.phoneNumber
-
-
-      },
-      include: { roles: true }, 
-
-    })
-    if (createUser?.roles.length === 0) {
-      // Trouver le rôle CLIENT
-      let clientRole = await prisma.role.findUnique({
-        where: { name: "CLIENT" },
-      });
-
-   
-      if (!clientRole) {
-        clientRole = await prisma.role.create({
-          data: { name: "CLIENT" },
-        });
-      }
-    
-      await prisma.userRole.create({
-        data: {
-          userId: createUser.clerkUserId,
-          roleId: clientRole.id,
-        },
-      });
-    }
-    return createUser
-  }
-
-}
-
 export async function userHasRoles() {
   try {
 
-    const user = await currentUser()
+     const user=await getUser()
     if (user) {
 
       const dbUser = await prisma.user.findUnique({
-        where: { clerkUserId: user.id },
+        where: { id: user.id },
         select: {
           id: true,
           roles: {
@@ -124,7 +69,7 @@ export async function userHasRoles() {
 }
 export async function userIsAdmin(): Promise<boolean> {
 
-  const user = await currentUser();
+ const user=await getUser()
   if (!user) return false;
 
 
@@ -146,7 +91,7 @@ export async function userIsAdmin(): Promise<boolean> {
 }
 export async function userIsSuperAdmin(): Promise<boolean> {
 
-  const user = await currentUser();
+  const user=await getUser()
   if (!user) return false;
 
 
@@ -167,8 +112,8 @@ export async function userIsSuperAdmin(): Promise<boolean> {
   return Boolean(userRole);
 }
 export async function userIsHotelier(): Promise<boolean> {
+ const user=await getUser()
 
-  const user = await currentUser();
   if (!user) return false;
 
 
@@ -204,10 +149,10 @@ export async function deletedUser(id: string) {
 export async function DeleteUser()
 {
   
-  const user = await currentUser();
+   const user=await getUser()
   await prisma.user.delete({
     where: {
-      clerkUserId: user?.id
+      id: user?.id
     }
   });
 }

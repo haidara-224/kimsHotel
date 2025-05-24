@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -44,17 +45,20 @@ model Role {
   name                Roles                 @unique
   users               UserRole[]            @relation("RoleUsers")
   UserRoleAppartement UserRoleAppartement[] @relation("RoleUsersLogement")
-  UserRoleHotel       UserRoleHotel[] @relation("RoleUsersHotel")
+  UserRoleHotel       UserRoleHotel[]       @relation("RoleUsersHotel")
 }
 
 model User {
   id                  String                @id @unique
-  prenom              String
-  nom                 String
-  clerkUserId         String                @unique
+ 
+  name          String
+  emailVerified Boolean
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
   email               String                @unique
   profileImage        String?
-  telephone           String?
+
   roles               UserRole[]            @relation("UserRoles")
   logements           Logement[]            @relation("UserLogements")
   favorites           Favorite[]            @relation("UserFavorites")
@@ -66,16 +70,19 @@ model User {
   updatedAt           DateTime              @updatedAt
   CommentaireHotel    CommentaireHotel[]    @relation("UserCommentHotel")
   UserRoleAppartement UserRoleAppartement[] @relation("UserLogement")
-  UserRoleHotel       UserRoleHotel[] @relation("UserHotel")
+  UserRoleHotel       UserRoleHotel[]       @relation("UserHotel")
+
+ 
 
   @@index([email])
+  @@map("user")
 }
 
 model UserRole {
   userId String
   roleId String
 
-  user User @relation("UserRoles", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user User @relation("UserRoles", fields: [userId], references: [id], onDelete: Cascade)
   role Role @relation("RoleUsers", fields: [roleId], references: [id], onDelete: Cascade)
 
   @@id([userId, roleId])
@@ -115,7 +122,7 @@ model ImageHotel {
 
 model Hotel {
   id                 String               @id @default(uuid())
-  user               User                 @relation("UserHotels", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user               User                 @relation("UserHotels", fields: [userId], references: [id], onDelete: Cascade)
   userId             String
   hotelOptions       HotelOptionOnHotel[] @relation("OptionOnHotel")
   categoryLogement   CategoryLogement     @relation("CategoryToHotel", fields: [categoryLogementId], references: [id], onDelete: Cascade)
@@ -140,14 +147,14 @@ model Hotel {
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   CommentaireHotel CommentaireHotel[] @relation("HotelComment")
-  UserRoleHotel    UserRoleHotel[] @relation("UserRoleHotel")
+  UserRoleHotel    UserRoleHotel[]    @relation("UserRoleHotel")
 
   @@index([nom])
 }
 
 model Logement {
   id                 String                     @id @default(uuid())
-  user               User                       @relation("UserLogements", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user               User                       @relation("UserLogements", fields: [userId], references: [id], onDelete: Cascade)
   userId             String
   logementOptions    LogementOptionOnLogement[] @relation("LogementToOptionOnLogement")
   categoryLogement   CategoryLogement           @relation("CategoryToLogement", fields: [categoryLogementId], references: [id], onDelete: Cascade)
@@ -242,7 +249,7 @@ model Reservation {
   startDate  DateTime
   endDate    DateTime
   status     StatutReservations @default(PENDING)
-  user       User?              @relation("UserReservations", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user       User?              @relation("UserReservations", fields: [userId], references: [id], onDelete: Cascade)
   userId     String?
   logement   Logement?          @relation("LogementReservations", fields: [logementId], references: [id], onDelete: Cascade)
   logementId String?
@@ -256,7 +263,7 @@ model Reservation {
 model Avis {
   id         String    @id @default(uuid())
   start      Int
-  user       User?     @relation("UserAvis", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user       User?     @relation("UserAvis", fields: [userId], references: [id], onDelete: Cascade)
   userId     String?
   logement   Logement? @relation("LogementAvis", fields: [logementId], references: [id], onDelete: Cascade)
   logementId String?
@@ -271,7 +278,7 @@ model CommentaireLogement {
   comment    String    @db.VarChar(1000)
   logement   Logement? @relation("LogementComment", fields: [logementId], references: [id], onDelete: Cascade)
   logementId String?
-  user       User?     @relation("UserComment", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user       User?     @relation("UserComment", fields: [userId], references: [id], onDelete: Cascade)
   userId     String?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -282,7 +289,7 @@ model CommentaireHotel {
   comment   String   @db.VarChar(1000)
   hotel     Hotel?   @relation("HotelComment", fields: [hotelId], references: [id], onDelete: Cascade)
   hotelId   String?
-  user      User?    @relation("UserCommentHotel", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  user      User?    @relation("UserCommentHotel", fields: [userId], references: [id], onDelete: Cascade)
   userId    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -318,29 +325,76 @@ model Paiement {
 }
 
 model UserRoleAppartement {
-  id         String    @id @default(uuid())
+  id         String   @id @default(uuid())
   logement   Logement @relation("UserRoleLogement", fields: [logementId], references: [id], onDelete: Cascade)
   logementId String
   roleId     String
-  role       Role      @relation("RoleUsersLogement", fields: [roleId], references: [id], onDelete: Cascade)
+  role       Role     @relation("RoleUsersLogement", fields: [roleId], references: [id], onDelete: Cascade)
   userId     String
-  active     Boolean @default(true)
-  user      User     @relation("UserLogement", fields: [userId], references: [clerkUserId], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  active     Boolean  @default(true)
+  user       User     @relation("UserLogement", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
   @@unique([userId, logementId])
 }
 
 model UserRoleHotel {
-  id      String  @id @default(uuid())
-  hotel   Hotel  @relation("UserRoleHotel", fields: [hotelId], references: [id], onDelete: Cascade)
-  hotelId String
-  roleId  String
-  role    Role    @relation("RoleUsersHotel", fields: [roleId], references: [id], onDelete: Cascade)
-  userId  String
-  active   Boolean @default(true)
-  user      User     @relation("UserHotel", fields: [userId], references: [clerkUserId], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  hotel     Hotel    @relation("UserRoleHotel", fields: [hotelId], references: [id], onDelete: Cascade)
+  hotelId   String
+  roleId    String
+  role      Role     @relation("RoleUsersHotel", fields: [roleId], references: [id], onDelete: Cascade)
+  userId    String
+  active    Boolean  @default(true)
+  user      User     @relation("UserHotel", fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
   @@unique([userId, hotelId])
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }

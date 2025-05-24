@@ -1,9 +1,12 @@
 "use server";
-
 import { prisma } from "@/src/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+
+import { getUser } from "@/src/lib/auth.session";
+
+
 export async function createAvis(hotelId: string, rating: number) {
-    const user = await currentUser();
+     const user=await getUser()
+   
     if (!user) {
         return { success: false, message: "Utilisateur non connecté" };
     }
@@ -48,7 +51,7 @@ export async function createAvis(hotelId: string, rating: number) {
 }
 
 export async function createComment(hotelId: string, comment: string) {
-    const user = await currentUser();
+const user=await getUser()
     if (!user) {
         return { success: false, message: "Utilisateur non connecté" };
     }
@@ -72,7 +75,7 @@ export async function createComment(hotelId: string, comment: string) {
     }
 }
 export async function getAvisByUser(hotelId: string) {
-    const user = await currentUser();
+ const user=await getUser()
     if (!user) return null;
 
     return await prisma.avis.findFirst({
@@ -91,8 +94,8 @@ export async function UserCommentHotel(hotelId: string) {
             user: {
                 select: {
                     id:true,
-                    nom: true,
-                    prenom: true,
+                    name: true,
+                 
                     profileImage:true,
                     avis: {
                         where: {

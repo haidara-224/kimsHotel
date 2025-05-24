@@ -7,15 +7,16 @@ import { MonthlyChart } from "@/src/components/ui/Dashboard/ChartReportReservati
 import { ChartReservation } from "@/src/components/ui/Dashboard/chartReservationHotel";
 import { DetailsHotel } from "@/src/components/ui/Dashboard/DetailsHotel";
 import { DetailsCardLogement } from "@/src/components/ui/Dashboard/DetailsLogementCard";
+import { useSession } from "@/src/lib/auth-client";
 import { Hotels, RoleUserHotel} from "@/types/types";
-import { useUser } from "@clerk/nextjs";
+
 
 import { Heart, NotepadText, Star, Trash2Icon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 export default function Page() {
-    const {user} =useUser()
+  const { data: session } = useSession();
     const params = useParams();
     const HotelId = Array.isArray(params?.hotelId) ? params.hotelId[0] : params?.hotelId || "";
 
@@ -53,7 +54,7 @@ export default function Page() {
         <>
            <div className="flex justify-between">
             
-           <BackButton text="Tableau" link={`/dashboard/hotes/${user?.id}/hotels`} />
+           <BackButton text="Tableau" link={`/dashboard/hotes/${session?.user?.id}/hotels`} />
            {isAdmin?.role.name==="ADMIN"
            &&  <Button type="submit" variant={'destructive'}><Trash2Icon/></Button>
            }

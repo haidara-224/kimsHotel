@@ -3,8 +3,8 @@ import { ChartDashboard } from "@/src/components/ui/Dashboard/ChartDashboard";
 import { CountDashboard } from "@/src/components/ui/Dashboard/CoutDashboard";
 
 
-
-export default function Page() {
+export default async function Page() {
+    
    
     return (
         <>

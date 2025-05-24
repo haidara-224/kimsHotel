@@ -17,10 +17,11 @@ import { ParkingCircle, Snowflake, Tv, Utensils, Wifi } from "lucide-react";
 
 import Image from "next/image";
 import { Textarea } from "../textarea";
-import { useUser } from "@clerk/nextjs";
+
 import { CreationSchemaHotel } from "@/Validation/creationHotelShema";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "../select";
 import { createHotel } from "@/app/(action)/hotel.action";
+import { useSession } from "@/src/lib/auth-client";
 
 interface FormLogement {
     option: [string, ...string[]];
@@ -59,7 +60,7 @@ interface Option {
 }
 
 export default function MultiformStepHotel() {
-    const { user } = useUser()
+    const { data: session} = useSession();
     const [step, setStep] = useState(1);
     const router = useRouter()
     const [imageUrl, setImageUrl] = useState<string[] | null>(null)
@@ -217,7 +218,7 @@ export default function MultiformStepHotel() {
         } else {
             toast("Logement créé avec success")
             setTimeout(() => {
-                router.push(`/dashboard/hotes/${user?.id}`)
+                router.push(`/dashboard/hotes/${session?.user?.id}`)
             }, 1000);
         }
     }

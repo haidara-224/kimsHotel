@@ -3,10 +3,11 @@
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { InvitationUserLogementDialogue } from "@/src/components/ui/Dashboard/InvitationUserLogement";
 import UserLogementDataTable from "@/src/components/ui/Dashboard/UserLogementDataTables";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 import { useParams } from "next/navigation";
 export default function Page(){
-    const {user}=useUser()
+    const { data: session } = useSession();
      const params = useParams();
     const logementId = Array.isArray(params?.appartementId) ? params.appartementId[0] : params?.appartementId || "";
     const handleSubmit=async(email:string)=>{
@@ -33,7 +34,7 @@ export default function Page(){
           
         <>
         <div className="flex justify-between items-center">
-        <BackButton text="Logement" link={`/dashboard/hotes/${user?.id}/appartements`}  />
+        <BackButton text="Logement" link={`/dashboard/hotes/${session?.user?.id}/appartements`}  />
         <InvitationUserLogementDialogue onSubmit={handleSubmit}/>
         </div>
         

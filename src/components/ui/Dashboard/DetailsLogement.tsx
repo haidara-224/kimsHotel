@@ -57,7 +57,7 @@ export function DetailsLogement({ logementId }: logementProps) {
                                             day: "numeric",
                                         })}</TableCell>
                                     <TableCell className=" lg:table-cell">{rs.status}</TableCell>
-                                    <TableCell className="lg:table-cell">{rs.user.nom}</TableCell>
+                                    <TableCell className="lg:table-cell">{rs.user.name}</TableCell>
 
 
 
@@ -74,16 +74,13 @@ export function DetailsLogement({ logementId }: logementProps) {
                         <TableBody>
                             <TableRow>
                                 <TableHead className="font-semibold">Nom</TableHead>
-                                <TableCell>{logement?.user.nom}</TableCell>
+                                <TableCell>{logement?.user.name}</TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableHead className="font-semibold">Email</TableHead>
                                 <TableCell>{logement?.user.email}</TableCell>
                             </TableRow>
-                            <TableRow>
-                                <TableHead className="font-semibold">Téléphone</TableHead>
-                                <TableCell>{logement?.user.telephone}</TableCell>
-                            </TableRow>
+                           
 
 
 

@@ -1,7 +1,7 @@
 "use client";
 import { NavBar } from "@/src/components/ui/NavBar";
 import { Favorites } from "@/types/types";
-import { useUser } from "@clerk/nextjs";
+
 import { useCallback, useEffect, useState } from "react";
 import { deleteFavorisById, getFavorisByUserId } from "../(action)/favoris.action";
 import { useRouter } from "next/navigation";
@@ -9,9 +9,10 @@ import { X } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import Loader from "@/src/components/ui/Client/Loader";
+import { useSession } from "@/src/lib/auth-client";
 
 export default function Page() {
-    const { user, isSignedIn } = useUser();
+      const { data: session ,isPending} = useSession();
     const [favoris, setFavoris] = useState<Favorites[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -19,7 +20,7 @@ export default function Page() {
     const [pending, setPending] = useState(false);
     const [hoveredFavoriId, setHoveredFavoriId] = useState<string | null>(null);
 
-    const userId = user?.id || null;
+    const userId = session?.user?.id || null;
 
     const fetchFavoris = useCallback(async () => {
         if (userId) {
@@ -59,12 +60,24 @@ export default function Page() {
             setPending(false);
         }
     };
+  
+  
+   
+  
 
+
+  const isUnauthenticated = !session && !isPending;
+  
+    useEffect(()=>{
+      if(isUnauthenticated){
+        router.push("/auth/signin?redirect=favorites")
+      }
+    },[isUnauthenticated,router])
     useEffect(() => {
 
         fetchFavoris();
 
-    }, [isSignedIn, router, fetchFavoris]);
+    }, [userId, router, fetchFavoris]);
 
     if (isLoading) {
         return (

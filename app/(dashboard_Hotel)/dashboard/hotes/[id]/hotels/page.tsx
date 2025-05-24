@@ -3,21 +3,22 @@
 
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import HotelDataTableUser from "@/src/components/ui/Dashboard/HotelDataTableUser";
+import { useSession } from "@/src/lib/auth-client";
 
-import { useUser } from "@clerk/nextjs";
+
 
 
 
 
 export default function Page() {
    
-    const {user}=useUser()
+   const { data: session } = useSession();
 
    
 
     return(
         <>          
-            <BackButton text="Dashboard" link={`/dashboard/hotes/${user?.id}`}/>
+            <BackButton text="Dashboard" link={`/dashboard/hotes/${session?.user?.id}`}/>
           
             
               <HotelDataTableUser />

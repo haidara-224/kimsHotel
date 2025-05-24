@@ -10,8 +10,8 @@ interface Comment {
   createdAt:Date;
   user: {
     id:string,
-    nom: string;
-    prenom: string;
+    name: string;
+  
     profileImage:string | null;
     avis: {
       start: number;

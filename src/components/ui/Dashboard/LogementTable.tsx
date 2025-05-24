@@ -106,7 +106,7 @@ export function LogementTable({ limit, title }: LogementTableProps) {
                 */
               }
              
-              <TableCell className="hidden lg:table-cell">{lg.user.nom}</TableCell>
+              <TableCell className="hidden lg:table-cell">{lg.user.name}</TableCell>
               <TableCell className="flex gap-3">
                 <Link href={`/dashboard/logement/${lg.id}`}><Eye /></Link>
                 {

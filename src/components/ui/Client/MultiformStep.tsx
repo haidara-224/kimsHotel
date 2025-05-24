@@ -19,7 +19,8 @@ import { Snowflake, Tv, Wifi, Utensils, ParkingCircle } from "lucide-react";
 
 import Image from "next/image";
 import { Textarea } from "../textarea";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "@/src/lib/auth-client";
+
 
 interface FormLogement {
     option: [string, ...string[]];
@@ -55,7 +56,7 @@ interface Option {
 }
 
 export default function MultiformStep() {
-    const { user } = useUser()
+     const { data: session, } = useSession();
     const [step, setStep] = useState(1);
     const router = useRouter()
     const [imageUrl, setImageUrl] = useState<string[] | null>(null)
@@ -186,7 +187,7 @@ export default function MultiformStep() {
             toast("Logement créé avec success")
 
             setTimeout(() => {
-                router.push(`/dashboard/hotes/${user?.id}`)
+                router.push(`/dashboard/hotes/${session?.user?.id}`)
             }, 1000);
         }
 

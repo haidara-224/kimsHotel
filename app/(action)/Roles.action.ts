@@ -1,9 +1,11 @@
 "use server"
 import { prisma } from "@/src/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+import { getUser } from "@/src/lib/auth.session";
+
+
 
 export async function getRolesUserHotel() {
-    const user = await currentUser();
+    const user=await getUser()
     try {
         const roles=await prisma.userRoleHotel.findMany({
             where:{
@@ -20,7 +22,7 @@ export async function getRolesUserHotel() {
     }
 }
 export async function getRolesUserLogement() {
-    const user = await currentUser();
+    const user=await getUser()
     try {
         const roles=await prisma.userRoleAppartement.findMany({
             where:{
@@ -37,8 +39,9 @@ export async function getRolesUserLogement() {
     }
 }
 export async function getRolesUserHotelId(hotelId: string) {
+   const user=await getUser()
     try {
-      const user = await currentUser();
+      
       if (!user) throw new Error("Utilisateur non authentifié");
   
       const role = await prisma.userRoleHotel.findFirst({
@@ -58,8 +61,9 @@ export async function getRolesUserHotelId(hotelId: string) {
     }
   }
   export async function getRolesUserLogementId(logementId: string) {
+     const user=await getUser()
     try {
-      const user = await currentUser();
+     
       if (!user) throw new Error("Utilisateur non authentifié");
   
       const role = await prisma.userRoleAppartement.findFirst({
@@ -80,7 +84,8 @@ export async function getRolesUserHotelId(hotelId: string) {
   }
   
 export async function isAdminUserHotel() {
-    const user = await currentUser();
+   const user=await getUser()
+
     try {
         const roles=await prisma.userRoleHotel.findMany({
             where:{

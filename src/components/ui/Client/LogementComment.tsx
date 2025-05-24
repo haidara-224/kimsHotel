@@ -3,9 +3,10 @@ import { useEffect, useState, useTransition } from "react";
 import { Star, Trash } from "lucide-react";
 import { useCommentContext } from "@/contexte/CommenteContexte";
 import Image from "next/image";
-import { useUser } from "@clerk/nextjs";
+
 import { DeleteCommentUser } from "@/app/(action)/createAvisLogement";
 import { toast } from "sonner";
+import { useSession } from "@/src/lib/auth-client";
 
 interface PropsId {
   logmentId: string;
@@ -14,7 +15,7 @@ interface PropsId {
 export function LogementComment({ logmentId }: PropsId) {
   const { comments, fetchComments, setComments } = useCommentContext();
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const { user } = useUser();
+   const { data: session } = useSession();
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export function LogementComment({ logmentId }: PropsId) {
                   className="rounded-full object-cover border border-gray-300"
                 />
                 <div className="text-lg font-medium">
-                  {comment.user?.prenom} {comment.user?.nom}
+                  {comment.user?.name} 
                 </div>
               </div>
 
@@ -76,7 +77,7 @@ export function LogementComment({ logmentId }: PropsId) {
 
               <div className="flex">
                 <span className="text-gray-600">{comment.comment}</span>
-                {user?.id === comment.user?.id && (
+                {session?.user.id === comment.user?.id && (
                   <button
                     type="button"
                     onClick={() => handleDelete(comment.id)}

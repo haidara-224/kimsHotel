@@ -13,8 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Logement } from "@/types/types";
 import { useState } from "react";
 import React from "react";
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+
 import Link from "next/link";
+import { useSession } from "@/src/lib/auth-client";
 
 interface logementProps {
     logement: Logement
@@ -26,7 +27,9 @@ export function CardReservationLogement({ logement }: logementProps) {
 
     const [dateD, setDateD] = React.useState<Date>()
     const [dateA, setDateA] = React.useState<Date>()
-    const { user } = useUser()
+     const { data: session ,isPending} = useSession();
+      const isAuthenticated = !!session;
+     const isUnauthenticated = !session && !isPending;
     const [voyageurs, setVoyageurs] = useState<string>("1");
     const getNumberOfNights = () => {
         if (!dateA || !dateD) return 0;
@@ -151,27 +154,34 @@ export function CardReservationLogement({ logement }: logementProps) {
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
-                                <input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/logement/${logement.id}/${user?.id}`} />
+                                <input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}`} />
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />
                                 <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
 
-                                <SignedIn>
-                                    <Button
+                                 {
+                            isAuthenticated && (
+                                <Button
+                                    className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
+                                    disabled={!dateA || !dateD}
+                                >
+                                    Réserver maintenant
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
 
-                                        className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
-                                        disabled={!dateA || !dateD}
-                                    >
-                                        Réserver maintenant
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </SignedIn>
-                                <SignedOut>
-                                    <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
-
-                                    <Link href="/sign-in" className="w-full text-left text-primary">Se Connecter</Link>
-
-                                </SignedOut>
+                            )
+                          }
+                                
+                          
+                           {
+                            isUnauthenticated && (
+                                <>
+                                     <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
+                                <Link href="/auth/signin" className="w-full text-left text-primary">Se Connecter</Link>
+                                </>
+                               
+                            )
+                           }
 
                             </form>
                         )

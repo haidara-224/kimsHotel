@@ -1,12 +1,19 @@
 import MultiformStep from "@/src/components/ui/Client/MultiformStep";
 import { BackButton } from "@/src/components/ui/Dashboard/backButton";
 import { NavBar } from "@/src/components/ui/NavBar";
+import { getUser } from "@/src/lib/auth.session";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 export const metadata: Metadata = {
     title: "Creation Appartement",
     description: "Creer Votre Logement en toute simplicité",
 };
-export default function Page() {
+export default async function Page() {
+       const user = await getUser()
+    if (!user) {
+       redirect("/auth/signin?redirect=type-etablissement")
+    }
+      
     return (
         <>
             <div className="w-full min-h-screen bg-background">
