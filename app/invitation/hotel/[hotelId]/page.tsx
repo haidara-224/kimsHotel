@@ -16,7 +16,7 @@ export default function Page() {
    
  
    
-   const isUnauthenticated = !session && !isPending;
+  const isUnauthenticated = !session && !isPending;
  
     
   const params = useParams();
@@ -29,11 +29,11 @@ export default function Page() {
     setHotel(data as unknown as Hotel);
   }, [hotelId]);
   const [message,setMesssage]=useState<string>("")
-    useEffect(()=>{
-         if(isUnauthenticated){
-           router.push("/auth/signin")
-         }
-       },[isUnauthenticated, router])
+  useEffect(()=>{
+      if(isUnauthenticated){
+        router.push("/auth/signin")
+      }
+    },[isUnauthenticated,router])
   useEffect(() => {
     async function checkUserInHotel() {
       if (!session?.user?.id) {

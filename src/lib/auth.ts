@@ -28,7 +28,8 @@ export const auth = betterAuth({
   emailAndPassword: {  
     enabled: true,
     async sendResetPassword(data) {
-      const resetLink = `https://kimshotel.net/auth/forgot-password?token=${data.token}`;
+     // const resetLink = `https://kimshotel.net/auth/forgot-password?token=${data.token}`;
+      const resetLink = `http://localhost:3000/auth/forgot-password?token=${data.token}`;
       
       await sendEmail(
         data.user.email,
