@@ -27,18 +27,8 @@ enum StatutReservations {
   CANCELLED
 }
 
-enum StatutPaiements {
-  COMPLETED
-  PENDING
-  FAILED
-}
 
-enum TypePaiement {
-  ORANGE_MONEY
-  WAVE
-  PAYPAL
-  STRIPE
-}
+
 
 model Role {
   id                  String                @id @default(uuid())
@@ -256,6 +246,7 @@ model Reservation {
   paiement   Paiement?
   chambre    Chambre?           @relation("ChambreReservations", fields: [chambreId], references: [id], onDelete: Cascade)
   chambreId  String?
+  nbpersonne String
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
 }
@@ -318,8 +309,8 @@ model Paiement {
   reservation   Reservation     @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   reservationId String          @unique
   montant       Float
-  status        StatutPaiements @default(PENDING)
-  type          TypePaiement
+  paycard_operation_reference String? @unique
+  paycard_operation_status   String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }

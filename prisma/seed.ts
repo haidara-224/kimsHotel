@@ -100,36 +100,19 @@ const generateAvisHotel = (userId: string, hotelId: string) => ({
   updatedAt: faker.date.recent(),
 });
 
-const generateReservationChambre = (userId: string, chambreId: string) => ({
-  id: faker.string.uuid(),
-  startDate: faker.date.future(),
-  endDate: faker.date.future(),
-  status: faker.helpers.arrayElement(["PENDING", "CONFIRMED", "CANCELLED"]),
-  userId,
-  chambreId,
-  createdAt: faker.date.past(),
-  updatedAt: faker.date.recent(),
-});
+
 const generateReservationLogement = (userId: string, logementId: string) => ({
   id: faker.string.uuid(),
   startDate: faker.date.future(),
   endDate: faker.date.future(),
   status: faker.helpers.arrayElement(["PENDING", "CONFIRMED", "CANCELLED"]),
+  nbpersonnes: faker.number.int({ min: 1, max: 10 }),
   userId,
   logementId,
   createdAt: faker.date.past(),
   updatedAt: faker.date.recent(),
 });
 
-const generatePaiement = (reservationId: string) => ({
-  id: faker.string.uuid(),
-  reservationId,
-  montant: faker.number.int({ min: 50, max: 1000 }),
-  status: faker.helpers.arrayElement(["COMPLETED", "PENDING", "FAILED"]),
-  type: faker.helpers.arrayElement(["ORANGE_MONEY", "WAVE", "PAYPAL", "STRIPE"]),
-  createdAt: faker.date.past(),
-  updatedAt: faker.date.recent(),
-});
 
 async function main() {
   console.log("🔄 Début de l'insertion des données...");
@@ -212,13 +195,11 @@ async function main() {
   console.log("✅ Réservations insérées");
 
   // Création des paiements
-  await prisma.reservation.createMany({ data: reservations });
+  
   console.log("✅ Réservations insérées");
   const reservationsIds = reservations.map(reservation => reservation.id);
   console.log("IDs des réservations : ", reservationsIds);
-  const paiements = reservations.map(reservation => generatePaiement(reservation.id));
-  await prisma.paiement.createMany({ data: paiements });
-  console.log("✅ Paiements insérés");
+ 
   const dataChambre = [];
   if (hotel.length > 0) {
     for (let i = 0; i < 10; i++) {
@@ -246,11 +227,7 @@ async function main() {
   }
   await prisma.chambre.createMany({ data: dataChambre });
 
-  const reservationsChambre = dataChambre.flatMap(chambre =>
-    users.map(user => generateReservationChambre(user.id, chambre.id))
-  );
 
-  await prisma.reservation.createMany({ data: reservationsChambre });
   console.log("✅ Réservations insérées");
   console.log("🎉 Données insérées avec succès !");
 

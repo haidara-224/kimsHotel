@@ -7,12 +7,6 @@ CREATE TYPE "TypeChambre" AS ENUM ('SIMPLE', 'DOUBLE', 'SUITE');
 -- CreateEnum
 CREATE TYPE "StatutReservations" AS ENUM ('PENDING', 'CONFIRMED', 'CANCELLED');
 
--- CreateEnum
-CREATE TYPE "StatutPaiements" AS ENUM ('COMPLETED', 'PENDING', 'FAILED');
-
--- CreateEnum
-CREATE TYPE "TypePaiement" AS ENUM ('ORANGE_MONEY', 'WAVE', 'PAYPAL', 'STRIPE');
-
 -- CreateTable
 CREATE TABLE "Role" (
     "id" TEXT NOT NULL,
@@ -194,6 +188,7 @@ CREATE TABLE "Reservation" (
     "userId" TEXT,
     "logementId" TEXT,
     "chambreId" TEXT,
+    "nbpersonne" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -264,8 +259,8 @@ CREATE TABLE "Paiement" (
     "id" TEXT NOT NULL,
     "reservationId" TEXT NOT NULL,
     "montant" DOUBLE PRECISION NOT NULL,
-    "status" "StatutPaiements" NOT NULL DEFAULT 'PENDING',
-    "type" "TypePaiement" NOT NULL,
+    "paycard_operation_reference" TEXT,
+    "paycard_operation_status" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -372,6 +367,9 @@ CREATE UNIQUE INDEX "Chambre_numero_chambre_key" ON "Chambre"("numero_chambre");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Paiement_reservationId_key" ON "Paiement"("reservationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Paiement_paycard_operation_reference_key" ON "Paiement"("paycard_operation_reference");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "UserRoleAppartement_userId_logementId_key" ON "UserRoleAppartement"("userId", "logementId");

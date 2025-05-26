@@ -42,8 +42,8 @@ export default async function EmailTemplate({ email, hotelId }: Props) {
             Vous avez été invité à être hôtelier dans l&apos;hôtel <strong>{hotel?.nom || 'Inconnu'}</strong>.
           </Text>
           <Button
-             href={`https://kimshotel.net/invitation/hotel/${hotelId}`} 
-            //href={`http://localhost:3000/invitation/hotel/${hotelId}`}
+            // href={`https://kimshotel.net/invitation/hotel/${hotelId}`} 
+            href={`http://localhost:3000/invitation/hotel/${hotelId}`}
             style={{
               backgroundColor: '#0d9488',
               color: '#fff',
