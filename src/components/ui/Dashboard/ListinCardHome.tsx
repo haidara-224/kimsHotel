@@ -51,6 +51,7 @@ export default function ListingCardHome({
         setCurrent((prev) => (prev + dir + urlImage.length) % urlImage.length);
     };
 
+
     useEffect(() => {
         const checkFavorite = async () => {
             if (!session) return;
@@ -63,9 +64,10 @@ export default function ListingCardHome({
         checkFavorite();
     }, [logementId, hotelId, type, session]);
 
-   const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
+  const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!session) {
-        router.push('/sign-in');
+        router.push('/auth/signin');
+        toast.error("Veuillez vous connecter pour ajouter aux favoris");
         return;
     }
     event.preventDefault();
@@ -79,15 +81,14 @@ export default function ListingCardHome({
             response = await AddFavorisHotelWithUser(hotelId);
         }
 
-        if (!response.success) {
-            throw new Error(response.message || "Action échouée");
-        }
-
-        toast.success(response.message);
-        setIsFavorite(response.success);
+        toast(response.message);
+        
+        setIsFavorite(!isFavorite);
+        
+        console.log("Favoris mis à jour:", response.message);
     } catch (error) {
-        console.error("Erreur AddFavoris:", error); // Log détaillé
-        toast.error((error as Error).message || "Erreur lors de l'ajout aux favoris");
+        console.error("Erreur AddFavoris:", error);
+        toast.error((error as Error).message || "Erreur lors de la modification des favoris");
     } finally {
         setAdding(false);
     }

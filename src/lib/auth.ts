@@ -29,7 +29,7 @@ export const auth = betterAuth({
     enabled: true,
     async sendResetPassword(data) {
      const resetLink = `https://kimshotel.net/auth/forgot-password?token=${data.token}`;
-      //const resetLink = `http://localhost:3000/auth/forgot-password?token=${data.token}`;
+     // const resetLink = `http://localhost:3000/auth/forgot-password?token=${data.token}`;
       
       await sendEmail(
         data.user.email,
@@ -38,7 +38,7 @@ export const auth = betterAuth({
         <h1>Réinitialisation du mot de passe</h1>
         <p>Cliquez sur ce lien pour réinitialiser votre mot de passe :</p>
         <a href="${resetLink}">${resetLink}</a>
-        <p>Ce lien expirera dans 1 heure.</p>
+        <p>Ce lien expirera dans 1 heure.</p> 
         `
       );
     },

@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 
 export default async function Page() {
    const categoryEtablissement = await getCategory();
+
    const user = await getUser()
 if (!user) {
    redirect("/auth/signin?redirect=type-etablissement")

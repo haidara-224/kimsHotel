@@ -39,7 +39,7 @@ export function UserNav() {
     const initUser = async () => {
       if (email && fullname) {
         //await CreateAddUser();
-        console.log('hello')
+    
       }
     };
     initUser();

@@ -30,6 +30,7 @@ async function ShowItems({
 }) {
   const datas = await getData({ searchParams }) as unknown as homeTypes[];
 
+
   return (
     <>
       {datas.length > 0 ? (
