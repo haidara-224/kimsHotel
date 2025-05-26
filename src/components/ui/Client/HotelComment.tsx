@@ -45,7 +45,7 @@ export function HotelComment({ hotelId }: PropsId) {
             <div key={index} className="p-4 rounded-lg">
               <div className="flex items-center mb-3 space-x-3">
                 <Image
-                  src={comment.user?.profileImage || "/user_default.png"} 
+                  src={comment.user?.image || "/user_default.png"} 
                   alt="Photo de profil"
                   width={48}
                   height={48}

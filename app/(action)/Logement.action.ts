@@ -623,7 +623,14 @@ export async function acceptInvitationLogement(userId: string, logementId: strin
           active: true,
         },
       });
-  
+   await prisma.userRole.create({
+          data: {
+            userId,
+           
+            roleId: roleHotelier.id,
+           
+          },
+        });
       return {
         success: true,
         message: "Invitation acceptée avec succès.",
@@ -649,7 +656,31 @@ export async function acceptInvitationLogement(userId: string, logementId: strin
   
       return !!userRole; 
     } catch (error) {
-      console.error("Erreur lors de la vérification de l'utilisateur dans l'hôtel :", error);
+      console.error("Erreur lors de la vérification de l'utilisateur dans l'appartement :", error);
       return false;
     }
   }
+   export async function deleteUserAppartement(logementId: string, userId: string) {
+      try {
+        const userRole = await prisma.userRoleAppartement.findFirst({
+          where: {
+            logementId,
+            userId,
+          },
+        });
+    
+        if (!userRole) {
+          return { success: false, message: "L'utilisateur n'est pas associé à cet hôtel." };
+        }
+    
+        await prisma.userRoleAppartement.delete({
+          where: { id: userRole.id },
+        });
+    
+        return { success: true, message: "Utilisateur supprimé de l'appartement avec succès." };
+      } catch (error) {
+        console.error("Erreur lors de la suppression de l'utilisateur de l'appartement :", error);
+        return { success: false, message: "Erreur lors de la suppression de l'utilisateur." };
+      }
+  
+    }

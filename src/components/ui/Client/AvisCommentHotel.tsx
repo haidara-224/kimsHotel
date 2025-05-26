@@ -80,7 +80,7 @@ const { data: session } = useSession();
             id: session?.user?.id || "", 
             name: session?.user?.name || "", 
            
-            profileImage: session?.user.image || null,
+            image: session?.user.image || null,
             avis: [{ start: rating }],
           },
         },

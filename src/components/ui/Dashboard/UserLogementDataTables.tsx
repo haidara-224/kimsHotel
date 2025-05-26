@@ -2,8 +2,8 @@
 import { useCallback, useEffect, useState } from "react"
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table"
-import { RoleUserHotel } from "@/types/types"
-import { getUsersWithLogement, UpdateStatusUserLogement } from "@/app/(action)/Logement.action"
+import { RoleUserLogement } from "@/types/types"
+import { deleteUserAppartement, getUsersWithLogement, UpdateStatusUserLogement } from "@/app/(action)/Logement.action"
 import { Button } from "../button"
 import { Switch } from "../switch"
 import Image from "next/image"
@@ -14,7 +14,7 @@ interface tableProps {
     logement: string
 }
 export default function UserLogementDataTable({ logement }: tableProps) {
-    const [users, setUser] = useState<RoleUserHotel[]>([]);
+    const [users, setUser] = useState<RoleUserLogement[]>([]);
   
     const [loading,setLoading]=useState(false)
     const fetchData = useCallback(async () => {
@@ -22,7 +22,7 @@ export default function UserLogementDataTable({ logement }: tableProps) {
           
             const data = await getUsersWithLogement(logement);
 
-            setUser(data as unknown as RoleUserHotel[]);
+            setUser(data as unknown as RoleUserLogement[]);
         } catch (e) {
             console.log(e)
         } finally {
@@ -49,7 +49,20 @@ export default function UserLogementDataTable({ logement }: tableProps) {
                 console.error("Hotel or User ID is undefined");
             }
         };
+    const handlleDeleteUser = async (userId: string,logementId:string) => {
+        setLoading(true)
+        try {
+          await deleteUserAppartement(logementId,userId)
     
+            await fetchData(); 
+            toast.success("Utilisateur supprimé avec succès");
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            toast.error("Erreur lors de la suppression de l'utilisateur");
+        } finally {
+            setLoading(false);
+        }
+    }
     return (
         <>
             <div className="mt-10 overflow-x-auto">
@@ -97,10 +110,9 @@ export default function UserLogementDataTable({ logement }: tableProps) {
 
                                         <TableCell>
                                             <div className="flex items-center gap-3">
-                                                <Button variant="destructive" size="sm" className="w-20">
-                                                    Supprimer
-                                                </Button>
-                                             
+                                                 <Button variant="destructive" size="sm" className="w-20" onClick={() => lg?.user?.id && handlleDeleteUser(lg.user.id, lg.logementId)} disabled={loading}>
+                                               Supprimer
+                                            </Button>
                                                 <div className="flex items-center gap-2">
                                                 <Switch
                                                     checked={lg.active}

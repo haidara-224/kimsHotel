@@ -95,8 +95,7 @@ export async function UserCommentHotel(hotelId: string) {
                 select: {
                     id:true,
                     name: true,
-                 
-                    profileImage:true,
+                    image: true,
                     avis: {
                         where: {
                             hotelId: hotelId, 

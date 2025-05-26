@@ -97,7 +97,7 @@ export async function UserComment(logementId: string) {
                     id: true,
                     name: true,
                  
-                    profileImage: true,
+                    image: true,
                     avis: {
                         where: {
                             logementId: logementId,

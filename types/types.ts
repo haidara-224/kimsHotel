@@ -55,11 +55,12 @@ export interface CommentaireLogement{
 export interface User {
   id: string;
   name: string;
-  image?:string;
+  image?:string | null;
   email: string;
   roles?: Role[]
   commentUser: CommentaireLogement[]
   profileImage?: string | null;
+
   emailVerified?:boolean
   createdAt: Date;
   updatedAt: Date;

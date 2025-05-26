@@ -78,7 +78,7 @@ export default function ViewHotel() {
               </div>
               <div className="flex items-center gap-4 p-4 ">
                 <Image
-                  src={hotel.user?.profileImage ?? '/user_default.jpg'}
+                  src={hotel.user?.image ?? '/user_default.jpg'}
                   alt={`${hotel.user.name}`}
                   className="w-14 h-14 rounded-full object-cover"
                   width={56}

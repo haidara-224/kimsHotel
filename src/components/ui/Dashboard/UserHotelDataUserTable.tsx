@@ -4,7 +4,7 @@ import Image from "next/image"
 
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../table"
 import { RoleUserHotel } from "@/types/types"
-import { getUsersWithHotel, UpdateStatusUserHotel } from "@/app/(action)/hotel.action"
+import { deleteUserHotel, getUsersWithHotel, UpdateStatusUserHotel } from "@/app/(action)/hotel.action"
 import { Button } from "../button"
 import { CheckCheck, X } from "lucide-react"
 import { Switch } from "../switch"
@@ -50,7 +50,20 @@ export default function UserHotelDataTable({ hotel }: tableProps) {
         }
     };
 
+const handlleDeleteUser = async (userId: string,hotelId:string) => {
+    setLoading(true)
+    try {
+      await deleteUserHotel(hotelId,userId)
 
+        await fetchData(); 
+        toast.success("Utilisateur supprimé avec succès");
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        toast.error("Erreur lors de la suppression de l'utilisateur");
+    } finally {
+        setLoading(false);
+    }
+}
     return (
         <>
             <div className="mt-10 overflow-x-auto">
@@ -101,8 +114,9 @@ export default function UserHotelDataTable({ hotel }: tableProps) {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <Button variant="destructive" size="sm" className="w-20">
-                                                Supprimer
+                                             
+                                            <Button variant="destructive" size="sm" className="w-20" onClick={() => lg?.user?.id && handlleDeleteUser(lg.user.id, lg.hotelId)} disabled={loading}>
+                                               Supprimer
                                             </Button>
                                             <div className="flex items-center gap-2">
                                                 <Switch

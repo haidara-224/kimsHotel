@@ -12,7 +12,7 @@ interface Comment {
     id:string,
     name: string;
   
-    profileImage:string | null;
+    image:string | null;
     avis: {
       start: number;
     }[];
