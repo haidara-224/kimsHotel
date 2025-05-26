@@ -87,7 +87,7 @@ export default function UserLogementDataTable({ logement }: tableProps) {
                                         </TableCell>
                                         <TableCell>
                                             <Image
-                                                src={lg?.user?.profileImage || "/default-profile.png"}
+                                                src={lg?.user?.image || "/default-profile.png"}
                                                 alt="user image"
                                                 className="w-10 h-10 rounded-full"
                                                 width={40}
