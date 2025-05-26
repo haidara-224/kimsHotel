@@ -154,8 +154,8 @@ export function CardReservationLogement({ logement }: logementProps) {
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
-                                <input type="hidden" name="paycard-callback-url" value={`http://localhost:3000/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}`} />
-                               {/**<input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}`} /> */}
+                                <input type="hidden" name="paycard-callback-url" value={`http://localhost:3000/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}?dateA=${dateA}&dateD=${dateD}`} />
+                               {/**<input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}?dateA=${dateA}&dateD=${dateD}`} /> */}
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />
                                 <input type="hidden" name="order_id" value={`res-${Date.now()}`} />

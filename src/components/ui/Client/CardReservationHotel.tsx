@@ -24,9 +24,9 @@ interface HotelProps {
 export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps) {
     const [dateD, setDateD] = React.useState<string>("");
     const [dateA, setDateA] = React.useState<string>("");
-   const { data: session ,isPending} = useSession();
-   const isAuthenticated = !!session;
-  const isUnauthenticated = !session && !isPending;
+    const { data: session, isPending } = useSession();
+    const isAuthenticated = !!session;
+    const isUnauthenticated = !session && !isPending;
     const [voyageurs, setVoyageurs] = useState<string>("1");
 
     const formatPrice = (price: number) => {
@@ -120,54 +120,59 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                     {chambre?.disponible && (
                         <form action="https://mapaycard.com/epay/" method="POST">
                             <input type="hidden" name="c" value="NTY4Nzk1MTU" />
-                           {
-                            /**
-                             *  <input
-                                type="hidden"
-                                name="paycard-amount"
-                                value={(chambre?.price ?? 0) * getNumberOfNights()}
-                                readOnly
-                            />
-                             */
-                           }
-                            <input
+                            {
+                                /**
+                                 *  <input
                                     type="hidden"
                                     name="paycard-amount"
-                                    value="1000"
+                                    value={(chambre?.price ?? 0) * getNumberOfNights()}
                                     readOnly
                                 />
+                                 */
+                            }
+                            <input
+                                type="hidden"
+                                name="paycard-amount"
+                                value="1000"
+                                readOnly
+                            />
                             <input type="hidden" name="paycard-description" value={`reservation de chambre ${chambre.numero_chambre}`} />
-                            {/**<input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${chambre.id}/${session?.user.id}/${chambre?.price}`} /> */}
-                            <input type="hidden" name="paycard-callback-url" value={`http://localhost:3000/check_payment/hotel/${chambre.id}/${session?.user.id}/${chambre?.price}`} />
+                            {/**<input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${chambre.id}/${session?.user.id}/${chambre?.price}?dateA=${dateA}&dateD=${dateD}`} /> */}
+                            <input
+                                type="hidden"
+                                name="paycard-callback-url"
+                                value={`http://localhost:3000/check_payment/hotel/${chambre.id}/${session?.user.id}/${chambre?.price}?dateA=${dateA}&dateD=${dateD}`}
+                            />
+
                             <input type="hidden" name="paycard-redirect-with-get" value="on" />
                             <input type="hidden" name="paycard-auto-redirect" value="off" />
                             <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
 
-                          {
-                            isAuthenticated && (
-                                <Button
-                                    className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
-                                    disabled={!dateA || !dateD}
-                                >
-                                    Réserver maintenant
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
+                            {
+                                isAuthenticated && (
+                                    <Button
+                                        className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
+                                        disabled={!dateA || !dateD}
+                                    >
+                                        Réserver maintenant
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
 
-                            )
-                          }
-                                
-                          
-                           {
-                            isUnauthenticated && (
-                                <>
-                                     <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
-                                <Link href="/auth/signin" className="w-full text-left text-primary">Se Connecter</Link>
-                                </>
-                               
-                            )
-                           }
-                                
-                            
+                                )
+                            }
+
+
+                            {
+                                isUnauthenticated && (
+                                    <>
+                                        <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
+                                        <Link href="/auth/signin" className="w-full text-left text-primary">Se Connecter</Link>
+                                    </>
+
+                                )
+                            }
+
+
                         </form>
                     )}
 
