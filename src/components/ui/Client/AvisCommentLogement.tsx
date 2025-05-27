@@ -40,7 +40,7 @@ const { data: session } = useSession();
       if (!response.success) {
         toast(response.message);
         if (response.message === "Utilisateur non connecté") {
-          router.push(`/sign-in?redirect_url=views/appartement/${logementId}`);
+          router.push(`/auth/signin?redirect_url=views/appartement/${logementId}`);
         }
         return;
       }
@@ -59,7 +59,7 @@ const { data: session } = useSession();
       if (!response.success) {
         toast(response.message);
         if (response.message === "Utilisateur non connecté") {
-          router.push(`/sign-in?redirect_url=views/appartement/${logementId}`);
+          router.push(`/auth/signin?redirect_url=views/appartement/${logementId}`);
         }
         return;
       }

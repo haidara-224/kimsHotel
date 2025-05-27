@@ -45,7 +45,7 @@ export function NavBar() {
             <AnimatedLink href="/favorites" Icon={Heart}>
               Mes Favoris
             </AnimatedLink>
-            <AnimatedLink href="/" Icon={CalendarCheck}>
+            <AnimatedLink href="/reservations" Icon={CalendarCheck}>
               Mes Réservations
             </AnimatedLink>
             <AnimatedLink href="/type-etablissement" Icon={Hotel}>
@@ -122,7 +122,7 @@ export function NavBar() {
             <AnimatedLink href="/favorites" Icon={Heart}>
               Mes Favoris
             </AnimatedLink>
-            <AnimatedLink href="/" Icon={CalendarCheck}>
+            <AnimatedLink href="/reservations" Icon={CalendarCheck}>
               Mes Réservations
             </AnimatedLink>
             <AnimatedLink href="/type-etablissement" Icon={Hotel}>

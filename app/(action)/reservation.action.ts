@@ -1,5 +1,6 @@
 'use server'
 
+import { getUser } from "@/src/lib/auth.session";
 import { prisma } from "@/src/lib/prisma"
 
 export async function getReservation() {
@@ -231,3 +232,36 @@ export async function validerReservationChambre(data: {
         throw error;
     }
 }
+
+export async function getUserReservationsWithHotel() {
+  try {
+    const user = await getUser();
+
+    if (!user?.id) {
+      throw new Error("Utilisateur non authentifié.");
+    }
+
+    const reservations = await prisma.reservation.findMany({
+      where: {
+        userId: user.id,
+        chambreId: {
+          not: null,
+        },
+      },
+      include: {
+        chambre: {
+          include: {
+            hotel: true,
+          },
+        },
+        paiement: true,
+      },
+    });
+console.log("Reservations:", reservations);
+    return reservations ?? [];
+  } catch (error) {
+    console.error("Erreur lors de la récupération des réservations :", error);
+    throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
+  }
+}
+

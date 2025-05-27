@@ -384,9 +384,14 @@ export interface Reservation {
   userId?: string | null;
   user: User;
   logement: Logement;
-  chambre: { hotel: Hotel };
+  chambre:{ 
+    numero_chambre:string;
+    hotel: Hotel };
   logementId?: string | null;
   chambreId?: string | null;
+  nbpersonne: string
+  paiement: Paiement | null;
+  paiementId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
