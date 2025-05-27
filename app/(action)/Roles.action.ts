@@ -102,3 +102,6 @@ export async function isAdminUserHotel() {
         throw new Error("Impossible d'afficher les roles des utilisateur"+ error)
     }
 }
+// app/check_payment/logement/[logementId]/[userId]/[price]/action.ts
+
+

@@ -309,8 +309,8 @@ model Paiement {
   reservation   Reservation     @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   reservationId String          @unique
   montant       Float
-  paycard_operation_reference String? @unique
-  paycard_operation_status   String?
+  //paycard_operation_reference String? @unique
+  transaction_reference   String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }

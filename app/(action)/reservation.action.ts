@@ -18,14 +18,14 @@ export async function getReservation() {
                 }
             }
         });
-        
+
         if (!data) return [];
 
         return data;
 
     } catch (error) {
         console.error(error);
-        return []; 
+        return [];
     }
 }
 
@@ -97,7 +97,7 @@ export async function getReservationById(id: string) {
             where: {
                 id
             },
-            include:{
+            include: {
                 user: true,
                 logement: true,
                 chambre: {
@@ -106,10 +106,128 @@ export async function getReservationById(id: string) {
                     }
                 }
             }
-        })
- 
+        });
+
         return reservation
     } catch (error) {
         console.error(error)
+    }
+}
+import { revalidatePath } from "next/cache";
+
+export async function validerReservation(data: {
+    logementId: string;
+    userId: string;
+    price: string;
+    dateA: string;
+    dateD: string;
+    voyageurs: string;
+   
+    transactionReference: string;
+}) {
+    try {
+        const startDate = new Date(data.dateA);
+        const endDate = new Date(data.dateD);
+        const nbPersonne = parseInt(data.voyageurs);
+        if (isNaN(nbPersonne)) {
+            throw new Error("Nombre de voyageurs invalide");
+        }
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            throw new Error("Dates invalides");
+        }
+
+        // Valider le nombre de voyageurs
+
+
+        const reservation = await prisma.reservation.create({
+            data: {
+                logementId: data.logementId,
+                userId: data.userId,
+                status: "PENDING",
+                startDate,
+                endDate,
+                nbpersonne: nbPersonne.toString(),
+            },
+        });
+
+        if (reservation) {
+            await prisma.paiement.create({
+                data: {
+                    reservationId: reservation.id,
+                    montant: parseFloat(data.price),
+                   
+                    transaction_reference: data.transactionReference,
+                },
+            });
+            await prisma.logement.update({
+                where: { id: data.logementId },
+                data: {
+                   disponible: false, 
+                },
+            });
+
+        }
+
+        revalidatePath("/");
+    } catch (error) {
+        console.error("Erreur:", error);
+        console.error("Données de la réservation:", data);
+        throw error;
+    }
+}
+export async function validerReservationChambre(data: {
+    chambreId: string;
+    userId: string;
+    price: string;
+    dateA: string;
+    dateD: string;
+    voyageurs: string;
+  
+    transactionReference: string;
+}) {
+    try {
+        const startDate = new Date(data.dateA);
+        const endDate = new Date(data.dateD);
+        const nbPersonne = parseInt(data.voyageurs);
+        if (isNaN(nbPersonne)) {
+            throw new Error("Nombre de voyageurs invalide");
+        }
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+            throw new Error("Dates invalides");
+        }
+        const reservation = await prisma.reservation.create({
+            data: {
+                chambreId: data.chambreId,
+                userId: data.userId,
+                status: "PENDING",
+                startDate,
+                endDate,
+                nbpersonne: nbPersonne.toString(),
+            },
+        });
+
+        if (reservation) {
+            await prisma.paiement.create({
+                data: {
+                    reservationId: reservation.id,
+                    montant: parseFloat(data.price),
+                
+                    transaction_reference: data.transactionReference,
+                },
+            });
+            await prisma.chambre.update({
+                where: { id: data.chambreId },
+                data: {
+                   disponible: false, 
+                },
+            });
+
+        }
+
+        revalidatePath("/");
+    } catch (error) {
+        console.error("Erreur:", error);
+        console.error("Données de la réservation:", data);
+        throw error;
     }
 }

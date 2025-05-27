@@ -1,10 +1,10 @@
-import { validerReservation } from "@/app/(action)/reservation.action";
+import { validerReservationChambre } from "@/app/(action)/reservation.action";
 import { redirect } from 'next/navigation';
 export default async function Page(props: {
-  params: Promise<{ logementId: string; userId: string; price: string }>;
+  params: Promise<{ chambreId: string; userId: string; price: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { logementId, userId, price } = await props.params;
+  const { chambreId, userId, price } = await props.params;
   const searchParams = await props.searchParams;
 
   const operationRef = searchParams["paycard-operation-reference"];
@@ -16,11 +16,11 @@ export default async function Page(props: {
 
   const handleReservation = async (formData: FormData) => {
     "use server";
-    await validerReservation({
-      logementId: formData.get("logementId") as string,
+    await validerReservationChambre({
+      chambreId: formData.get("chambreId") as string,
       userId: formData.get("userId") as string,
       price: formData.get("price") as string,
-      
+   
       
       transactionReference: formData.get("transactionRef") as string,
       dateA: formData.get("dateA") as string,
@@ -34,7 +34,7 @@ export default async function Page(props: {
     <div className="flex flex-col items-center justify-center h-screen">
       <h1>Dernière ligne droite</h1>
       <p className="text-2xl font-bold mb-4">Valider votre réservation</p>
-      <p>Logement ID: {logementId}</p>
+      <p>Chambre ID: {chambreId}</p>
       <p>User ID: {userId}</p>
       <p>Price: {price}</p>
       <p>Operation Reference: {operationRef}</p>
@@ -52,10 +52,10 @@ export default async function Page(props: {
         
         className="flex flex-col space-y-4 mt-8"
       >
-        <input type="hidden" name="logementId" value={logementId} />
+        <input type="hidden" name="chambreId" value={chambreId} />
         <input type="hidden" name="userId" value={userId} />
         <input type="hidden" name="price" value={price} />
-      
+        
         <input type="hidden" name="c" value={c} />
         <input type="hidden" name="transactionRef" value={transactionRef} />
         <input type="hidden" name="dateA" value={dateA} />

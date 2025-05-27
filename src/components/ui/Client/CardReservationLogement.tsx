@@ -27,9 +27,9 @@ export function CardReservationLogement({ logement }: logementProps) {
 
     const [dateD, setDateD] = React.useState<Date>()
     const [dateA, setDateA] = React.useState<Date>()
-     const { data: session ,isPending} = useSession();
-      const isAuthenticated = !!session;
-     const isUnauthenticated = !session && !isPending;
+    const { data: session, isPending } = useSession();
+    const isAuthenticated = !!session;
+    const isUnauthenticated = !session && !isPending;
     const [voyageurs, setVoyageurs] = useState<string>("1");
     const getNumberOfNights = () => {
         if (!dateA || !dateD) return 0;
@@ -37,6 +37,8 @@ export function CardReservationLogement({ logement }: logementProps) {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays > 0 ? diffDays : 0;
     };
+
+
     return (
         <>
             <Card className="border-border/50 hover:border-border/80 transition-colors shadow-xl hover:shadow-2xl">
@@ -133,7 +135,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                     </div>
                     {
                         logement.disponible && (
-                            <form action="https://mapaycard.com/epay/" method="POST">
+                            <form action="https://mapaycard.com/epay/" method="POST" target="_blank">
                                 <input type="hidden" name="c" value="NTY4Nzk1MTU" />
                                 {
                                     /**
@@ -154,35 +156,57 @@ export function CardReservationLogement({ logement }: logementProps) {
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
-                                <input type="hidden" name="paycard-callback-url" value={`http://localhost:3000/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}?dateA=${dateA}&dateD=${dateD}`} />
-                               {/**<input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}?dateA=${dateA}&dateD=${dateD}`} /> */}
+                                 {/** 
+                                <input
+                                    type="hidden"
+                                    name="paycard-callback-url"
+                                    value={
+                                        `http://localhost:3000/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}` +
+                                        `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
+                                        `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
+                                        `&voyageurs=${encodeURIComponent(voyageurs)}` +
+                                        `&kimshotel=true`
+                                    }
+                                />
+*/}
+                                 <input
+                                    type="hidden"
+                                    name="paycard-callback-url"
+                                    value={
+                                        `https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}` +
+                                        `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
+                                        `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
+                                        `&voyageurs=${encodeURIComponent(voyageurs)}` +
+                                        `&kimshotel=true`
+                                    }
+                                />
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />
                                 <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
 
-                                 {
-                            isAuthenticated && (
-                                <Button
-                                    className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
-                                    disabled={!dateA || !dateD}
-                                >
-                                    Réserver maintenant
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
+                                {
+                                    isAuthenticated && (
+                                        <Button
+                                            className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all"
+                                            disabled={!dateA || !dateD}
+                                        >
+                                            Réserver maintenant
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
 
-                            )
-                          }
-                                
-                          
-                           {
-                            isUnauthenticated && (
-                                <>
-                                     <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
-                                <Link href="/auth/signin" className="w-full text-left text-primary">Se Connecter</Link>
-                                </>
-                               
-                            )
-                           }
+                                    )
+                                }
+
+
+                                {
+                                    isUnauthenticated && (
+                                        <>
+                                            <h1>Veuillez vous connectez d&apos;abord avant de pouvoir reserver</h1>
+                                            <Link href="/auth/signin" className="w-full text-left text-primary">Se Connecter</Link>
+                                        </>
+
+                                    )
+                                }
 
                             </form>
                         )

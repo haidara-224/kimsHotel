@@ -22,8 +22,8 @@ interface HotelProps {
 }
 
 export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps) {
-    const [dateD, setDateD] = React.useState<string>("");
-    const [dateA, setDateA] = React.useState<string>("");
+    const [dateD, setDateD] = React.useState<Date>()
+    const [dateA, setDateA] = React.useState<Date>()
     const { data: session, isPending } = useSession();
     const isAuthenticated = !!session;
     const isUnauthenticated = !session && !isPending;
@@ -34,11 +34,10 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
     };
 
     const getNumberOfNights = () => {
-        const start = new Date(dateA);
-        const end = new Date(dateD);
-        if (!dateA || !dateD || end < start) return 0;
-        const diffTime = end.getTime() - start.getTime();
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (!dateA || !dateD) return 0;
+        const diffTime = dateD.getTime() - dateA.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays > 0 ? diffDays : 0;
     };
 
     const [, setNights] = useState(0);
@@ -81,8 +80,8 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                 <input
                                     type="date"
                                     className="w-full border rounded-md px-4 py-2"
-                                    value={dateA}
-                                    onChange={(e) => setDateA(e.target.value)}
+                                    value={dateA ? dateA.toISOString().split("T")[0] : ""}
+                                    onChange={(e) => setDateA(e.target.value ? new Date(e.target.value) : undefined)}
                                     min={new Date().toISOString().split("T")[0]}
                                 />
                             </span>
@@ -91,9 +90,9 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                 <input
                                     type="date"
                                     className="w-full border rounded-md px-4 py-2"
-                                    value={dateD}
-                                    onChange={(e) => setDateD(e.target.value)}
-                                    min={dateA}
+                                    value={dateD ? dateD.toISOString().split("T")[0] : ""}
+                                    onChange={(e) => setDateD(e.target.value ? new Date(e.target.value) : undefined)}
+                                    min={new Date().toISOString().split("T")[0]}
                                 />
                             </span>
                         </span>
@@ -118,7 +117,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                     </span>
 
                     {chambre?.disponible && (
-                        <form action="https://mapaycard.com/epay/" method="POST">
+                        <form action="https://mapaycard.com/epay/" method="POST" target="_blank">
                             <input type="hidden" name="c" value="NTY4Nzk1MTU" />
                             {
                                 /**
@@ -137,12 +136,33 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                 readOnly
                             />
                             <input type="hidden" name="paycard-description" value={`reservation de chambre ${chambre.numero_chambre}`} />
-                            {/**<input type="hidden" name="paycard-callback-url" value={`https://kimshotel.net/check_payment/hotel/${chambre.id}/${session?.user.id}/${chambre?.price}?dateA=${dateA}&dateD=${dateD}`} /> */}
                             <input
                                 type="hidden"
                                 name="paycard-callback-url"
-                                value={`http://localhost:3000/check_payment/hotel/${chambre.id}/${session?.user.id}/${chambre?.price}?dateA=${dateA}&dateD=${dateD}`}
+                                value={
+                                    `https://kimshotel.net/check_payment/hotel/${chambre.id}/${session?.user.id}/${(chambre?.price ?? 0) * getNumberOfNights()
+                                    }` +
+                                    `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
+                                    `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
+                                    `&voyageurs=${encodeURIComponent(voyageurs)}` +
+                                    `&kimshotel=true`
+                                }
                             />
+                            {/**
+     * <input
+                                type="hidden"
+                                name="paycard-callback-url"
+                                value={
+                                    `http://localhost:3000/check_payment/hotel/${chambre.id}/${session?.user.id}/${(chambre?.price ?? 0) * getNumberOfNights()}`+
+                                    `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
+                                    `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
+                                    `&voyageurs=${encodeURIComponent(voyageurs)}` +
+                                    `&kimshotel=true`
+                                }
+                            />
+     */}
+
+
 
                             <input type="hidden" name="paycard-redirect-with-get" value="on" />
                             <input type="hidden" name="paycard-auto-redirect" value="off" />
@@ -160,7 +180,6 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
 
                                 )
                             }
-
 
                             {
                                 isUnauthenticated && (
