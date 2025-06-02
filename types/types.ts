@@ -415,8 +415,8 @@ export interface Paiement {
   id: string;
   reservationId: string;
   montant: number;
-  status: StatutPaiements;
-  type: TypePaiement;
+
+  transaction_reference:string
   createdAt: Date;
   updatedAt: Date;
 }

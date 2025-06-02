@@ -1,184 +1,267 @@
 'use client'
 
+import { ReservationDasbordHotel, ReservationDasbordLogement, UpdateStatusReservation } from "@/app/(action)/reservation.action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
-import { Input } from "@/src/components/ui/input";
-import { Badge } from "@/src/components/ui/badge";
-import {
-    BellIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    SearchIcon,
-} from "lucide-react";
-
-import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { useSession } from "@/src/lib/auth-client";
-
-
+import { Reservation } from "@/types/types";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 export default function Page() {
-  const { data: session, } = useSession();
+    const { data: session, } = useSession();
+    const [reservationHotel, setReservationHotel] = useState<Reservation[]>([])
+    const [reservationAppartement, setReservationAppartement] = useState<Reservation[]>([])
+    const [loading, setLoading] = useState<boolean>(false);
+    const fetchData = async () => {
+        const data = await ReservationDasbordHotel()
+        setReservationHotel(data as unknown as Reservation[])
+    }
+    const fetchDataAppartement = async () => {
+        const data = await ReservationDasbordLogement()
+        setReservationAppartement(data as unknown as Reservation[])
+    }
+    useEffect(() => {
+        fetchData()
+        fetchDataAppartement()
+    }, [])
 
-    const incomingOccupants = [
-        {
-            name: "Jonathan D.",
-            image: "/jonathan.jpg",
-            type: "GROOMING",
-            dates: "Feb 12 - Feb 14",
-            amount: "$120",
-            status: "Unpaid balance: $120",
-            needsPaymentLink: true,
-        },
-        {
-            name: "Jessica P.",
-            image: "/jessica.jpg",
-            type: "DAYCARE",
-            dates: "Feb 12 - Feb 14",
-            amount: "$130",
-            status: "Paid",
-            needsPaymentLink: false,
-        },
-    ];
+    const handleConfirm = async (reservationId: string,email:string,hotelId:string) => {
 
+        try {
+            setLoading(true);
+            const updateStatus = await UpdateStatusReservation(reservationId, 'CONFIRMED');
+            if (!updateStatus) {
+                throw new Error("Failed to update reservation status");
+            } else {
+                const response = await fetch(`/api/hotel/confirmReservation`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email, hotelId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to confirm reservation");
+                }
+
+                const data = await response.json();
+                console.log(data.message);
+                toast.success("Reservation confirmée avec succès !");
+                fetchData(); // Refresh the reservation list after confirmation
+            }
+
+        } catch (error) {
+            console.error("Error confirming reservation:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleCancel = async (reservationId: string,email:string,hotelId:string ) => {
+        try {
+            const updateStatus = await UpdateStatusReservation(reservationId, 'CANCELLED');
+            if (!updateStatus) {
+                throw new Error("Failed to update reservation status");
+            }
+            if(updateStatus) {
+                 const response = await fetch(`/api/hotel/cancelReservation`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email,hotelId }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to cancel reservation");
+            }
+
+            const data = await response.json();
+            console.log(data.message);
+            fetchData(); // Refresh the reservation list after cancellation
+            toast.success("Reservation annulée avec succès !");
+                
+            }
+           
+        } catch (error) {
+            console.error("Error canceling reservation:", error);
+        }
+    };
     return (
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 px-6 py-8">
-            {/* Colonne de gauche */}
-            <div className="col-span-2 bg-white dark:bg-zinc-900 shadow-lg rounded-lg p-6">
-                <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4">
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                            <AvatarImage src={session?.user.image ?? undefined} alt={session?.user.name || "User"} />
-                            <AvatarFallback>{session?.user?.name?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-semibold text-xl text-gray-800 dark:text-white">
-                            {session?.user.name}
-                        </span>
-                    </div>
+        <>
+            <section className=" px-6 py-8">
 
-                    <div className="flex items-center gap-4 ml-auto w-full lg:w-auto">
-                        <div className="relative flex-1 lg:flex-none">
-                            <Input
-                                placeholder="Search"
-                                className="pl-9 pr-4 py-2 rounded-full bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 w-full text-gray-900 dark:text-white"
-                            />
-                            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-300" />
-                        </div>
 
-                        <div className="relative">
-                            <BellIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
-                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full text-white text-xs flex items-center justify-center">
-                                1
-                            </span>
-                        </div>
-                    </div>
+                <div className="flex items-center gap-3">
+                    <Avatar className="h-12 w-12">
+                        <AvatarImage src={session?.user.image ?? undefined} alt={session?.user.name || "User"} />
+                        <AvatarFallback>{session?.user?.name?.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <span className="font-semibold text-xl text-gray-800 dark:text-white">
+                        {session?.user.name}
+                    </span>
                 </div>
+                {
+                    reservationHotel.length <= 0 ? (
+                        <p>Pas de reservation pour le moment</p>
+                    ) : (
+                        <div>
+                            <Table className="min-w-full">
+                                <TableCaption>Liste des Logements </TableCaption>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Hotel</TableHead>
 
-                <div>
-                    <div className="flex justify-between items-center mb-4 mt-6">
-                        <h3 className="font-medium text-lg text-gray-800 dark:text-white">Incoming occupants</h3>
-                        <div className="flex gap-2">
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <ChevronLeftIcon className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                <ChevronRightIcon className="h-4 w-4" />
-                            </Button>
+                                        <TableHead className="hidden lg:table-cell">Chambre</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Client Nom</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Client Email</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Date Arrivé</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Date de Départ</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Nombre de Personne</TableHead>
+
+                                        <TableHead className="hidden lg:table-cell">Montant</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Transaction Reference</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Statut</TableHead>
+
+                                        <TableHead>Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {reservationHotel.map((res) => (
+                                        <TableRow key={res.id}>
+                                            <TableCell>{res.chambre.hotel.nom}</TableCell>
+                                            <TableCell>{res.chambre.numero_chambre}</TableCell>
+                                            <TableCell>{res.user.name}</TableCell>
+                                            <TableCell>{res.user.email}</TableCell>
+                                            <TableCell>
+                                                <div>{new Date(res.startDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div>{new Date(res.endDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}</div>
+                                            </TableCell>
+
+                                            <TableCell>{res.nbpersonne}</TableCell>
+                                            <TableCell>{res.paiement?.montant.toLocaleString()} GNF</TableCell>
+                                            <TableCell>{res.paiement?.transaction_reference}</TableCell>
+                                            {
+                                                res.status === 'CONFIRMED' ? (
+                                                    <TableCell className="text-green-600">Payé</TableCell>
+                                                ) : res.status === 'PENDING' ? (
+                                                    <TableCell className="text-yellow-600">En attente de confirmation</TableCell>
+                                                ) : (
+                                                    <TableCell className="text-red-600">Échoué</TableCell>
+                                                )
+                                            }
+
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Button onClick={() => handleConfirm(res.id,res.user.email,res.chambre.hotel.id)} variant="outline" className="text-blue-600 hover:text-blue-800 transition-colors">
+                                                        {loading ? "Confirmation..." : "Confirmer"}
+                                                    </Button>
+                                                    <Button onClick={() => handleCancel(res.id,res.user.email,res.chambre.hotel.id)} variant="outline" className="text-yellow-600 hover:text-yellow-800 transition-colors">
+                                                        {loading ? "Annulation..." : "Annuler"}
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+
+
+
+
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
                         </div>
-                    </div>
+                    )
+                }
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {incomingOccupants.map((occupant, index) => (
-                            <Card
-                                key={index}
-                                className="overflow-hidden shadow-lg rounded-xl border border-gray-100 dark:border-zinc-700 hover:shadow-2xl"
-                            >
-                                <CardContent className="p-0">
-                                    <div
-                                        className={`p-4 flex flex-col items-center rounded-t-lg ${
-                                            occupant.needsPaymentLink
-                                                ? "bg-teal-500"
-                                                : "bg-white dark:bg-zinc-900"
-                                        }`}
-                                    >
-                                        <Avatar className="h-16 w-16 mb-2 border-2 border-white">
-                                            <AvatarImage src={occupant.image} alt={occupant.name} />
-                                            <AvatarFallback>{occupant.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <div className="text-center">
-                                            <h4
-                                                className={`font-medium ${
-                                                    occupant.needsPaymentLink
-                                                        ? "text-white"
-                                                        : "text-gray-800 dark:text-white"
-                                                }`}
-                                            >
-                                                {occupant.name}
-                                            </h4>
-                                            <Badge
-                                                className={`mt-1 ${
-                                                    occupant.needsPaymentLink
-                                                        ? "bg-white text-teal-500"
-                                                        : "bg-teal-100 text-teal-600 dark:bg-teal-700 dark:text-teal-100"
-                                                }`}
-                                            >
-                                                {occupant.type}
-                                            </Badge>
-                                        </div>
-                                        <div
-                                            className={`text-sm mt-2 ${
-                                                occupant.needsPaymentLink
-                                                    ? "text-white"
-                                                    : "text-gray-500 dark:text-gray-400"
-                                            }`}
-                                        >
-                                            {occupant.dates}
-                                        </div>
-                                        {occupant.needsPaymentLink && (
-                                            <div className="mt-2 text-white text-sm">{occupant.status}</div>
-                                        )}
-                                    </div>
-                                    <div className="p-4 flex flex-col items-center bg-gray-50 dark:bg-zinc-800 rounded-b-lg">
-                                        <div className="text-xl font-medium text-gray-800 dark:text-white">
-                                            {occupant.amount}
-                                        </div>
-                                        <div
-                                            className={`text-sm ${
-                                                occupant.needsPaymentLink
-                                                    ? "text-gray-500"
-                                                    : "text-green-500 dark:text-green-400"
-                                            }`}
-                                        >
-                                            {!occupant.needsPaymentLink && occupant.status}
-                                        </div>
-                                        {occupant.needsPaymentLink && (
-                                            <Button className="mt-2 bg-teal-600 hover:bg-teal-700 text-white text-sm py-2 px-4 rounded-md">
-                                                Send Payment Link
-                                            </Button>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </div>
+                {
+                    reservationAppartement.length <= 0 ? (
+                        <p>Pas de reservation pour le moment Pour vos Hotel ou aucun hotel disponible</p>
+                    ) : (
+                        <div>
+                            <Table className="min-w-full">
+                                <TableCaption>Liste des Reservation De vos Appartement </TableCaption>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Appartement</TableHead>
 
-            {/* Colonne de droite : calendrier */}
-            <div className="mt-8 bg-white dark:bg-zinc-900 shadow-lg rounded-lg p-6">
-                <h3 className="text-xl font-medium mb-4 text-gray-800 dark:text-white">Occupants Calendar</h3>
-                <FullCalendar
-                    plugins={[dayGridPlugin]}
-                    initialView="dayGridMonth"
-                    events={[
-                        { title: 'Jonathan D.', start: '2024-02-12', end: '2024-02-14' },
-                        { title: 'Jessica P.', start: '2024-02-12', end: '2024-02-14' },
-                        { title: 'Lilliana M. - Grooming', start: '2024-02-12', end: '2024-02-14' },
-                        { title: 'Lilliana M. - Daycare', start: '2024-02-12', end: '2024-02-14' },
-                    ]}
-                    height="auto"
-                />
-            </div>
-        </section>
+                                        
+                                        <TableHead className="hidden lg:table-cell">Client Nom</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Client Email</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Date Arrivé</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Date de Départ</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Nombre de Personne</TableHead>
+
+                                        <TableHead className="hidden lg:table-cell">Montant</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Transaction Reference</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Statut</TableHead>
+
+                                        <TableHead>Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {reservationAppartement.map((res) => (
+                                        <TableRow key={res.id}>
+                                            <TableCell>{res.logement.nom}</TableCell>
+                                          
+                                            <TableCell>{res.user.name}</TableCell>
+                                            <TableCell>{res.user.email}</TableCell>
+                                            <TableCell>
+                                                <div>{new Date(res.startDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}</div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div>{new Date(res.endDate).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}</div>
+                                            </TableCell>
+
+                                            <TableCell>{res.nbpersonne}</TableCell>
+                                            <TableCell>{res.paiement?.montant.toLocaleString()} GNF</TableCell>
+                                            <TableCell>{res.paiement?.transaction_reference}</TableCell>
+                                            {
+                                                res.status === 'CONFIRMED' ? (
+                                                    <TableCell className="text-green-600">Payé</TableCell>
+                                                ) : res.status === 'PENDING' ? (
+                                                    <TableCell className="text-yellow-600">En attente de confirmation</TableCell>
+                                                ) : (
+                                                    <TableCell className="text-red-600">Échoué</TableCell>
+                                                )
+                                            }
+
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                  
+                                                </div>
+                                            </TableCell>
+
+
+
+
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )
+                }
+            </section>
+        </>
+
     );
 }

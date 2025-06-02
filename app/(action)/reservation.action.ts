@@ -105,7 +105,8 @@ export async function getReservationById(id: string) {
                     include: {
                         hotel: true
                     }
-                }
+                },
+                paiement: true
             }
         });
 
@@ -123,7 +124,7 @@ export async function validerReservation(data: {
     dateA: string;
     dateD: string;
     voyageurs: string;
-   
+
     transactionReference: string;
 }) {
     try {
@@ -156,14 +157,14 @@ export async function validerReservation(data: {
                 data: {
                     reservationId: reservation.id,
                     montant: parseFloat(data.price),
-                   
+
                     transaction_reference: data.transactionReference,
                 },
             });
             await prisma.logement.update({
                 where: { id: data.logementId },
                 data: {
-                   disponible: false, 
+                    disponible: false,
                 },
             });
 
@@ -183,7 +184,7 @@ export async function validerReservationChambre(data: {
     dateA: string;
     dateD: string;
     voyageurs: string;
-  
+
     transactionReference: string;
 }) {
     try {
@@ -212,14 +213,14 @@ export async function validerReservationChambre(data: {
                 data: {
                     reservationId: reservation.id,
                     montant: parseFloat(data.price),
-                
+
                     transaction_reference: data.transactionReference,
                 },
             });
             await prisma.chambre.update({
                 where: { id: data.chambreId },
                 data: {
-                   disponible: false, 
+                    disponible: false,
                 },
             });
 
@@ -234,34 +235,153 @@ export async function validerReservationChambre(data: {
 }
 
 export async function getUserReservationsWithHotel() {
-  try {
-    const user = await getUser();
+    try {
+        const user = await getUser();
 
-    if (!user?.id) {
-      throw new Error("Utilisateur non authentifié.");
+        if (!user?.id) {
+            throw new Error("Utilisateur non authentifié.");
+        }
+
+        const reservations = await prisma.reservation.findMany({
+            where: {
+                userId: user.id,
+                chambreId: {
+                    not: null,
+                },
+            },
+            include: {
+                chambre: {
+                    include: {
+                        hotel: true,
+                    },
+                },
+                paiement: true,
+            },
+        });
+
+        return reservations ?? [];
+    } catch (error) {
+        console.error("Erreur lors de la récupération des réservations :", error);
+        throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
     }
-
-    const reservations = await prisma.reservation.findMany({
-      where: {
-        userId: user.id,
-        chambreId: {
-          not: null,
-        },
-      },
-      include: {
-        chambre: {
-          include: {
-            hotel: true,
-          },
-        },
-        paiement: true,
-      },
-    });
-console.log("Reservations:", reservations);
-    return reservations ?? [];
-  } catch (error) {
-    console.error("Erreur lors de la récupération des réservations :", error);
-    throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
-  }
 }
+export async function getUserReservationsWithLogement() {
+    try {
+        const user = await getUser();
+
+        if (!user?.id) {
+            throw new Error("Utilisateur non authentifié.");
+        }
+
+        const reservations = await prisma.reservation.findMany({
+            where: {
+                userId: user.id,
+                logementId: {
+                    not: null,
+                },
+            },
+            include: {
+                logement: true,
+                paiement: true,
+            },
+        });
+        console.log(reservations)
+        return reservations ?? [];
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des réservations :", error);
+        throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
+    }
+}
+export async function ReservationDasbordHotel() {
+    try {
+        const user = await getUser();
+        if (!user?.id) {
+            throw new Error("Utilisateur non authentifié.");
+        }
+
+        const hotels = await prisma.userRoleHotel.findMany({
+            where: { userId: user.id },
+            include: {
+                hotel: {
+                    include: { chambres: true }
+                }
+            }
+        });
+
+        const chambreIds = hotels.flatMap(h => h.hotel.chambres.map(ch => ch.id));
+
+        const reservations = await prisma.reservation.findMany({
+            where: {
+                chambreId: {
+                    in: chambreIds
+                }
+            }, include: {
+                chambre: {
+                    include: {
+                        hotel: true,
+                    },
+                },
+                user:true,
+                paiement: true,
+            }
+        });
+
+        console.log(reservations)
+        return reservations;
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des réservations :", error);
+        throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
+    }
+}
+
+export async function ReservationDasbordLogement() {
+    try {
+        const user = await getUser();
+        if (!user?.id) {
+            throw new Error("Utilisateur non authentifié.");
+        }
+
+        const logements = await prisma.userRoleAppartement.findMany({
+            where: { userId: user.id },
+            include: {
+                logement: true
+            }
+        });
+        const logementIds = logements.map(lg => lg.logement.id);
+
+        const reservations = await prisma.reservation.findMany({
+            where: {
+                chambreId: {
+                    in: logementIds
+                }
+            }
+        });
+
+        return reservations;
+
+    } catch (error) {
+        console.error("Erreur lors de la récupération des réservations :", error);
+        throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
+    }
+}
+export async function UpdateStatusReservation(id: string, status: "CONFIRMED" | "CANCELLED") {
+    try {
+        const reservation = await prisma.reservation.update({
+            where: { id },
+            data: { status }
+        });
+
+        if (!reservation) {
+            throw new Error("Réservation non trouvée ou mise à jour échouée.");
+        }
+
+        return reservation;
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour du statut de la réservation :", error);
+        throw new Error("Impossible de mettre à jour le statut de la réservation.");
+    }
+}
+
 

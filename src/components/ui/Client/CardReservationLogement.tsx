@@ -156,7 +156,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
-                                 {/** 
+                                {/**
                                 <input
                                     type="hidden"
                                     name="paycard-callback-url"
@@ -168,8 +168,9 @@ export function CardReservationLogement({ logement }: logementProps) {
                                         `&kimshotel=true`
                                     }
                                 />
-*/}
-                                 <input
+
+   */}
+                                <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
@@ -180,6 +181,7 @@ export function CardReservationLogement({ logement }: logementProps) {
                                         `&kimshotel=true`
                                     }
                                 />
+
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />
                                 <input type="hidden" name="order_id" value={`res-${Date.now()}`} />

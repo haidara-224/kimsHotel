@@ -72,6 +72,25 @@ export default function Page() {
 
                     </TableBody>
                 </Table>
+
+                  <h1>Information sur Le le paiement</h1>
+                <Table className="min-w-full border">
+
+                    <TableBody>
+                        <TableRow>
+                            <TableHead className="font-semibold">Montant</TableHead>
+                            <TableCell>  {reseration?.paiement?.montant.toLocaleString()} GNF</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableHead className="font-semibold">transaction_reference</TableHead>
+                            <TableCell>{reseration?.paiement?.transaction_reference}</TableCell>
+                        </TableRow>
+                        
+
+
+
+                    </TableBody>
+                </Table>
             </div>
             <div className="mb-5">
                 <h1>Information sur L&apos;Etablissement</h1>

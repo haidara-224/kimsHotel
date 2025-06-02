@@ -67,7 +67,7 @@ export function ReservationDataTable({ title, limit }: ReservationTableProps) {
                     {reservation.map((ct) => (
                         <TableRow key={ct.id}>
                              <TableCell> {ct.user.name}</TableCell>
-                             <TableCell> {ct.logement ? `${ct.logement.nom}- Logement` : `${ct.chambre?.hotel?.nom} - Hotel`}</TableCell>
+                             <TableCell> {ct.logement ? `${ct.logement.nom}- (Logement)` : `${ct.chambre?.hotel?.nom} - Chambre: ${ct.chambre.numero_chambre}`}</TableCell>
 
                             <TableCell className="hidden md:table-cell"> {ct?.startDate && new Date(ct.startDate).toLocaleDateString('fr-FR', {
                                 year: 'numeric',

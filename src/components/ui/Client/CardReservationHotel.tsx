@@ -136,6 +136,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                 readOnly
                             />
                             <input type="hidden" name="paycard-description" value={`reservation de chambre ${chambre.numero_chambre}`} />
+
                             <input
                                 type="hidden"
                                 name="paycard-callback-url"
@@ -148,19 +149,21 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                     `&kimshotel=true`
                                 }
                             />
+
                             {/**
-     * <input
+                            <input
                                 type="hidden"
                                 name="paycard-callback-url"
                                 value={
-                                    `http://localhost:3000/check_payment/hotel/${chambre.id}/${session?.user.id}/${(chambre?.price ?? 0) * getNumberOfNights()}`+
+                                    `http://localhost:3000/check_payment/hotel/${chambre.id}/${session?.user.id}/${(chambre?.price ?? 0) * getNumberOfNights()}` +
                                     `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
                                     `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
                                     `&voyageurs=${encodeURIComponent(voyageurs)}` +
                                     `&kimshotel=true`
                                 }
                             />
-     */}
+                              */}
+
 
 
 
