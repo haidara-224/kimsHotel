@@ -11,10 +11,6 @@ import { LastLogement } from "@/src/components/ui/LastLogement";
 import { HeaderSection } from "@/src/components/ui/heardersSection";
 import MapFilterItems from "@/src/components/ui/MapFilter";
 import { ShowItems } from "@/src/components/ui/Client/ShowItems";
-
-
-
-export const dynamic = 'auto'; 
 export const metadata = {
   title: "Kims Hotel Guinée - Hôtels & Appartements à Conakry",
   description: "Réservez les meilleurs hôtels et appartements en Guinée. Offres exclusives et assistance 24/7.",
