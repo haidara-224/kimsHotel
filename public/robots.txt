@@ -1,0 +1,13 @@
+# *
+User-agent: *
+Allow: /
+
+# Googlebot
+User-agent: Googlebot
+Disallow: /dashboard
+
+# Host
+Host: https://kimshotel.net
+
+# Sitemaps
+Sitemap: https://kimshotel.net/sitemap.xml

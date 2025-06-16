@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommentProvider } from "@/contexte/CommenteContexte";
 import { CommentHotelProvider } from "@/contexte/userCommentHotelContext";
+import { FilterProvider } from "@/contexte/FilterContexte";
 
 
 const geistSans = Geist({
@@ -37,10 +38,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         
           <CommentProvider>
             <CommentHotelProvider>
+              <FilterProvider>
               <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
                 {children}
                 <Toaster />
               </ThemeProvider>
+              </FilterProvider>
+            
             </CommentHotelProvider>
           </CommentProvider>
        

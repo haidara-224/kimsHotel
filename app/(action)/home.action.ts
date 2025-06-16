@@ -2,6 +2,7 @@
 
 import { prisma } from "@/src/lib/prisma"
 
+
 export async function GetLastLogement() {
     try {
       const logements = await prisma.logement.findMany({
@@ -20,47 +21,84 @@ export async function GetLastLogement() {
       throw new Error('Failed to fetch logements');
     }
   }
-  
-  export async function getData({ searchParams }: { searchParams?: { filter?: string } }) {
- 
-    //await new Promise(resolve => setTimeout(resolve, 5000));
-  
+
+
+export async function getData(option?: string) {
+  // 🔹 CAS 1 : aucun filtre => on retourne tout
+  if (!option) {
     const [hotels, logements] = await Promise.all([
-      prisma.hotelOptionOnHotel.findMany({
-        where: { option: { name: searchParams?.filter } },
+      prisma.hotel.findMany({
         include: {
-          hotel: {
-            include: {
-              hotelOptions: { include: { option: true } },
-              categoryLogement: true,
-              images: true,
-  
-  
-            }
-          }
+          images: true,
+          categoryLogement: true,
+          hotelOptions: { include: { option: true } },
         },
-        distinct: ['hotelId'],
       }),
-      prisma.logementOptionOnLogement.findMany({
-        where: { option: { name: searchParams?.filter } },
+      prisma.logement.findMany({
         include: {
-          logement: {
-            include: {
-              logementOptions: { include: { option: true } },
-              categoryLogement: true,
-              images: true
-  
-  
-            }
-          }
+          images: true,
+          categoryLogement: true,
+          logementOptions: { include: { option: true } },
         },
-        distinct: ['logementId'],
       }),
     ]);
-  
+
     return [
-      ...hotels.map(h => ({ type: "hotel", ...h.hotel })),
-      ...logements.map(l => ({ type: "logement", ...l.logement })),
+      ...hotels.map(h => ({ type: "hotel", ...h })),
+      ...logements.map(l => ({ type: "logement", ...l })),
     ];
   }
+
+  // 🔹 CAS 2 : un filtre (option) est sélectionné => on filtre par option
+  const [hotelsFiltered, logementsFiltered] = await Promise.all([
+    prisma.hotelOptionOnHotel.findMany({
+      where: {
+        option: {
+          name: option, // nom de l'option sélectionnée (ex: "wifi", "piscine", etc.)
+        },
+      },
+      include: {
+        hotel: {
+          include: {
+            images: true,
+            categoryLogement: true,
+            hotelOptions: { include: { option: true } },
+          },
+        },
+      },
+      distinct: ['hotelId'], // Pour éviter les doublons
+    }),
+
+    prisma.logementOptionOnLogement.findMany({
+      where: {
+        option: {
+          name: option,
+        },
+      },
+      include: {
+        logement: {
+          include: {
+            images: true,
+            categoryLogement: true,
+            logementOptions: { include: { option: true } },
+          },
+        },
+      },
+      distinct: ['logementId'],
+    }),
+  ]);
+
+  return [
+    ...hotelsFiltered.map(h => ({
+      type: "hotel",
+      ...h.hotel,
+    })),
+    ...logementsFiltered.map(l => ({
+      type: "logement",
+      ...l.logement,
+    })),
+  ];
+}
+
+ 
 
