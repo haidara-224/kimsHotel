@@ -8,17 +8,22 @@ import { Footers } from "@/src/components/ui/FooterAceuil";
 import { ContactUs } from "@/src/components/ui/ContactUs";
 import { LastLogement } from "@/src/components/ui/LastLogement";
 
-import { Metadata } from "next";
 import { HeaderSection } from "@/src/components/ui/heardersSection";
 import MapFilterItems from "@/src/components/ui/MapFilter";
 import { ShowItems } from "@/src/components/ui/Client/ShowItems";
-export const dynamic = "force-static";
 
 
 
-export const metadata: Metadata = {
-  title: "Kims Hotel Guinée",
-  description: "Trouver des Hotels et Appartements partout en Guinée"
+export const dynamic = 'auto'; 
+export const metadata = {
+  title: "Kims Hotel Guinée - Hôtels & Appartements à Conakry",
+  description: "Réservez les meilleurs hôtels et appartements en Guinée. Offres exclusives et assistance 24/7.",
+  alternates: {
+    canonical: "https://kimshotel.net",
+  },
+  openGraph: {
+    images: ['/opengraph-image.jpg'],
+  },
 };
 
 
@@ -46,15 +51,10 @@ export default async function HomePage() {
 
   return (
     <div className="w-full min-h-screen bg-background">
-      {/* Navigation */}
       <nav className="bg-white shadow-md fixed w-full z-40 p-2 lg:p-5">
         <NavBar />
       </nav>
-
-      {/* Section header */}
       <HeaderSection />
-
-      {/* Section principale avec filtres et résultats */}
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
         <h1 className="sr-only">Liste des logements et hôtels disponibles</h1>
         <div className="text-3xl font-semibold mb-8 text-center">
@@ -67,8 +67,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Sections supplémentaires pour le SEO */}
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50 dark:bg-slate-800">
         <h2 className="text-3xl font-semibold mb-8 text-center">Pourquoi faire appel à nos services ?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
