@@ -7,7 +7,7 @@ module.exports = {
   priority: 0.7,
   exclude: [
     '/dashboard/*',
-    '/dashboard/hotes/*', // ← corrigé ici
+    '/dashboard/hotes/*',
   ],
   robotsTxtOptions: {
     policies: [
@@ -16,12 +16,14 @@ module.exports = {
     ],
   },
   transform: async (config, url) => {
-    // Force l’ajout de "/" si jamais il est ignoré
     return {
       loc: url,
       changefreq: 'weekly',
-      priority: url === `${config.siteUrl}/` ? 1.0 : 0.7, // Home avec priorité haute
+      priority: url === `${config.siteUrl}/` ? 1.0 : 0.7,
       lastmod: new Date().toISOString(),
     };
   },
+  additionalPaths: async (config) => [
+    await config.transform(config, '/'),
+  ],
 };
