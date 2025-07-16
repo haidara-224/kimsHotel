@@ -1,4 +1,5 @@
 
+
 import * as z from "zod";
 
 
@@ -102,10 +103,9 @@ export const EditSchemaLogement = z.object({
 
     price: z.number()
         .min(100000, "Le prix ne peut pas être inférieur a 100000"),
-images: z.array(z.instanceof(File))
-  .min(4, "Au moins 4 images sont requises")
-  .refine(files => files.every(file => file.size <= 5 * 1024 * 1024), {
-    message: "Chaque image doit faire moins de 5MB",
-  }),
-
+images: (z.array(z.instanceof(File))
+    .min(4, "Au moins 4 images sont requises")
+    .refine(files => files.every(file => file.size <= 5 * 1024 * 1024), {
+        message: "Chaque image doit faire moins de 5MB",
+    }))
 });
