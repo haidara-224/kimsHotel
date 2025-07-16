@@ -5,6 +5,7 @@ import { sendEmail } from "./mailer";
 import { nextCookies } from "better-auth/next-js";
 
 
+
 const prisma = new PrismaClient();
 
 export const auth = betterAuth({

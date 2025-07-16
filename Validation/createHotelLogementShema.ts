@@ -102,16 +102,10 @@ export const EditSchemaLogement = z.object({
 
     price: z.number()
         .min(100000, "Le prix ne peut pas être inférieur a 100000"),
-images: z.array(
-  z.any().refine(file => {
-
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-    const maxSize = isMobile ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
-    return file?.size <= maxSize;
-  }, {
-    message: "Chaque image doit être inférieure à 5 Mo (10 Mo sur mobile).",
-  })
-).min(4, "Ajoutez au moins 4 images.")
-.max(10, "Ajoutez au maximum 10 images."),
+images: z.array(z.instanceof(File))
+  .min(4, "Au moins 4 images sont requises")
+  .refine(files => files.every(file => file.size <= 5 * 1024 * 1024), {
+    message: "Chaque image doit faire moins de 5MB",
+  }),
 
 });

@@ -8,7 +8,7 @@ import { CreationSchema } from "@/Validation/createHotelLogementShema";
 import ProgresseBars from "./progresseBar";
 import { Input } from "../input";
 
-import { CreateLogement } from "@/app/(action)/Logement.action";
+//import { CreateLogement } from "@/app/(action)/Logement.action";
 import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
 import { toast } from "sonner"
 
@@ -114,7 +114,12 @@ export default function MultiformStep() {
             setSelectedOption(watchedOption)
         }
     }, [watch, selectedOption])
-
+      const isUnauthenticated = !session;
+useEffect(()=>{
+      if(isUnauthenticated){
+        router.push("/auth/signin?redirect=favorites")
+      }
+    },[isUnauthenticated,router])
     const validationStep = async (nextStep: number) => {
         let fieldValidate: (keyof FormLogement)[] = [];
         switch (step) {
@@ -167,8 +172,60 @@ export default function MultiformStep() {
             setValue('option', selectedOption as [string, ...string[]]);
         }
     }, [selectedOption, setValue]);
+const onSubmit = async (data: FormLogement) => {
+  const formData = new FormData();
+  
+  // Ajoutez tous les champs
+  formData.append('categoryLogementId', categoryLogementId);
+  formData.append('options', JSON.stringify(data.option));
+  formData.append('nom', data.nom);
+  formData.append('description', data.description);
+    formData.append('adresse', data.adresse);
+    formData.append('ville', data.ville);
+    formData.append('telephone', data.telephone);
+    formData.append('email', data.email);
+    formData.append('capacity', data.capacity.toString());
+    formData.append('hasWifi', data.hasWifi.toString());
+    formData.append('hasTV', data.hasTV.toString());
+    formData.append('hasClim', data.hasClim.toString());
+    formData.append('hasKitchen', data.hasKitchen.toString());
+    formData.append('parking', data.parking.toString());
+    formData.append('surface', data.surface.toString());
+    formData.append('extraBed', data.extraBed.toString());
+    formData.append('nbChambres', data.nbChambres.toString());
+    formData.append('price', data.price.toString());
+   
 
-    const onSubmit = async (data: FormLogement) => {
+  data.images.forEach(file => {
+    formData.append('images', file);
+  });
+
+  try {
+    const response = await fetch('/api/logement', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Erreur inconnue");
+    }
+
+     await response.json();
+    toast.success("Logement créé avec succès");
+    router.push(`/dashboard/hotes/${session?.user?.id}`);
+    
+  } catch (error) {
+    console.error('Erreur:', error);
+    if (error instanceof Error) {
+      toast.error(error.message || "Erreur lors de la création");
+    } else {
+      toast.error("Erreur lors de la création");
+    }
+  }
+};
+/**
+ *const onSubmit = async (data: FormLogement) => {
 
         const response = await CreateLogement(
             categoryLogementId,
@@ -202,7 +259,12 @@ export default function MultiformStep() {
         }
 
     }
+ * @param data
+ */
 
+
+ 
+    
     return (
         <div className="mx-2xl mx-auto p-6 ">
             <ProgresseBars curentstep={step} steps={steps} />
