@@ -148,24 +148,26 @@ useEffect(()=>{
         });
     };
 
-  const onUploaded = (e: ChangeEvent<HTMLInputElement>) => {
-  const files = e.target.files;
-  if (files && files.length > 0) {
-    // Vérifier la taille des fichiers
-    const oversizedFiles = Array.from(files).filter(file => file.size > 5 * 1024 * 1024);
-    
-    if (oversizedFiles.length > 0) {
-      toast.error(`Certains fichiers dépassent 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
-      return;
-    }
+const onUploaded = (e: ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files || e.target.files.length === 0) return;
 
-    const validFiles = Array.from(files).filter(file => file.size <= 5 * 1024 * 1024);
-    const fileUrls = validFiles.map(file => URL.createObjectURL(file));
-    
-    setImageUrl(prev => [...(prev || []), ...fileUrls]); 
-    setValue("images", [...watch("images"), ...validFiles]); 
+  const newFiles = Array.from(e.target.files).filter(file => {
+    // Validation basique du type de fichier
+    return file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024;
+  });
+
+  if (newFiles.length === 0) {
+    toast.error("Veuillez sélectionner des images valides (max 5MB)");
+    return;
   }
+
+  setValue("images", [...watch("images"), ...newFiles], { shouldValidate: true });
+  
+  // Prévisualisation
+  const newUrls = newFiles.map(file => URL.createObjectURL(file));
+  setImageUrl(prev => [...(prev || []), ...newUrls]);
 };
+
 
     useEffect(() => {
         if (selectedOption.length > 0) {
@@ -196,10 +198,15 @@ const onSubmit = async (data: FormLogement) => {
     formData.append('price', data.price.toString());
    
 
-  data.images.forEach(file => {
-    formData.append('images', file);
-  });
+  // Ajoutez les images une par une
+    data.images.forEach((file, index) => {
+      formData.append(`image_${index}`, file);
+    });
 
+    // Debug: Vérifiez le contenu de FormData
+    for (const [key, value] of formData.entries()) {
+      toast.success(`${key}: ${value}`);
+    }
   try {
     const response = await fetch('/api/logement', {
       method: 'POST',

@@ -36,10 +36,16 @@ export async function POST(request: Request) {
     
 
     // Fichiers images
-    const imageFiles = formData.getAll('images') as File[];
+  const images: File[] = [];
+let index = 0;
+while (formData.has(`image_${index}`)) {
+  const file = formData.get(`image_${index}`) as File;
+  if (file && file.size > 0) images.push(file);
+  index++;
+}
 
     // 3. Validation
-    if (!imageFiles || imageFiles.length < 4) {
+    if (!images || images.length < 4) {
       return NextResponse.json(
         { error: "Au moins 4 images sont requises" },
         { status: 400 }
@@ -85,7 +91,7 @@ export async function POST(request: Request) {
 
     // 6. Upload des images
     const uploadResults = await Promise.allSettled(
-      imageFiles.map(async (file) => {
+      images.map(async (file) => {
         try {
           const buffer = Buffer.from(await file.arrayBuffer());
           const blob = await put(file.name, buffer, { access: 'public' });
