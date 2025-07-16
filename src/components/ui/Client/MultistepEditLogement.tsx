@@ -38,7 +38,7 @@ interface FormLogement {
     extraBed: boolean;
     nbChambres: number;
     price: number;
-    images?: File[];
+    images: File[];
 }
 
 const steps = [

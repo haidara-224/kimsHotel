@@ -58,6 +58,7 @@ interface Option {
 export default function MultiformStep() {
      const { data: session, } = useSession();
     const [step, setStep] = useState(1);
+    const [uploadProgress] = useState<number>(0);
     const router = useRouter()
     const [imageUrl, setImageUrl] = useState<string[] | null>(null)
     const [selectedOption, setSelectedOption] = useState<string[]>([]);
@@ -142,15 +143,24 @@ export default function MultiformStep() {
         });
     };
 
-    const onUploaded = (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const fileArray = Array.from(files);
-            const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrl(fileUrls); 
-            setValue("images", fileArray); 
-        }
-    };
+   const onUploaded = (e: ChangeEvent<HTMLInputElement>) => {
+  const files = e.target.files;
+  if (files && files.length > 0) {
+    // Vérifier la taille des fichiers pour mobile
+    const oversizedFiles = Array.from(files).filter(file => file.size > 5 * 1024 * 1024);
+    
+    if (oversizedFiles.length > 0) {
+      toast.error(`Certains fichiers dépassent 5MB: ${oversizedFiles.map(f => f.name).join(', ')}`);
+      return;
+    }
+
+    const validFiles = Array.from(files).filter(file => file.size <= 5 * 1024 * 1024);
+    const fileUrls = validFiles.map(file => URL.createObjectURL(file));
+    
+    setImageUrl(prev => [...(prev || []), ...fileUrls]); 
+    setValue("images", [...watch("images"), ...validFiles]); 
+  }
+};
 
     useEffect(() => {
         if (selectedOption.length > 0) {
@@ -288,25 +298,62 @@ export default function MultiformStep() {
                         </div>
                         {errors.option && <span className="text-red-500">{errors.option.message}</span>}
                         <div className="mt-5">
-                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images (telecharger 4 Images au minimum)</Label>
-                            <div className="flex flex-col items-center justify-center  gap-3">
-                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V8a4 4 0 018 0v8m-4 4h.01M4 16h16"></path>
-                                        </svg>
-                                        <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Cliquez pour télécharger</span> ou faites glisser et déposez</p>
-                                        <p className="text-xs text-gray-500">PNG, JPG (MAX. 800x400px)</p>
-                                    </div>
-                                    <Input type="file" multiple accept="image/*" onChange={onUploaded} className="hidden" />
-                                </label>
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {imageUrl && imageUrl.map((url, index) => (
-                                        <Image key={index} src={url} alt={`Preview ${index}`} className="rounded-md shadow w-32 h-32 object-cover" width={128} height={128} />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+  <Label className="block mb-2 text-sm font-medium text-gray-700">
+    Télécharger des images (télécharger 4 Images au minimum)
+  </Label>
+  <div className="flex flex-col items-center justify-center gap-3">
+    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
+      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+        <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V8a4 4 0 018 0v8m-4 4h.01M4 16h16"></path>
+        </svg>
+        <p className="mb-2 text-sm text-gray-500">
+          <span className="font-semibold">Cliquez pour télécharger</span> ou faites glisser et déposez
+        </p>
+        <p className="text-xs text-gray-500">PNG, JPG (MAX. 5MB par image)</p>
+      </div>
+      <Input 
+        type="file" 
+        multiple 
+        accept="image/*" 
+        onChange={onUploaded} 
+        className="hidden"
+        capture="environment" // Ajout pour mobile
+      />
+    </label>
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      {imageUrl && imageUrl.map((url, index) => (
+        <div key={index} className="relative">
+          <Image 
+            src={url} 
+            alt={`Preview ${index}`} 
+            className="rounded-md shadow w-32 h-32 object-cover" 
+            width={128} 
+            height={128} 
+          />
+          <button 
+            type="button"
+            onClick={() => {
+              setImageUrl(prev => prev?.filter((_, i) => i !== index) || null);
+              setValue("images", watch("images").filter((_, i) => i !== index));
+            }}
+            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      {isSubmitting && (
+  <div className="w-full bg-gray-200 rounded-full h-2.5">
+    <div 
+      className="bg-blue-600 h-2.5 rounded-full" 
+      style={{ width: `${uploadProgress}%` }}
+    ></div>
+  </div>
+)}
+    </div>
+  </div>
+</div>
 
                     </>
                 )}

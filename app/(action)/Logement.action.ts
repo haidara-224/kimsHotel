@@ -86,18 +86,30 @@ export async function CreateLogement(
            }
        })
    }
-    const uploadedImages = await Promise.allSettled(
-      images.map(async (file) => {
-        try {
-          const fileBuffer = Buffer.from(await file.arrayBuffer());
-          const blob = await put(file.name, fileBuffer, { access: 'public' });
-          return { logementId: createdLogement.id, urlImage: blob.url };
-        } catch (err) {
-          console.error("Erreur lors de l'upload d'une image :", err);
-          return null;
-        }
-      })
-    );
+   const uploadedImages = await Promise.allSettled(
+  images.map(async (file) => {
+    try {
+      console.log('Processing file:', file.name, 'Size:', file.size);
+      
+      // Vérification supplémentaire
+      if (file.size === 0) {
+        console.error('Fichier vide détecté:', file.name);
+        return null;
+      }
+
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
+      console.log('File buffer length:', fileBuffer.length);
+      
+      const blob = await put(file.name, fileBuffer, { access: 'public' });
+      console.log('Upload successful for:', file.name, 'URL:', blob.url);
+      
+      return { logementId: createdLogement.id, urlImage: blob.url };
+    } catch (err) {
+      console.error("Erreur lors de l'upload d'une image :", err);
+      return null;
+    }
+  })
+);
 
    
     const validImages = uploadedImages

@@ -12,7 +12,7 @@ import { HeaderSection } from "@/src/components/ui/heardersSection";
 import MapFilterItems from "@/src/components/ui/MapFilter";
 import { ShowItems } from "@/src/components/ui/Client/ShowItems";
 export const metadata = {
-  title: "Kims Hotel Guinée - Hôtels & Appartements en Guinée",
+  title: "Kims Hotel Guinée - Hôtels & Appartements en Guinée ",
   description: "Réservez les meilleurs hôtels et appartements en Guinée. Offres exclusives et assistance 24/7.",
   alternates: {
     canonical: "https://kimshotel.net",
