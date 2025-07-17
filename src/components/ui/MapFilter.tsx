@@ -8,7 +8,7 @@ import Image from "next/image";
 
 export default function MapFilterItems() {
   const { currentFilter, setCurrentFilter } = useFilter();
-  console.log(currentFilter)
+
 
   return (
     <div className="flex justify-between gap-x-6 mt-2 w-full overflow-x-auto no-scrollbar px-4 py-2">

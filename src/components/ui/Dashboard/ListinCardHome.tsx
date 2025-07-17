@@ -25,7 +25,7 @@ interface getPropsHome {
     urlImage: string[];
     logementId?: string;
     hotelId?: string;
-    rating: number; // Assurez-vous que cette prop est bien passée depuis le parent
+    rating: number; 
 }
 
 export default function ListingCardHome({
@@ -36,7 +36,7 @@ export default function ListingCardHome({
     prix,
     logementId,
     hotelId,
-    rating = 0, // Valeur par défaut si non fournie
+    rating = 0, 
 }: getPropsHome) {
     const router = useRouter();
     const { data: session } = useSession();
@@ -180,8 +180,10 @@ export default function ListingCardHome({
 
                 <p className="text-sm text-gray-500 dark:text-white">{adresse}</p>
                 
-                {/* Affichage du rating */}
-                {renderRatingStars()}
+                
+                {
+                    type=='hotel'&&
+                renderRatingStars()}
                 
                 {prix && (
                     <p className="text-sm text-gray-500 mt-1">

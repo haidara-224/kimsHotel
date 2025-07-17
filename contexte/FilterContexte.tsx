@@ -1,5 +1,4 @@
-// src/contexte/FilterContexte.tsx
-'use client';
+"use client";
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 

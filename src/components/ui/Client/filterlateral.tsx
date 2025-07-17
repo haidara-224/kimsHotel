@@ -18,7 +18,7 @@ export function SidebarFilters() {
   } = useFilter();
 
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(priceRange);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // ✅ Drawer contrôlé
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
 
   const handlePriceChange = (value: number[]) => {
     setLocalPriceRange([value[0], value[1]]);
@@ -26,17 +26,17 @@ export function SidebarFilters() {
 
   const applyPriceFilter = () => {
     setPriceRange(localPriceRange);
-    setIsDrawerOpen(false); // ✅ Fermer drawer après filtre
+    setIsDrawerOpen(false); 
   };
 
   const handleRatingClick = (rating: number) => {
     setRatingFilter(rating === ratingFilter ? 0 : rating);
-    setIsDrawerOpen(false); // ✅ Fermer drawer après filtre
+    setIsDrawerOpen(false); 
   };
 
   const handleFilterTypeClick = (filterValue: string) => {
     setCurrentFilter(filterValue);
-    setIsDrawerOpen(false); // ✅ Fermer drawer après filtre
+    setIsDrawerOpen(false); 
   };
 
   const resetFilters = () => {
@@ -44,12 +44,11 @@ export function SidebarFilters() {
     setPriceRange([0, 1000000]);
     setRatingFilter(0);
     setLocalPriceRange([0, 1000000]);
-    setIsDrawerOpen(false); // ✅ Fermer drawer après reset
+    setIsDrawerOpen(false); 
   };
 
   return (
     <>
-      {/* Version mobile - Drawer */}
       <div className="lg:hidden">
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerTrigger asChild>
@@ -69,7 +68,6 @@ export function SidebarFilters() {
         </Drawer>
       </div>
 
-      {/* Version desktop - Barre latérale fixe */}
       <div className="hidden lg:block w-72 p-4 border-r dark:border-slate-700 h-[calc(100vh-140px)] sticky top-20 overflow-y-auto">
         <div className="space-y-6 p-1">
           <h3 className="text-xl font-bold">Filtres</h3>
@@ -82,7 +80,7 @@ export function SidebarFilters() {
   function FilterContent() {
     return (
       <>
-        {/* Filtre par type */}
+
         <div>
           <h4 className="text-sm font-medium mb-3">Type de propriété</h4>
           <div className="grid grid-cols-3 gap-2">
@@ -94,7 +92,7 @@ export function SidebarFilters() {
               <Button
                 key={filter.value}
                 variant={currentFilter === filter.value ? "default" : "outline"}
-                onClick={() => handleFilterTypeClick(filter.value)} // ✅
+                onClick={() => handleFilterTypeClick(filter.value)} 
                 className="text-xs py-1 h-auto"
               >
                 {filter.label}
@@ -106,7 +104,7 @@ export function SidebarFilters() {
         {/* Filtre par prix */}
         <div>
           <div className="flex justify-between items-center mb-3">
-            <h4 className="text-sm font-medium">Prix (GNF)</h4>
+            <h4 className="text-sm font-medium">Prix App (GNF)</h4>
             <span className="text-xs text-gray-500">
               {new Intl.NumberFormat('fr-FR').format(localPriceRange[0])} - {new Intl.NumberFormat('fr-FR').format(localPriceRange[1])}
             </span>
@@ -136,7 +134,7 @@ export function SidebarFilters() {
             {[5, 4, 3, 2, 1].map((stars) => (
               <button
                 key={stars}
-                onClick={() => handleRatingClick(stars)} // ✅
+                onClick={() => handleRatingClick(stars)} 
                 className={`flex items-center w-full p-2 rounded-md ${ratingFilter === stars ? 'bg-blue-50 dark:bg-slate-800' : 'hover:bg-gray-50 dark:hover:bg-slate-800'}`}
               >
                 <div className="flex mr-2">
@@ -156,7 +154,7 @@ export function SidebarFilters() {
         </div>
 
         <Button
-          onClick={resetFilters} // ✅
+          onClick={resetFilters} 
           variant="outline"
           className="w-full mt-4"
         >
