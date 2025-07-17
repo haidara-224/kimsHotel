@@ -1,457 +1,728 @@
 'use client'
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-
-import ProgresseBars from "./progresseBar";
-import { Input } from "../input";
-
-import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
-import { toast } from "sonner"
-
-import { Label } from "../label";
-import { Button } from "../button";
-import { Checkbox } from "../checkbox";
-import { ParkingCircle, Snowflake, Tv, Utensils, Wifi } from "lucide-react";
-
-import Image from "next/image";
-import { Textarea } from "../textarea";
-
-import { CreationSchemaHotel } from "@/Validation/creationHotelShema";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "../select";
-import { createHotel } from "@/app/(action)/hotel.action";
+import { Wifi, Tv, Snowflake, Utensils, ParkingCircle, Bed, Star } from "lucide-react";
+import { toast } from "sonner";
 import { useSession } from "@/src/lib/auth-client";
+import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
+import Image from "next/image";
+import { createHotel } from "@/app/(action)/hotel.action";
 
-interface FormLogement {
-    option: [string, ...string[]];
-    nom: string;
-    numero_chambre: string;
-    description: string;
-    adresse: string;
-    ville: string;
-    telephone: string;
-    email: string;
-    type_etoils: number;
-    capacity: number;
-    hasWifi: boolean;
-    hasTV: boolean;
-    hasClim: boolean;
-    hasKitchen: boolean;
-    parking: boolean;
-    surface: number;
-    extraBed: boolean;
-    price: number;
-    type_chambre: "SIMPLE" | "DOUBLE" | "SUITE",
-    images: File[],
-    images_hotel: File[]
+interface FormData {
+  option: string[];
+  nom: string;
+  description: string;
+  adresse: string;
+  ville: string;
+  telephone: string;
+  email: string;
+  etoils: number;
+  capacity: number;
+  hasWifi: boolean;
+  hasTV: boolean;
+  hasClim: boolean;
+  hasKitchen: boolean;
+  parking: boolean;
+  surface: number;
+  extraBed: boolean;
+  price: number;
+  numero_chambre: string;
+  type_chambre: "SIMPLE" | "DOUBLE" | "SUITE";
+  images: File[];
+  images_hotel: File[];
+}
+
+interface Option {
+  id: string;
+  title: string;
+  imageUrl: string;
 }
 
 const steps = [
-    { title: "Établissement", description: "Informations sur l'établissement" },
-    { title: "Spécificité du L'Hotel", description: "Informations sur l'établissement" },
-    { title: "Chambres", description: "Ajouter Des Chambres" },
+  { id: 1, title: "Informations", description: "Détails de l'hôtel" },
+  { id: 2, title: "Équipements", description: "Services et options" },
+  { id: 3, title: "Chambres", description: "Configuration des chambres" },
 ];
 
-interface Option {
-    id: string,
-    title: string,
-    imageUrl: string
-}
+export default function HotelCreationForm() {
+  const { data: session } = useSession();
+  const [selectedOption, setSelectedOption] = useState<string[]>([]);
+  const [option, setOption] = useState<Option[]>([]);
+  const [step, setStep] = useState(1);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [hotelImagePreviews, setHotelImagePreviews] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const params = useParams();
+  const categoryLogementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? "";
 
-export default function MultiformStepHotel() {
-    const { data: session} = useSession();
-    const [step, setStep] = useState(1);
-    const router = useRouter()
-    const [imageUrl, setImageUrl] = useState<string[] | null>(null)
-    const [imageUrlHotel, setImageUrlHotel] = useState<string[] | null>(null)
-    const [selectedOption, setSelectedOption] = useState<string[]>([]);
-    const [option, setOption] = useState<Option[]>([])
-    const [globalError, setGlobalError] = useState<string | null>(null);
+  const [formData, setFormData] = useState<FormData>({
+    option: [],
+    nom: "",
+    description: "",
+    adresse: "",
+    ville: "Conakry",
+    etoils:1,
+    telephone: "",
+    email: "",
+    
+    capacity: 1,
+    hasWifi: false,
+    hasTV: false,
+    hasClim: false,
+    hasKitchen: false,
+    parking: false,
+    surface: 20,
+    extraBed: false,
+    price: 500000,
+    type_chambre: "SIMPLE",
+    numero_chambre: "",
+    images: [],
+    images_hotel: []
+  });
 
-    const params = useParams()
-    const categoryLogementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? ""
-    const getOption = async () => {
+  // Chargement des options
+  useEffect(() => {
+    const loadOptions = async () => {
+      try {
         const data = await getLogementOptionIdName();
-        if (data) {
-            setOption(data);
-        }
+        if (data) setOption(data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des options:", error);
+        toast.error("Erreur lors du chargement des options");
+      }
     };
+    loadOptions();
+  }, []);
 
-    useEffect(() => {
-        getOption()
-    }, [])
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-    const {
-        register,
-        handleSubmit,
-        trigger,
-        formState: { errors, isSubmitting },
-        watch,
-        setValue,
-    } = useForm<FormLogement>({
-        resolver: zodResolver(CreationSchemaHotel),
-        mode: "onChange",
-        defaultValues: {
-            numero_chambre: "",
-            option: [],
-            nom: "",
-            description: "",
-            adresse: "",
-            ville: "",
-            telephone: "",
-            email: "",
-            type_chambre: undefined,
-            type_etoils: 1,
-            parking: false,
-            capacity: 1,
-            hasWifi: false,
-            hasTV: false,
-            hasClim: false,
-            hasKitchen: false,
-            price: 100000,
-            surface: 9,
-            extraBed: false,
-            images: [],
-            images_hotel: []
-        },
-    });
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: checked }));
+  };
 
-    useEffect(() => {
-        const watchedOption = watch('option')
-        if (watchedOption && watchedOption.length > 0 && selectedOption.length === 0) {
-            setSelectedOption(watchedOption)
-        }
-    }, [watch, selectedOption])
+  const handleSelectChange = (name: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-    const validationStep = async (nextStep: number) => {
+  const handleSelectOption = (optionId: string) => {
+    const newOptions = selectedOption.includes(optionId)
+      ? selectedOption.filter(id => id !== optionId)
+      : [...selectedOption, optionId];
+    
+    setSelectedOption(newOptions);
+    setFormData(prev => ({ ...prev, option: newOptions }));
+  };
 
-        let fieldValidate: (keyof FormLogement)[] = [];
-        switch (step) {
-            case 1:
-                fieldValidate = ["nom", "description", "adresse", "ville", "telephone", "email"];
-                break;
-            case 2:
-                fieldValidate = ["option", "parking", "type_etoils", "images_hotel"];
-                break;
-            case 3:
-                fieldValidate = ["numero_chambre", "hasClim", "hasTV", "hasKitchen", "hasWifi", "extraBed", "surface", "price", "capacity", "type_chambre", "images"];
-                break;
-        }
-        const isValid = await trigger(fieldValidate);
-        if (!isValid) {
-            setGlobalError("Veuillez corriger les erreurs avant de continuer.");
-            return; // ne passe pas à l'étape suivante
-        }
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>, type: "room" | "hotel") => {
+    if (!e.target.files) return;
+    
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter(file => 
+      file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
+    );
 
-        setGlobalError(null); // tout est bon
-        if (isValid) {
-
-            setStep(nextStep);
-        }
-    };
-
-    const handlleSelectOption = (options: string) => {
-        setSelectedOption(prev => {
-            const updatedOptions = prev.includes(options)
-                ? prev.filter(op => op !== options)
-                : [...prev, options];
-            return updatedOptions;
-        });
-    };
-
-    const onUploaded = (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const fileArray = Array.from(files);
-            const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrl(fileUrls);
-            setValue("images", fileArray);
-
-        }
-    };
-    const onUploadedImageHotel = (e: ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const fileArray = Array.from(files);
-            const fileUrls = fileArray.map(file => URL.createObjectURL(file));
-            setImageUrlHotel(fileUrls);
-            setValue("images_hotel", fileArray);
-
-        }
-    };
-
-    useEffect(() => {
-        if (selectedOption.length > 0) {
-            setValue('option', selectedOption as [string, ...string[]]);
-        }
-    }, [selectedOption, setValue]);
-
-    const onSubmit = async (data: FormLogement) => {
-
-        const response = await createHotel(
-            categoryLogementId,
-            data.numero_chambre,
-            data.option,
-            data.nom,
-            data.description,
-            data.adresse,
-            data.ville,
-            data.telephone,
-            data.email,
-            data.capacity,
-            data.hasClim,
-            data.hasWifi,
-            data.hasTV,
-            data.type_chambre,
-            data.parking,
-            data.surface,
-            data.type_etoils,
-            data.extraBed,
-            data.price,
-
-            data.images,
-            data.images_hotel
-        );
-        if ('error' in response) {
-            alert(response.error)
-        } else {
-            toast("Logement créé avec success")
-            setTimeout(() => {
-                router.push(`/dashboard/hotes/${session?.user?.id}`)
-            }, 1000);
-        }
+    if (validFiles.length !== files.length) {
+      toast.error("Certains fichiers ne sont pas valides (max 5MB)");
     }
 
-    return (
-        <div className="mx-2xl mx-auto p-6 ">
-            {/**<pre>{JSON.stringify(watch(), null, 2)}</pre>**/}
-            {globalError && (
-                <div className="text-red-600 bg-red-100 border border-red-400 p-4 rounded-md text-center">
-                    {globalError}
-                </div>
-            )}
-            <ProgresseBars curentstep={step} steps={steps} />
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8  lg:px-32">
-                {step === 1 && (
-                    <div className="space-y-4 flex flex-col justify-center m-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 w-full gap-5">
-                            <div>
-                                <Input {...register("nom")} placeholder="Donner Un Nom A Votre Hôtels" />
-                                {errors.nom && <span className="text-red-500">{errors.nom.message}</span>}
-                            </div>
-                            <div>
-                                <Input {...register("ville")} placeholder="La ville où se trouve votre Hôtels" />
-                                {errors.ville && <span className="text-red-500">{errors?.ville?.message}</span>}
-                            </div>
-                            <div>
-                                <Input {...register("adresse")} placeholder="Quartier/Village/District" />
-                                {errors.adresse && <span className="text-red-500">{errors?.adresse?.message}</span>}
-                            </div>
-                            <div>
-                                <Input {...register("telephone")} placeholder="Numéro de Téléphone à Contacter" />
-                                {errors.telephone && <span className="text-red-500">{errors?.telephone?.message}</span>}
-                            </div>
-                            <div>
-                                <Input {...register("email")} placeholder="Adresse Email" />
-                                {errors.email && <span className="text-red-500">{errors?.email?.message}</span>}
-                            </div>
-                        </div>
-                        <Textarea {...register("description")} placeholder="Entrer une description" id="message" className="h-32" />
-                        {errors.description && <span className="text-red-500">{errors?.description?.message}</span>}
-                    </div>
-                )}
-                {step === 2 && (
-                    <div className="space-y-6">
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
-                            {option.map((op) => (
-                                <div key={op.id} className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id={op.id}
-                                        checked={selectedOption.includes(op.id)}
-                                        onCheckedChange={() => handlleSelectOption(op.id)}
-                                    />
-                                    <Label htmlFor={op.id}>{op.title}</Label><Image className="dark:bg-white" src={op.imageUrl} width={32} height={32} alt="" />
-                                </div>
-                            ))}
-                        </div>
-                        {errors.option && <span className="text-red-500">{errors.option.message}</span>}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            {[
-                                { id: "parking", label: "Parking", icon: <ParkingCircle />, field: "parking" },
-                            ].map(({ id, label, icon, field }) => (
-                                <div key={id} className="flex items-center space-x-3 p-2">
-                                    <Checkbox id={id}  {...register(field as keyof FormLogement)} onCheckedChange={(checked) => setValue(field as keyof FormLogement, checked)} />
-                                    <label htmlFor={id} className="flex items-center text-sm font-medium cursor-pointer space-x-2">
-                                        {icon} <span>{label}</span>
-                                    </label>
-                                </div>
-                            ))}
-                            {errors.parking && <span className="text-red-500">{errors.parking.message}</span>}
-                            <div className="w-1/2">
-                                <Label>Etoils</Label>
-                                <Input type="number"  {...register("type_etoils", { valueAsNumber: true })} />
-                                {errors.type_etoils && <span className="text-red-500">{errors.type_etoils.message}</span>}
-                            </div>
-                        </div>
-                        <div className="mt-5">
-                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images de votre Hotel</Label>
-                            <div className="flex flex-col items-center justify-center  gap-3">
-                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V8a4 4 0 018 0v8m-4 4h.01M4 16h16"></path>
-                                        </svg>
-                                        <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Cliquez pour télécharger</span> ou faites glisser et déposez</p>
-                                        <p className="text-xs text-gray-500">PNG, JPG (MAX. 800x400px)</p>
-                                    </div>
-                                    <Input type="file" multiple accept="image/*" onChange={onUploadedImageHotel} className="hidden" />
-                                </label>
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {imageUrlHotel && imageUrlHotel.map((url, index) => (
-                                        <Image
-                                            key={index}
-                                            src={url}
-                                            alt={`Preview ${index}`}
-                                            className="rounded-md shadow object-cover w-full h-auto max-w-[100px] max-h-[100px] sm:max-w-[128px] sm:max-h-[128px]"
-                                            width={128}
-                                            height={128}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            {errors.images_hotel && (
-                                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
-                                    {errors.images_hotel.message}
-                                </div>
-                            )}
+    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
 
-                        </div>
+    if (type === "room") {
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...validFiles] }));
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+    } else {
+      setFormData(prev => ({ ...prev, images_hotel: [...prev.images_hotel, ...validFiles] }));
+      setHotelImagePreviews(prev => [...prev, ...newPreviews]);
+    }
+  };
 
-                    </div>
-                )}
-                {step === 3 && (
-                    <>
-                        <h1>Ajouter une chambre, vous serez redirigez vers votre dashboard ou vous ajouter autant de chambre que vous voulez</h1>
-                        <Label>Numero de chambre </Label>
-                        <div >
-                            <Input type="text"  {...register("numero_chambre")} />
-                            {errors.numero_chambre && <span className="text-red-500">{errors.numero_chambre.message}</span>}
-                        </div>
+  const removeImage = (index: number, type: "room" | "hotel") => {
+    if (type === "room") {
+      setFormData(prev => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index)
+      }));
+      setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        images_hotel: prev.images_hotel.filter((_, i) => i !== index)
+      }));
+      setHotelImagePreviews(prev => prev.filter((_, i) => i !== index));
+    }
+  };
 
-                        <div className="grid grid-cols-2 gap-4">
+  const validateStep = (): boolean => {
+    // Validation étape 1
+    if (step === 1) {
+      if (!formData.nom || formData.nom.length < 3) {
+        toast.error("Le nom doit contenir au moins 3 caractères");
+        return false;
+      }
+      if (!formData.ville) {
+        toast.error("La ville est obligatoire");
+        return false;
+      }
+      if (!formData.adresse || formData.adresse.length < 5) {
+        toast.error("L'adresse doit contenir au moins 5 caractères");
+        return false;
+      }
+      if (!formData.telephone || !/^\+?[0-9]{8,15}$/.test(formData.telephone)) {
+        toast.error("Numéro de téléphone invalide");
+        return false;
+      }
+      if (!formData.email || !/^\S+@\S+\.\S+$/.test(formData.email)) {
+        toast.error("Email invalide");
+        return false;
+      }
+      if (!formData.description || formData.description.length < 20) {
+        toast.error("La description doit contenir au moins 20 caractères");
+        return false;
+      }
+    }
 
-                            {[
-                                { id: "clim", label: "Climatisation", icon: <Snowflake />, field: "hasClim" },
-                                { id: "wifi", label: "WiFi", icon: <Wifi />, field: "hasWifi" },
-                                { id: "tv", label: "TV", icon: <Tv />, field: "hasTV" },
-                                { id: "kitchen", label: "Cuisine", icon: <Utensils />, field: "hasKitchen" },
-                                { id: "extraBed", label: "Lit supplémentaire", icon: "🛏️", field: "extraBed" },
-                            ].map(({ id, label, icon, field }) => (
-                                <div key={id} className="flex items-center space-x-3 p-2">
+    // Validation étape 2
+    if (step === 2) {
+      if (formData.images_hotel.length < 4) {
+        toast.error("Minimum 4 photos de l'hôtel requises");
+        return false;
+      }
+    }
 
-                                    <Checkbox id={id}  {...register(field as keyof FormLogement)} onCheckedChange={(checked) => setValue(field as keyof FormLogement, checked)} />
-                                    <label htmlFor={id} className="flex items-center text-sm font-medium cursor-pointer space-x-2">
-                                        {icon} <span>{label}</span>
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
+    // Validation étape 3
+    if (step === 3) {
+      if (!formData.type_chambre) {
+        toast.error("Le type de chambre est obligatoire");
+        return false;
+      }
+      if (!formData.price || formData.price < 10000) {
+        toast.error("Le prix minimum est de 10,000 GNF");
+        return false;
+      }
+      if (!formData.capacity || formData.capacity < 1) {
+        toast.error("La capacité minimale est de 1 personne");
+        return false;
+      }
+      if (!formData.surface || formData.surface < 9) {
+        toast.error("La surface minimale est de 9m²");
+        return false;
+      }
+      if (formData.images.length < 4) {
+        toast.error("Minimum 4 photos de la chambre requises");
+        return false;
+      }
+    }
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div>
-                                <Label>Prix </Label>
-                                <div className="flex gap-2">
-                                    <Input type="number"  {...register("price", { valueAsNumber: true })} /> <span>/nuit</span>
-                                </div>
+    return true;
+  };
 
-                                {errors.price && <span className="text-red-500">{errors.price.message}</span>}
-                            </div>
-                            <div>
-                                <Label>Capacité </Label>
-                                <div className="flex gap-5">
-                                    <Input type="number"  {...register("capacity", { valueAsNumber: true })} /> <span>Personnes</span>
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validateStep()) return;
+    
+    setIsSubmitting(true);
 
-                                </div>
-                                {errors.capacity && <span className="text-red-500">{errors.capacity.message}</span>}
-                            </div>
-                            <div>
-                                <Label>Surface </Label>
-                                <div className="flex gap-5">
-                                    <Input type="surface"  {...register("surface", { valueAsNumber: true })} /> <span>m²</span>
+    try {
+      const formPayload = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'option') {
+          formPayload.append(key, JSON.stringify(value));
+        } else if (key === 'images' || key === 'images_hotel') {
+          (value as File[]).forEach((file, index) => {
+            formPayload.append(`${key}_${index}`, file);
+          });
+        } else {
+          formPayload.append(key, String(value));
+        }
+      });
+      
+      await createHotel(
+        categoryLogementId,
+        formData.numero_chambre,
+        formData.option,  
+        formData.nom,
+        formData.description,
+        formData.adresse,
+        formData.ville,
+        formData.telephone,
+        formData.email,
+        Number(formData.capacity),
+        formData.hasClim,
+        formData.hasWifi,
+        formData.hasTV,
+        formData.type_chambre,
+        formData.parking,
+        formData.surface,
+        Number(formData.etoils),
+        formData.extraBed,
+        Number(formData.price),
+        formData.images,
+        formData.images_hotel
+      );
+      toast.success("Hôtel créé avec succès");
+      router.push(`/dashboard/hotes/${session?.user?.id}`);
+    } catch (error) {
+      console.error("Erreur:", error);
+      toast.error("Erreur lors de la création de l'hôtel");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-                                </div>
-                                {errors.surface && <span className="text-red-500">{errors.surface.message}</span>}
-                            </div>
-                            <div>
-                                <Label>Type de Chambre</Label>
-                                <Select onValueChange={(value) => setValue("type_chambre", value as "SIMPLE" | "DOUBLE" | "SUITE")}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionner un type de chambre" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="SIMPLE">Simple</SelectItem>
-                                            <SelectItem value="DOUBLE">Double</SelectItem>
-                                            <SelectItem value="SUITE">Suite</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                                {errors.type_chambre && <span className="text-red-500">{errors.type_chambre.message}</span>}
+  // Styles réutilisables
+  const inputStyle = "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all";
+  const buttonStyle = "px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50";
+  const stepButtonStyle = "w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-md";
 
-                            </div>
-                        </div>
-                        <div className="mt-5">
-                            <Label className="block mb-2 text-sm font-medium text-gray-700">Télécharger des images (telecharger 4 Images au minimum)</Label>
-                            <div className="flex flex-col items-center justify-center  gap-3">
-                                <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-gray-100">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16V8a4 4 0 018 0v8m-4 4h.01M4 16h16"></path>
-                                        </svg>
-                                        <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Cliquez pour télécharger</span> ou faites glisser et déposez</p>
-                                        <p className="text-xs text-gray-500">PNG, JPG (MAX. 800x400px)</p>
-                                    </div>
-                                    <Input type="file" multiple accept="image/*" onChange={onUploaded} className="hidden" />
-                                </label>
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                                    {imageUrl && imageUrl.map((url, index) => (
-                                        <Image
-                                            key={index}
-                                            src={url}
-                                            alt={`Preview ${index}`}
-                                            className="rounded-md shadow object-cover w-full h-auto max-w-[100px] max-h-[100px] sm:max-w-[128px] sm:max-h-[128px]"
-                                            width={128}
-                                            height={128}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                            {errors.images && (
-                                <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg w-full">
-                                    {errors.images.message}
-                                </div>
-                            )}
-                        </div>
-                    </>
-                )}
-                <div className="flex justify-between mt-6">
-                    {step > 1 && (
-                        <Button type="button" className="w-32" onClick={() => validationStep(step - 1)}>
-                            Précédent
-                        </Button>
-                    )}
-                    {step < 3 ? (
-                        <Button type="button" className="w-32" onClick={() => validationStep(step + 1)}>
-                            Suivant
-                        </Button>
-                    ) : (
-                        <button type="submit" className="w-32 bg-primary p-2 rounded-md text-white" disabled={isSubmitting}>
-                        {isSubmitting ? 'Création ....' : ' Valider'}
-                    </button>
-                    )}
-                </div>
-            </form>
+  return (
+    <div className="mx-auto p-4 max-w-4xl bg-white rounded-lg shadow-sm">
+      {/* Barre de progression */}
+      <div className="flex mb-8 relative">
+        <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10 mx-10">
+          <div 
+            className="h-1 bg-blue-500 transition-all duration-300" 
+            style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
+          ></div>
         </div>
-    );
+        
+        {steps.map((stepItem) => (
+          <div key={stepItem.id} className="flex-1 flex flex-col items-center">
+            <div className={`${stepButtonStyle} ${
+              step >= stepItem.id ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+            }`}>
+              {stepItem.id}
+            </div>
+            <div className={`text-sm mt-2 text-center font-medium ${
+              step >= stepItem.id ? 'text-blue-500' : 'text-gray-500'
+            }`}>
+              {stepItem.title}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Étape 1 - Informations de base */}
+        {step === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800">Informations de l&lsquo;hôtel</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Nom de l&lsquo;hôtel *</Label>
+                <input
+                  type="text"
+                  name="nom"
+                  value={formData.nom}
+                  onChange={handleInputChange}
+                  className={inputStyle}
+                  placeholder="Ex: Hôtel Riviera"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Ville *</Label>
+                <input
+                  type="text"
+                  name="ville"
+                  value={formData.ville}
+                  onChange={handleInputChange}
+                  className={inputStyle}
+                  placeholder="Conakry"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Adresse *</Label>
+                <input
+                  type="text"
+                  name="adresse"
+                  value={formData.adresse}
+                  onChange={handleInputChange}
+                  className={inputStyle}
+                  placeholder="Quartier Minière"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Téléphone *</Label>
+                <input
+                  type="tel"
+                  name="telephone"
+                  value={formData.telephone}
+                  onChange={handleInputChange}
+                  className={inputStyle}
+                  placeholder="622 00 00 00"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Email *</Label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={inputStyle}
+                  placeholder="contact@hotel.com"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Description *</Label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                className={`${inputStyle} min-h-32`}
+                placeholder="Décrivez votre hôtel..."
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Étape 2 - Équipements */}
+        {step === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800">Équipements et services</h2>
+
+            <div>
+              <h3 className="text-lg font-medium mb-4">Options disponibles *</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {option.map((op) => (
+                  <div
+                    key={op.id}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                      selectedOption.includes(op.id) ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => handleSelectOption(op.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      id={op.id}
+                      checked={selectedOption.includes(op.id)}
+                      className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                      onChange={() => {}}
+                    />
+                    {op.imageUrl && (
+                      <Image
+                        src={op.imageUrl}
+                        width={32}
+                        height={32}
+                        alt={op.title}
+                        className="mr-3 rounded"
+                      />
+                    )}
+                    <label htmlFor={op.id} className="cursor-pointer">{op.title}</label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="text-lg font-medium mb-4">Services principaux</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      id="parking"
+                      name="parking"
+                      checked={formData.parking}
+                      onChange={handleCheckboxChange}
+                      className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                    <label htmlFor="parking" className="flex items-center cursor-pointer">
+                      <ParkingCircle className="w-5 h-5 mr-2 text-gray-700" />
+                      Parking sécurisé
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Classement étoiles *</Label>
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    name="etoils"
+                    min="1"
+                    max="5"
+                    value={formData.etoils}
+                    onChange={handleInputChange}
+                    className="w-20 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                  <div className="ml-3 flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-5 h-5 ${
+                          i < formData.etoils ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Label>Photos de l&lsquo;hôtel *</Label>
+              <p className="text-sm text-gray-500 mb-4">Minimum 4 photos de votre établissement</p>
+
+              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <p className="mb-2 text-sm text-gray-500">Cliquez pour télécharger</p>
+                  <p className="text-xs text-gray-500">PNG, JPG (max 5MB)</p>
+                </div>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "hotel")}
+                  className="hidden"
+                />
+              </label>
+
+              {hotelImagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                  {hotelImagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <Image
+                        src={preview}
+                        alt={`Preview ${index}`}
+                        width={150}
+                        height={150}
+                        className="rounded-lg object-cover w-full h-32"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index, "hotel")}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Étape 3 - Chambres */}
+        {step === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-800">Configuration des chambres</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                <Label>Numero de Chambre (Unique) *</Label>
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    name="numero_chambre"
+                    value={formData.numero_chambre}
+                    onChange={handleInputChange}
+                    className={inputStyle}
+                    placeholder="CHAMBRE 101"
+                    
+                  />
+                  
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Type de chambre *</Label>
+                <select
+                  name="type_chambre"
+                  value={formData.type_chambre}
+                  onChange={(e) => handleSelectChange("type_chambre", e.target.value)}
+                  className={inputStyle}
+                >
+                  <option value="SIMPLE">Simple</option>
+                  <option value="DOUBLE">Double</option>
+                  <option value="SUITE">Suite</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Prix par nuit (GNF) *</Label>
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    className={inputStyle}
+                    placeholder="500000"
+                    min="10000"
+                  />
+                  <span className="ml-2 whitespace-nowrap">GNF/nuit</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Capacité (personnes) *</Label>
+                <input
+                  type="number"
+                  name="capacity"
+                  value={formData.capacity}
+                  onChange={handleInputChange}
+                  className={inputStyle}
+                  min="1"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Surface (m²) *</Label>
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    name="surface"
+                    value={formData.surface}
+                    onChange={handleInputChange}
+                    className={inputStyle}
+                    min="9"
+                  />
+                  <span className="ml-2">m²</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium mb-4">Équipements de la chambre</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {[
+                  { id: "wifi", label: "WiFi", icon: <Wifi className="w-5 h-5 mr-2" />, field: "hasWifi" },
+                  { id: "clim", label: "Climatisation", icon: <Snowflake className="w-5 h-5 mr-2" />, field: "hasClim" },
+                  { id: "tv", label: "Télévision", icon: <Tv className="w-5 h-5 mr-2" />, field: "hasTV" },
+                  { id: "kitchen", label: "Cuisine", icon: <Utensils className="w-5 h-5 mr-2" />, field: "hasKitchen" },
+                  { id: "extraBed", label: "Lit supplémentaire", icon: <Bed className="w-5 h-5 mr-2" />, field: "extraBed" },
+                ].map(({ id, label, icon, field }) => (
+                  <div
+                    key={id}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                      formData[field as keyof FormData] ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
+                    }`}
+                    onClick={() => setFormData(prev => ({ ...prev, [field]: !prev[field as keyof FormData] }))}
+                  >
+                    <input
+                      type="checkbox"
+                      id={id}
+                      checked={Boolean(formData[field as keyof FormData])}
+                      className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                      onChange={() => {}}
+                    />
+                    <label htmlFor={id} className="flex items-center cursor-pointer">
+                      {icon} {label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Label>Photos de la chambre *</Label>
+              <p className="text-sm text-gray-500 mb-4">Minimum 4 photos de votre chambre</p>
+
+              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <p className="mb-2 text-sm text-gray-500">Cliquez pour télécharger</p>
+                  <p className="text-xs text-gray-500">PNG, JPG (max 5MB)</p>
+                </div>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, "room")}
+                  className="hidden"
+                />
+              </label>
+
+              {imagePreviews.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative group">
+                      <Image
+                        src={preview}
+                        alt={`Preview ${index}`}
+                        width={150}
+                        height={150}
+                        className="rounded-lg object-cover w-full h-32"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index, "room")}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex justify-between pt-8 border-t border-gray-200">
+          {step > 1 ? (
+            <button
+              type="button"
+              onClick={() => setStep(step - 1)}
+              className={`${buttonStyle} bg-gray-100 text-gray-700 hover:bg-gray-200`}
+            >
+              Précédent
+            </button>
+          ) : <div></div>}
+
+          {step < 3 ? (
+            <button
+              type="button"
+              onClick={() => validateStep() && setStep(step + 1)}
+              className={`${buttonStyle} bg-blue-500 hover:bg-blue-600 text-white`}
+            >
+              Suivant
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className={`${buttonStyle} bg-blue-500 hover:bg-blue-600 text-white`}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Création en cours...
+                </span>
+              ) : 'Créer l\'hôtel'}
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
+  );
 }
+
+// Composants UI simplifiés
+const Label = ({ children, ...props }: { children: React.ReactNode } & React.LabelHTMLAttributes<HTMLLabelElement>) => (
+  <label className="block text-sm font-medium text-gray-700 mb-1" {...props}>
+    {children}
+  </label>
+);

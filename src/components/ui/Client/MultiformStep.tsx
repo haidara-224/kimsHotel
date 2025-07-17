@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useSession } from "@/src/lib/auth-client";
 import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
 import Image from "next/image";
+import { CreateLogement } from "@/app/(action)/Logement.action";
 
 interface FormData {
   option: string[];
@@ -210,12 +211,27 @@ export default function MultiformStep() {
         formPayload.append(`image_${index}`, file);
       });
 
-      const response = await fetch('/api/logement', {
-        method: 'POST',
-        body: formPayload
-      });
-
-      if (!response.ok) throw new Error(await response.text());
+      await CreateLogement(
+        categoryLogementId,
+        formData.option,
+        formData.nom,
+        formData.description,
+        formData.adresse,
+        formData.ville,
+        formData.telephone,
+        formData.email,
+        Number(formData.capacity),
+        formData.hasClim,
+        formData.hasWifi,
+        formData.hasTV,
+        formData.hasKitchen,
+        formData.parking,
+        Number(formData.surface),
+        formData.extraBed,
+        Number(formData.nbChambres),
+        Number(formData.price),
+        formData.images
+      )
 
       toast.success("Logement créé avec succès");
       router.push(`/dashboard/hotes/${session?.user?.id}`);
@@ -281,7 +297,7 @@ export default function MultiformStep() {
                   value={formData.ville}
                   onChange={handleInputChange}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary"
-                  placeholder="Ex: Abidjan"
+                  placeholder="Ex: Conakry"
                   required
                 />
               </div>
@@ -293,7 +309,7 @@ export default function MultiformStep() {
                   value={formData.adresse}
                   onChange={handleInputChange}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary"
-                  placeholder="Ex: Rue des Jardins, Cocody"
+                  placeholder="Ex: Kipé"
                   required
                 />
               </div>
@@ -305,7 +321,7 @@ export default function MultiformStep() {
                   value={formData.telephone}
                   onChange={handleInputChange}
                   className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary"
-                  placeholder="Ex: +22507070707"
+                  placeholder="Ex: 60000000"
                   required
                 />
               </div>
@@ -378,7 +394,7 @@ export default function MultiformStep() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Prix (FCFA)</label>
+                <label className="block text-sm font-medium text-gray-700">Prix (GNF)</label>
                 <input
                   type="number"
                   name="price"

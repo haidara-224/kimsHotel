@@ -1,16 +1,16 @@
 import { Card, CardContent } from "@/src/components/ui/card";
-
 import { NavBar } from "@/src/components/ui/NavBar";
-
 import Image from "next/image";
-
 import { Footers } from "@/src/components/ui/FooterAceuil";
 import { ContactUs } from "@/src/components/ui/ContactUs";
 import { LastLogement } from "@/src/components/ui/LastLogement";
-
 import { HeaderSection } from "@/src/components/ui/heardersSection";
 import MapFilterItems from "@/src/components/ui/MapFilter";
 import { ShowItems } from "@/src/components/ui/Client/ShowItems";
+import { SidebarFilters } from "@/src/components/ui/Client/filterlateral";
+import { FilterProvider } from "@/contexte/FilterContexte";
+
+
 export const metadata = {
   title: "Kims Hotel Guinée - Hôtels & Appartements en Guinée ",
   description: "Réservez les meilleurs hôtels et appartements en Guinée. Offres exclusives et assistance 24/7.",
@@ -22,47 +22,53 @@ export const metadata = {
   },
 };
 
+const features = [
+  {
+    id: 1,
+    icon: "🌟",
+    title: "Assurance",
+    description: "Profitez des meilleurs prix avec annulation gratuite sur la plupart de nos réservations.",
+  },
+  {
+    id: 2,
+    icon: "👥",
+    title: "Assistance",
+    description: "Bénéficiez d'une assistance 24/7 pour répondre à toutes vos questions.",
+  },
+  {
+    id: 3,
+    icon: "💎",
+    title: "PRESTIGE",
+    description: "Des services haut de gamme et une sélection exclusive pour des voyages d'exception.",
+  }
+];
 
-export default async function HomePage() {
-  const features = [
-    {
-      id: 1,
-      icon: "🌟",
-      title: "Assurance",
-      description: "Profitez des meilleurs prix avec annulation gratuite sur la plupart de nos réservations.",
-    },
-    {
-      id: 2,
-      icon: "👥",
-      title: "Assistance",
-      description: "Bénéficiez d'une assistance 24/7 pour répondre à toutes vos questions.",
-    },
-    {
-      id: 3,
-      icon: "💎",
-      title: "PRESTIGE",
-      description: "Des services haut de gamme et une sélection exclusive pour des voyages d'exception.",
-    }
-  ];
-
+export default function HomePage() {
   return (
     <div className="w-full min-h-screen bg-background">
       <nav className="bg-white shadow-md fixed w-full z-40 p-2 lg:p-5">
         <NavBar />
       </nav>
       <HeaderSection />
-      <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <h1 className="sr-only">Liste des logements et hôtels disponibles</h1>
-        <div className="text-3xl font-semibold mb-8 text-center">
-          <MapFilterItems />
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          <div className="w-full self-stretch flex flex-col">
-            <ShowItems />
+      
+      {/* Section principale avec les filtres et résultats */}
+      <FilterProvider>
+        <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
+          <h1 className="sr-only">Liste des logements et hôtels disponibles</h1>
+          <div className="text-3xl font-semibold mb-8 text-center">
+            <MapFilterItems />
           </div>
-        </div>
-      </section>
+
+          <div className="flex flex-col lg:flex-row gap-6 items-start">
+            <SidebarFilters />
+            <div className="w-full self-stretch flex flex-col">
+              <ShowItems />
+            </div>
+          </div>
+        </section>
+      </FilterProvider>
+
+      {/* Autres sections */}
       <section className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-blue-50/50 dark:bg-slate-800">
         <h2 className="text-3xl font-semibold mb-8 text-center">Pourquoi faire appel à nos services ?</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -118,7 +124,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-    
       <section className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
         <ContactUs />
       </section>

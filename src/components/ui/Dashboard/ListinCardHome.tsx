@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Star } from 'lucide-react';
 import { Button } from '../button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -17,7 +17,6 @@ import {
 import { toast } from 'sonner';
 import { useSession } from '@/src/lib/auth-client';
 
-
 interface getPropsHome {
     nom: string;
     type: string;
@@ -25,8 +24,8 @@ interface getPropsHome {
     prix?: number;
     urlImage: string[];
     logementId?: string;
-    
     hotelId?: string;
+    rating: number; // Assurez-vous que cette prop est bien passée depuis le parent
 }
 
 export default function ListingCardHome({
@@ -36,8 +35,8 @@ export default function ListingCardHome({
     urlImage,
     prix,
     logementId,
-   
     hotelId,
+    rating = 0, // Valeur par défaut si non fournie
 }: getPropsHome) {
     const router = useRouter();
     const { data: session } = useSession();
@@ -51,7 +50,6 @@ export default function ListingCardHome({
         setCurrent((prev) => (prev + dir + urlImage.length) % urlImage.length);
     };
 
-
     useEffect(() => {
         const checkFavorite = async () => {
             if (!session) return;
@@ -64,40 +62,60 @@ export default function ListingCardHome({
         checkFavorite();
     }, [logementId, hotelId, type, session]);
 
-  const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (!session) {
-        router.push('/auth/signin');
-        toast.error("Veuillez vous connecter pour ajouter aux favoris");
-        return;
-    }
-    event.preventDefault();
-    setAdding(true);
+    const AddFavoris = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (!session) {
+            router.push('/auth/signin');
+            toast.error("Veuillez vous connecter pour ajouter aux favoris");
+            return;
+        }
+        event.preventDefault();
+        setAdding(true);
 
-    try {
-        let response: { message: string; success: boolean } = { message: '', success: false };
-        if (type === 'logement' && logementId) {
-            response = await AddFavorisLogementWithUser(logementId);
-        } else if (type === 'hotel' && hotelId) {
-            response = await AddFavorisHotelWithUser(hotelId);
+        try {
+            let response: { message: string; success: boolean } = { message: '', success: false };
+            if (type === 'logement' && logementId) {
+                response = await AddFavorisLogementWithUser(logementId);
+            } else if (type === 'hotel' && hotelId) {
+                response = await AddFavorisHotelWithUser(hotelId);
+            }
+
+            toast(response.message);
+            setIsFavorite(!isFavorite);
+            console.log("Favoris mis à jour:", response.message);
+        } catch (error) {
+            console.error("Erreur AddFavoris:", error);
+            toast.error((error as Error).message || "Erreur lors de la modification des favoris");
+        } finally {
+            setAdding(false);
+        }
+    };
+
+    // Fonction pour afficher les étoiles de notation
+    const renderRatingStars = () => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+
+        for (let i = 1; i <= 5; i++) {
+            if (i <= fullStars) {
+                stars.push(<Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />);
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                stars.push(<Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />);
+            } else {
+                stars.push(<Star key={i} className="w-4 h-4 text-gray-300" />);
+            }
         }
 
-        toast(response.message);
-        
-        setIsFavorite(!isFavorite);
-        
-        console.log("Favoris mis à jour:", response.message);
-    } catch (error) {
-        console.error("Erreur AddFavoris:", error);
-        toast.error((error as Error).message || "Erreur lors de la modification des favoris");
-    } finally {
-        setAdding(false);
-    }
-};
+        return (
+            <div className="flex items-center mt-2">
+                <div className="flex mr-1">{stars}</div>
+                {rating > 0 && <span className="text-xs text-gray-500 ml-1">({rating.toFixed(1)})</span>}
+            </div>
+        );
+    };
+
     return (
-        
-             
-           
-            <div className="overflow-hidden rounded-lg border dark:border-slate-700 shadow-md">
+        <div className="overflow-hidden rounded-lg border dark:border-slate-700 shadow-md">
             <div className="relative h-72 w-full bg-black/10 overflow-hidden group">
                 <AnimatePresence initial={false} custom={direction} mode="wait">
                     <motion.div
@@ -121,7 +139,7 @@ export default function ListingCardHome({
                                         : `/views/hotel/${hotelId}`
                                 )
                             }
-                            className="object-cover w-full h-full cursor-pointer  transition-transform duration-200 hover:scale-105"
+                            className="object-cover w-full h-full cursor-pointer transition-transform duration-200 hover:scale-105"
                         />
                     </motion.div>
                 </AnimatePresence>
@@ -154,23 +172,24 @@ export default function ListingCardHome({
                 </div>
             </div>
 
-
             <div className="p-4 flex flex-col h-full">
                 <div className="flex justify-between">
                     <h1 className="text-sm font-semibold text-gray-900 dark:text-white">{nom}</h1>
                     <span className="text-xs text-gray-500 dark:text-white">{type}</span>
-                    
                 </div>
 
                 <p className="text-sm text-gray-500 dark:text-white">{adresse}</p>
-                       
+                
+                {/* Affichage du rating */}
+                {renderRatingStars()}
+                
                 {prix && (
                     <p className="text-sm text-gray-500 mt-1">
                         {new Intl.NumberFormat('fr-FR').format(prix)} GNF / nuit
                     </p>
                 )}
 
-                <Button className="w-full mt-8">
+                <Button className="w-full mt-4">
                     <Link
                         href={
                             type === 'logement'
@@ -183,9 +202,6 @@ export default function ListingCardHome({
                     </Link>
                 </Button>
             </div>
-
-
         </div>
-      
     );
 }

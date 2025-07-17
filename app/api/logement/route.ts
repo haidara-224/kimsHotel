@@ -8,8 +8,13 @@ import { getUser } from '@/src/lib/auth.session';
 
 export async function POST(request: Request) {
   try {
-     const user=await getUser()
-      if (!user) throw new Error("Utilisateur non authentifié");
+     const user = await getUser();
+     if (!user || !user.id) {
+       return NextResponse.json(
+         { error: "Utilisateur non authentifié" },
+         { status: 401 }
+       );
+     }
 
     // 2. Récupération des données
     const formData = await request.formData();
@@ -36,16 +41,10 @@ export async function POST(request: Request) {
     
 
     // Fichiers images
-  const images: File[] = [];
-let index = 0;
-while (formData.has(`image_${index}`)) {
-  const file = formData.get(`image_${index}`) as File;
-  if (file && file.size > 0) images.push(file);
-  index++;
-}
+    const imageFiles = formData.getAll('images') as File[];
 
     // 3. Validation
-    if (!images || images.length < 4) {
+    if (!imageFiles || imageFiles.length < 4) {
       return NextResponse.json(
         { error: "Au moins 4 images sont requises" },
         { status: 400 }
@@ -68,7 +67,7 @@ while (formData.has(`image_${index}`)) {
     // 5. Création du logement
     const createdLogement = await prisma.logement.create({
       data: {
-        userId: user?.id || '',
+        userId: user.id as string,
         nom,
         description,
         adresse,
@@ -91,7 +90,7 @@ while (formData.has(`image_${index}`)) {
 
     // 6. Upload des images
     const uploadResults = await Promise.allSettled(
-      images.map(async (file) => {
+      imageFiles.map(async (file) => {
         try {
           const buffer = Buffer.from(await file.arrayBuffer());
           const blob = await put(file.name, buffer, { access: 'public' });
@@ -135,7 +134,7 @@ while (formData.has(`image_${index}`)) {
     if (clientRole) {
       await prisma.userRoleAppartement.create({
         data: {
-          userId: user?.id || '',
+          userId: user.id.toString(),
           logementId: createdLogement.id,
           roleId: clientRole.id,
         },
@@ -145,7 +144,7 @@ while (formData.has(`image_${index}`)) {
     // 10. Vérification rôle HOTELIER
     const isHotelier = await prisma.userRole.findFirst({
       where: {
-        userId: user?.id || '',
+        userId: user.id.toString(),
         role: { name: 'HOTELIER' },
       },
     });
@@ -158,7 +157,7 @@ while (formData.has(`image_${index}`)) {
       if (hotelierRole) {
         await prisma.userRole.create({
           data: {
-            userId: user?.id || '',
+            userId: user.id.toString(),
             roleId: hotelierRole.id,
           },
         });

@@ -5,6 +5,7 @@ import { getUser } from "@/src/lib/auth.session";
 
 
 import { del, put } from '@vercel/blob'
+
 export async function createHotel(
     categoryLogementId: string,
     numero_chambre: string,

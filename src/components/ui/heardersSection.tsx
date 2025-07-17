@@ -85,7 +85,7 @@ const onDestinationChanged = () => {
   }, [images.length]);
 
   return (
-    <div key="header-section"> {/* Clé stable pour éviter l'erreur React */}
+    <div key="header-section"> 
       <LoadScript
         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
         libraries={["places"]}
