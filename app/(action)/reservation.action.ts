@@ -285,7 +285,7 @@ export async function getUserReservationsWithLogement() {
                 paiement: true,
             },
         });
-        console.log(reservations)
+        
         return reservations ?? [];
 
     } catch (error) {

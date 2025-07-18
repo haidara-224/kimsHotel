@@ -4,27 +4,27 @@ import { prisma } from "@/src/lib/prisma"
 
 
 export async function GetLastLogement() {
-    try {
-      const logements = await prisma.logement.findMany({
-        orderBy: {
-          createdAt: 'desc',  
-        },
-        include:{
-            images:true
-        },
-        take: 3,  
-      });
-      
-      return logements;
-    } catch (error) {
-      console.error('Error fetching logements:', error);
-      throw new Error('Failed to fetch logements');
-    }
+  try {
+    const logements = await prisma.logement.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        images: true
+      },
+      take: 3,
+    });
+
+    return logements;
+  } catch (error) {
+    console.error('Error fetching logements:', error);
+    throw new Error('Failed to fetch logements');
   }
+}
 
 
 export async function getData(option?: string) {
-  // 🔹 CAS 1 : aucun filtre => on retourne tout
+
   if (!option) {
     const [hotels, logements] = await Promise.all([
       prisma.hotel.findMany({
@@ -49,12 +49,12 @@ export async function getData(option?: string) {
     ];
   }
 
-  // 🔹 CAS 2 : un filtre (option) est sélectionné => on filtre par option
+
   const [hotelsFiltered, logementsFiltered] = await Promise.all([
     prisma.hotelOptionOnHotel.findMany({
       where: {
         option: {
-          name: option, // nom de l'option sélectionnée (ex: "wifi", "piscine", etc.)
+          name: option,
         },
       },
       include: {
@@ -66,7 +66,7 @@ export async function getData(option?: string) {
           },
         },
       },
-      distinct: ['hotelId'], // Pour éviter les doublons
+      distinct: ['hotelId'],
     }),
 
     prisma.logementOptionOnLogement.findMany({
@@ -99,6 +99,50 @@ export async function getData(option?: string) {
     })),
   ];
 }
+export async function SearchHebergement(destination: string) {
+  const [hotels, logements] = await Promise.all([
+    prisma.hotel.findMany({
+      include: {
+        images: true,
+        categoryLogement: true,
 
- 
+      },
+      where: {
+        adresse: {
+          contains: destination,
+          mode: 'insensitive',
+        },
+        
+      },
+
+    }),
+    prisma.logement.findMany({
+      include: {
+        images: true,
+        categoryLogement: true,
+
+      },
+      where: {
+        adresse: {
+          contains: destination,
+          mode: 'insensitive',
+        },
+        reservations: {
+          none: {
+            status: 'PENDING',
+          },
+        },
+      },
+
+    }),
+  ]);
+
+  return {
+    hotels,
+    logements,
+  };
+}
+
+
+
 

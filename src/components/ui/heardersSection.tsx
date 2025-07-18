@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "./tabs";
@@ -6,23 +6,29 @@ import { Input } from "./input";
 import { Button } from "./button";
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
+import { Search, MapPin, CalendarDays, Hotel, Home } from "lucide-react";
 
 export function HeaderSection() {
   const images = [
-    "https://plus.unsplash.com/premium_photo-1675745329954-9639d3b74bbf?w=1600&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=600&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&auto=format&fit=crop&q=60",
-    "https://images.unsplash.com/photo-1455587734955-081b22074882?w=600&auto=format&fit=crop&q=60",
+    "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1600&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1600&auto=format&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600&auto=format&fit=crop&q=80",
   ];
 
   const [currentImage, setCurrentImage] = useState(0);
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [apiLoaded, setApiLoaded] = useState(false);
-
+  const [date, setDate] = useState<string>("");
+  const [, setActiveTab] = useState("hotels");
+  
   const originAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destinationAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const guineaBounds = useRef<google.maps.LatLngBounds | null>(null);
+
+
+  const isFormValid = origin.trim() !== "" && destination.trim() !== "" && date.trim() !== "";
 
   const initBounds = () => {
     if (window.google) {
@@ -46,52 +52,48 @@ export function HeaderSection() {
     }
   };
 
-  const getPlaceName = (place: google.maps.places.PlaceResult) => {
-    return place.formatted_address || place.name || "";
-  };
-
   const onOriginChanged = () => {
     if (originAutocompleteRef.current) {
       const place = originAutocompleteRef.current.getPlace();
-      setOrigin(getPlaceName(place));
+      setOrigin(place.formatted_address || place.name || "");
     }
   };
-const onDestinationChanged = () => {
-  if (destinationAutocompleteRef.current) {
-    const place = destinationAutocompleteRef.current.getPlace();
 
-    const components = place.address_components || [];
+  const onDestinationChanged = () => {
+    if (destinationAutocompleteRef.current) {
+      const place = destinationAutocompleteRef.current.getPlace();
+      const components = place.address_components || [];
+      const preferredTypes = ['neighborhood', 'sublocality_level_1', 'sublocality', 'locality'];
+      const area = components.find((comp) =>
+        comp.types.some((type) => preferredTypes.includes(type))
+      );
+      setDestination(area?.long_name || place.name || place.formatted_address || "");
+    }
+  };
 
-    // On cherche le quartier ou sous-quartier en priorité
-    const preferredTypes = ['neighborhood', 'sublocality_level_1', 'sublocality', 'locality'];
-
-    const area = components.find((comp) =>
-      comp.types.some((type) => preferredTypes.includes(type))
-    );
-
-    setDestination(area?.long_name || place.name || place.formatted_address || "");
-  }
-};
-
-
-
+  const onSearch = () => {
+    if (isFormValid) {
+      window.location.href = `/${origin}/${destination}/${date}`;
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 4000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [images.length]);
 
   return (
-    <div key="header-section"> 
+    <div key="header-section" className="relative">
       <LoadScript
         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
         libraries={["places"]}
         language="fr"
         onLoad={initBounds}
       >
+   
         <div style={{ display: 'none' }}>
           <GoogleMap
             mapContainerStyle={{ width: '100%', height: '100px' }}
@@ -100,97 +102,145 @@ const onDestinationChanged = () => {
           />
         </div>
 
-        <section
-          className="relative h-[500px] bg-cover bg-center transition-all duration-1000 pt-[105px] lg:pt-[80px]"
-          style={{ backgroundImage: `url('${images[currentImage]}')` }}
-        >
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="relative z-10 flex flex-col items-center justify-center h-full text-white">
-            <div className="p-2 lg:p-0 flex flex-col justify-center items-center text-center">
+   
+        <section className="relative h-[600px] bg-cover bg-center transition-all duration-1000 pt-[80px]">
+   
+          <div className="absolute inset-0 overflow-hidden">
+            <AnimatePresence>
+              <motion.div
+                key={currentImage}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url('${images[currentImage]}')` }}
+              />
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/70" />
+          </div>
+          <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
+            <div className="text-center max-w-4xl px-4 mb-8">
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={`title-${currentImage}`}
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
+                  exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.8 }}
-                  className="text-xl md:text-4xl font-bold mb-2"
+                  className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight"
                 >
-                  Réservez vos Hôtels & Appartements en Guinée avec Kims Hotel
+                  Découvrez les meilleurs hébergements en Guinée
                 </motion.h1>
-
                 <motion.p
                   key={`subtitle-${currentImage}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.8 }}
-                  className="text-lg mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="text-lg md:text-xl text-gray-200"
                 >
-                  Laissez vos rêves vous guider – la destination idéale est à portée de clic
+                  Trouvez l&apos;hôtel ou l&lsquo;appartement parfait pour votre séjour
                 </motion.p>
               </AnimatePresence>
             </div>
-
             {apiLoaded && (
-              <div className="lg:w-full w-[95%] max-w-3xl bg-white rounded-lg p-4 shadow-lg">
-                <Tabs defaultValue="hotels" className="w-full">
-                  <TabsList className="grid grid-cols-2 mb-4">
-                    <TabsTrigger value="hotels">Hôtels</TabsTrigger>
-                    <TabsTrigger value="Appartements">Appartements</TabsTrigger>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="w-full max-w-5xl bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden p-6"
+              >
+                <Tabs 
+                  defaultValue="hotels" 
+                  className="w-full"
+                  onValueChange={setActiveTab}
+                >
+                  <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-lg mb-6">
+                    <TabsTrigger value="hotels" className="flex items-center gap-2">
+                      <Hotel className="w-4 h-4" /> Hôtels
+                    </TabsTrigger>
+                    <TabsTrigger value="appartements" className="flex items-center gap-2">
+                      <Home className="w-4 h-4" /> Appartements
+                    </TabsTrigger>
                   </TabsList>
-                  <div className="flex flex-col md:flex-row gap-4 relative">
-                    <div className="w-full relative">
-                      <Autocomplete
-                        onLoad={onOriginLoad}
-                        onPlaceChanged={onOriginChanged}
-                        options={{
-                          types: ['geocode'],
-                          fields: ['formatted_address', 'name']
-                        }}
-                      >
+                  
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                          <MapPin className="w-5 h-5" />
+                        </div>
+                        <Autocomplete
+                          onLoad={onOriginLoad}
+                          onPlaceChanged={onOriginChanged}
+                          options={{
+                            types: ['geocode'],
+                            fields: ['formatted_address', 'name']
+                          }}
+                        >
+                          <Input
+                            placeholder="D'où venez-vous ?"
+                            className="pl-10 py-5 text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            value={origin}
+                            onChange={(e) => setOrigin(e.target.value)}
+                          />
+                        </Autocomplete>
+                      </div>
+
+             
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                          <MapPin className="w-5 h-5" />
+                        </div>
+                        <Autocomplete
+                          onLoad={onDestinationLoad}
+                          onPlaceChanged={onDestinationChanged}
+                          options={{
+                            types: ['geocode'],
+                            componentRestrictions: { country: 'gn' },
+                            fields: ['formatted_address', 'name', 'address_components']
+                          }}
+                        >
+                          <Input
+                            placeholder="Où allez-vous en Guinée ?"
+                            className="pl-10 py-5 text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            value={destination}
+                            onChange={(e) => setDestination(e.target.value)}
+                          />
+                        </Autocomplete>
+                      </div>
+
+                  
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
+                          <CalendarDays className="w-5 h-5" />
+                        </div>
                         <Input
-                          placeholder="Pays/Ville d'origine"
-                          className="flex-1 text-slate-700 p-3 border border-gray-300 rounded-lg"
-                          value={origin}
-                          onChange={(e) => setOrigin(e.target.value)}
+                          type="date"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="pl-10 py-5 text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
-                      </Autocomplete>
+                      </div>
                     </div>
 
-                    <div className="w-full relative">
-                      <Autocomplete
-                        onLoad={onDestinationLoad}
-                        onPlaceChanged={onDestinationChanged}
-                        options={{
-                          types: ['geocode'],
-                          componentRestrictions: { country: 'gn' },
-                          fields: ['formatted_address', 'name', 'address_components']
-                        }}
-                      >
-                        <Input
-                          placeholder="Ville/Commune/Quartier en Guinée"
-                          className="flex-1 text-slate-700 p-3 border border-gray-300 rounded-lg"
-                          value={destination}
-                          onChange={(e) => setDestination(e.target.value)}
-                        />
-                      </Autocomplete>
-
-                    </div>
-
-                    <div className="w-full">
-                      <Input
-                        type="date"
-                        className="w-full p-3 text-slate-600 border border-gray-300 rounded-lg"
-                      />
-                    </div>
-
-                    <Button className="bg-teal-600 hover:bg-teal-700 transition-colors">
-                      Rechercher
+                    <Button 
+                      onClick={onSearch}
+                      disabled={!isFormValid}
+                      className={`w-full py-6 text-lg font-semibold shadow-lg transition-all transform hover:scale-[1.02] ${
+                        isFormValid 
+                          ? 'bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700' 
+                          : 'bg-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Search className="w-5 h-5 mr-2" />
+                      Trouver des hébergements
                     </Button>
                   </div>
                 </Tabs>
-              </div>
+              </motion.div>
             )}
           </div>
         </section>

@@ -90,7 +90,7 @@ export default function ListingCardHome({
         }
     };
 
-    // Fonction pour afficher les étoiles de notation
+    
     const renderRatingStars = () => {
         const stars = [];
         const fullStars = Math.floor(rating);
