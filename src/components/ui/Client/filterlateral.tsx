@@ -8,14 +8,16 @@ import { Star, X } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "../drawer";
 
 export function SidebarFilters() {
-  const {
-    currentFilter,
-    setCurrentFilter,
-    priceRange,
-    setPriceRange,
-    ratingFilter,
-    setRatingFilter
-  } = useFilter();
+const {
+  currentTypeFilter,
+  setCurrentTypeFilter,
+  
+  setCurrentOptionFilter,
+  priceRange,
+  setPriceRange,
+  ratingFilter,
+  setRatingFilter
+} = useFilter();
 
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(priceRange);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
@@ -34,13 +36,15 @@ export function SidebarFilters() {
     setIsDrawerOpen(false); 
   };
 
-  const handleFilterTypeClick = (filterValue: string) => {
-    setCurrentFilter(filterValue);
-    setIsDrawerOpen(false); 
-  };
+ // eslint-disable-next-line @typescript-eslint/no-unused-vars
+ const handleFilterTypeClick = (filterValue: string) => {
+  setCurrentTypeFilter(filterValue);  // ← ici on modifie bien le filtre de type
+  setIsDrawerOpen(false); 
+};
+
 
   const resetFilters = () => {
-    setCurrentFilter("tout");
+    setCurrentOptionFilter("tout");
     setPriceRange([0, 1000000]);
     setRatingFilter(0);
     setLocalPriceRange([0, 1000000]);
@@ -89,14 +93,14 @@ export function SidebarFilters() {
               { value: "logement", label: "Apparts" },
               { value: "hotel", label: "Hôtels" }
             ].map((filter) => (
-              <Button
-                key={filter.value}
-                variant={currentFilter === filter.value ? "default" : "outline"}
-                onClick={() => handleFilterTypeClick(filter.value)} 
-                className="text-xs py-1 h-auto"
-              >
-                {filter.label}
-              </Button>
+             <Button
+  key={filter.value}
+  variant={currentTypeFilter === filter.value ? "default" : "outline"}
+  onClick={() => setCurrentTypeFilter(filter.value)}
+  className="text-xs py-1 h-auto"
+>
+  {filter.label}
+</Button>
             ))}
           </div>
         </div>
@@ -126,8 +130,6 @@ export function SidebarFilters() {
             Appliquer prix
           </Button>
         </div>
-
-        {/* Filtre par évaluation */}
         <div>
           <h4 className="text-sm font-medium mb-3">Évaluation</h4>
           <div className="space-y-3">

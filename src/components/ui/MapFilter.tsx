@@ -7,7 +7,7 @@ import Image from "next/image";
 
 
 export default function MapFilterItems() {
-  const { currentFilter, setCurrentFilter } = useFilter();
+  const { currentOptionFilter, setCurrentOptionFilter } = useFilter();
 
 
   return (
@@ -16,16 +16,16 @@ export default function MapFilterItems() {
         <div
           key={item.id}
           className={cn(
-            currentFilter === item.name 
+            currentOptionFilter === item.name 
               ? "opacity-100 scale-105" 
               : "opacity-60 hover:opacity-90"
           )}
-          onClick={() => setCurrentFilter(item.name)}
+          onClick={() => setCurrentOptionFilter(item.name)}
         >
           <div
             className={cn(
               "relative flex items-center justify-center w-12 h-12 rounded-full border-2 shadow-sm transition-all duration-300 dark:text-white cursor-pointer hover:animate-in",
-              currentFilter === item.name 
+              currentOptionFilter === item.name 
                 ? "border-cyan-500 bg-cyan-100" 
                 : "border-gray-300 bg-gray-100"
             )}

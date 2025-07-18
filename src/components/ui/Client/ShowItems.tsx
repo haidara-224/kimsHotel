@@ -7,44 +7,79 @@ import { getData } from "@/app/(action)/home.action";
 import { SkeltonCard } from "./skeletonCard";
 
 const getImageUrls = (item: homeTypes) => item.images?.map((img) => img.urlImage) || [];
+const filterItems = (
+  items: homeTypes[],
+  priceRange: [number, number],
+  ratingFilter: number,
+  currentTypeFilter: string,
+  currentOptionFilter: string
+) => {
+  const normalize = (val?: string) => val?.trim().toLowerCase() || "";
 
-const filterItems = (items: homeTypes[], priceRange: [number, number], ratingFilter: number) => {
   return items.filter(item => {
-    const priceMatch = item.type === "logement"
-      ? item.price && item.price >= priceRange[0] && item.price <= priceRange[1]
+    const type = normalize(item.type);
+    const typeMatch =
+      normalize(currentTypeFilter) === 'tout' || type === normalize(currentTypeFilter);
+
+    const priceMatch = type === "logement"
+      ? typeof item.price === 'number' &&
+        item.price >= priceRange[0] &&
+        item.price <= priceRange[1]
       : true;
+
     const ratingMatch = ratingFilter === 0 || (item.etoils && item.etoils >= ratingFilter);
-    return priceMatch && ratingMatch;
+
+    const optionMatch =
+      currentOptionFilter === 'tout' ||
+      (type === 'hotel' && item.hotelOptions?.some(opt =>
+        normalize(opt.option?.name) === normalize(currentOptionFilter)
+      )) ||
+      type === 'logement'; // autorise logement même si option active
+
+    return typeMatch && priceMatch && ratingMatch && optionMatch;
   });
 };
 
+
+
+
+
+
+
 export function ShowItems() {
-  const { currentFilter, priceRange, ratingFilter } = useFilter();
+const {
+  currentTypeFilter,
+  currentOptionFilter,
+  priceRange,
+  ratingFilter
+} = useFilter();
+
   const [filteredItems, setFilteredItems] = useState<homeTypes[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const option = currentFilter !== 'tout' ? currentFilter : undefined;
-        const data = await getData(option) as unknown as homeTypes[];
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const data = await getData() as unknown as homeTypes[];
 
-        let result = [...data];
+      let result = [...data];
 
-        // Ajout des filtres secondaires
-        result = filterItems(result, priceRange, ratingFilter);
+      // On applique les filtres côté client
+      result = filterItems(result, priceRange, ratingFilter, currentTypeFilter, currentOptionFilter);
 
-        setFilteredItems(result);
-      } catch (error) {
-        console.error("Erreur lors du chargement:", error);
-      } finally {
-        setLoading(false);
-      }
+
+      setFilteredItems(result);
+    } catch (error) {
+      console.error("Erreur lors du chargement:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    fetchData();
-  }, [currentFilter, priceRange, ratingFilter]);
+  fetchData();
+}, [currentOptionFilter, currentTypeFilter, priceRange, ratingFilter]);
+
 
   if (loading) {
     return (
