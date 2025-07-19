@@ -8,7 +8,9 @@ import Link from 'next/link'
 import { homeTypes } from '@/types/types'
 import { SearchHebergement } from '@/app/(action)/home.action'
 interface PropsSearch{
-    destination:string
+    destination:string,
+    origin:string,
+    date:string
 }                    
 
 const ImageCarousel = ({ images, id }: { images: { urlImage: string }[], id: string }) => {

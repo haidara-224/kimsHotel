@@ -73,7 +73,7 @@ export function HeaderSection() {
 
   const onSearch = () => {
     if (isFormValid) {
-      window.location.href = `/${origin}/${destination}/${date}`;
+      window.location.href = `recherche/${origin}/${destination}/${date}`;
     }
   };
 
