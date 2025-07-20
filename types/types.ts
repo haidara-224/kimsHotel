@@ -523,7 +523,12 @@ export interface homeTypes {
   email: string;
   etoils: number | null;
   images: ImageLogement[],
-
+  logementOptions:{
+hotelId?: string | null;
+    logementId?: string | null;
+    option: LogementOption;
+    optionId: string;
+  }[];
   hotelOptions: {
     hotelId?: string | null;
     logementId?: string | null;

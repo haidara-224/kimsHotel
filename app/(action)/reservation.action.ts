@@ -335,36 +335,46 @@ export async function ReservationDasbordHotel() {
         throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
     }
 }
-
 export async function ReservationDasbordLogement() {
-    try {
-        const user = await getUser();
-        if (!user?.id) {
-            throw new Error("Utilisateur non authentifié.");
-        }
-
-        const logements = await prisma.userRoleAppartement.findMany({
-            where: { userId: user.id },
-            include: {
-                logement: true
-            }
-        });
-        const logementIds = logements.map(lg => lg.logement.id);
-
-        const reservations = await prisma.reservation.findMany({
-            where: {
-                chambreId: {
-                    in: logementIds
-                }
-            }
-        });
-
-        return reservations;
-
-    } catch (error) {
-        console.error("Erreur lors de la récupération des réservations :", error);
-        throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
+  try {
+    const user = await getUser();
+    if (!user?.id) {
+      throw new Error("Utilisateur non authentifié.");
     }
+
+    const logements = await prisma.userRoleAppartement.findMany({
+      where: { userId: user.id },
+      include: {
+        logement: true,
+      },
+    });
+
+    const logementIds = logements.map((lg) => lg.logement.id);
+
+    if (logementIds.length === 0) return [];
+
+    const reservations = await prisma.reservation.findMany({
+      where: {
+        logementId: {
+          in: logementIds,
+        },
+      },
+      include: {
+        logement: true,
+        chambre: true,
+        user: true,
+        paiement: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return reservations;
+  } catch (error) {
+    console.error("Erreur lors de la récupération des réservations :", error);
+    throw new Error("Impossible d'afficher les réservations de l'utilisateur.");
+  }
 }
 export async function UpdateStatusReservation(id: string, status: "CONFIRMED" | "CANCELLED") {
     try {

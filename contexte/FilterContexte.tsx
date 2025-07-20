@@ -19,7 +19,7 @@ const FilterContext = createContext<FilterContextType | undefined>(undefined);
 export function FilterProvider({ children }: { children: ReactNode }) {
   const [currentTypeFilter, setCurrentTypeFilter] = useState("tout");
   const [currentOptionFilter, setCurrentOptionFilter] = useState("tout");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 30000000]);
   const [ratingFilter, setRatingFilter] = useState(0);
 
   return (

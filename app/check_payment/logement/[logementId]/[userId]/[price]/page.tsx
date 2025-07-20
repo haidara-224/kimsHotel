@@ -27,7 +27,7 @@ export default async function Page(props: {
       dateD: formData.get("dateD") as string,
       voyageurs: formData.get("voyageurs") as string,
     });
-    redirect("/");
+    redirect("/reservations");
   };
 
   return (

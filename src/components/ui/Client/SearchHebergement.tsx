@@ -117,6 +117,8 @@ export default function SearchResults({destination}:PropsSearch) {
         price: logement.price ?? 0,
         chambres: logement.chambres ?? [],
         hotelOptions: logement.hotelOptions ?? [],
+          etoils: logement.etoils ?? null, // Ajoute ça
+
       }))
       const all: homeTypes[] = [...hotels, ...logements]
       setHebergements(all)

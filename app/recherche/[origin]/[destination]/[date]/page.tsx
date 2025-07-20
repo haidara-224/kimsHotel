@@ -30,7 +30,6 @@ export async function generateMetadata({ params }: any) {
     day: "numeric",
   });
 
-  // 💡 Requête Prisma pour compter les hébergements disponibles
   const [hotelCount, logementCount] = await Promise.all([
     prisma.hotel.count({
       where: {

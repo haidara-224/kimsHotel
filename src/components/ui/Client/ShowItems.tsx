@@ -18,6 +18,7 @@ const filterItems = (
 
   return items.filter(item => {
     const type = normalize(item.type);
+
     const typeMatch =
       normalize(currentTypeFilter) === 'tout' || type === normalize(currentTypeFilter);
 
@@ -27,18 +28,48 @@ const filterItems = (
         item.price <= priceRange[1]
       : true;
 
-    const ratingMatch = ratingFilter === 0 || (item.etoils && item.etoils >= ratingFilter);
+    const ratingMatch =
+  item.type === 'logement' ||
+  ratingFilter === 0 ||
+  (item.type === 'hotel' && item.etoils && item.etoils >= ratingFilter);
 
-    const optionMatch =
-      currentOptionFilter === 'tout' ||
-      (type === 'hotel' && item.hotelOptions?.some(opt =>
-        normalize(opt.option?.name) === normalize(currentOptionFilter)
-      )) ||
-      type === 'logement'; // autorise logement même si option active
 
-    return typeMatch && priceMatch && ratingMatch && optionMatch;
+    const optionFilterActive = normalize(currentOptionFilter) !== 'tout';
+
+    let optionMatch = true;
+
+    if (optionFilterActive) {
+      if (type === 'hotel') {
+        optionMatch = item.hotelOptions?.some(opt =>
+          normalize(opt.option?.name) === normalize(currentOptionFilter)
+        ) || false;
+      } else if (type === 'logement') {
+        optionMatch = item.logementOptions?.some(opt =>
+          normalize(opt.option?.name) === normalize(currentOptionFilter)
+        ) || false;
+      }
+    }
+
+    const keep = typeMatch && priceMatch && ratingMatch && optionMatch;
+
+    if (!keep) {
+      console.log("Filtré (rejeté)", {
+        id: item.id,
+        nom: item.nom,
+        type,
+        price: item.price,
+        etoils: item.etoils,
+        typeMatch,
+        priceMatch,
+        ratingMatch,
+        optionMatch
+      });
+    }
+
+    return keep;
   });
 };
+
 
 
 
@@ -62,6 +93,7 @@ const {
     try {
       setLoading(true);
       const data = await getData() as unknown as homeTypes[];
+      console.log(data)
 
       let result = [...data];
 

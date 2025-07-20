@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { prisma } from "@/src/lib/prisma"
@@ -23,8 +24,10 @@ export async function GetLastLogement() {
 }
 
 
-export async function getData(option?: string) {
 
+
+export async function getData(option?: string) {
+  // Cas où il n’y a pas de filtre option
   if (!option) {
     const [hotels, logements] = await Promise.all([
       prisma.hotel.findMany({
@@ -44,13 +47,13 @@ export async function getData(option?: string) {
     ]);
 
     return [
-      ...hotels.map(h => ({ type: "hotel", ...h })),
-      ...logements.map(l => ({ type: "logement", ...l })),
+      ...hotels.map((h) => ({ type: "hotel", ...h })),
+      ...logements.map((l) => ({ type: "logement", ...l })),
     ];
   }
 
-
-  const [hotelsFiltered, logementsFiltered] = await Promise.all([
+  // Cas avec filtre par option
+  const [hotelOptionsResult, logementOptionsResult] = await Promise.all([
     prisma.hotelOptionOnHotel.findMany({
       where: {
         option: {
@@ -66,7 +69,6 @@ export async function getData(option?: string) {
           },
         },
       },
-      distinct: ['hotelId'],
     }),
 
     prisma.logementOptionOnLogement.findMany({
@@ -84,21 +86,34 @@ export async function getData(option?: string) {
           },
         },
       },
-      distinct: ['logementId'],
     }),
   ]);
 
+  // Dédoublonnage des hôtels
+  const uniqueHotels = new Map<string, any>();
+  hotelOptionsResult.forEach((item) => {
+    const hotel = item.hotel;
+    if (hotel && !uniqueHotels.has(hotel.id)) {
+      uniqueHotels.set(hotel.id, { type: "hotel", ...hotel });
+    }
+  });
+
+  // Dédoublonnage des logements
+  const uniqueLogements = new Map<string, any>();
+  logementOptionsResult.forEach((item) => {
+    const logement = item.logement;
+    if (logement && !uniqueLogements.has(logement.id)) {
+      uniqueLogements.set(logement.id, { type: "logement", ...logement });
+    }
+  });
+
+  // Résultat combiné
   return [
-    ...hotelsFiltered.map(h => ({
-      type: "hotel",
-      ...h.hotel,
-    })),
-    ...logementsFiltered.map(l => ({
-      type: "logement",
-      ...l.logement,
-    })),
+    ...Array.from(uniqueHotels.values()),
+    ...Array.from(uniqueLogements.values()),
   ];
 }
+
 export async function SearchHebergement(destination: string) {
   const [hotels, logements] = await Promise.all([
     prisma.hotel.findMany({

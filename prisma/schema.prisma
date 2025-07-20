@@ -26,10 +26,6 @@ enum StatutReservations {
   CONFIRMED
   CANCELLED
 }
-
-
-
-
 model Role {
   id                  String                @id @default(uuid())
   name                Roles                 @unique
