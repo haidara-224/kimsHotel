@@ -88,9 +88,11 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                     <div className="grid gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">Arrivée</label>
+                            
+
                             <input
                                 type="date"
-                                className="w-full p-3 border rounded-lg text-sm"
+                                className="w-full min-w-0 p-2 border rounded-md text-sm"
                                 value={dateA?.toISOString().split('T')[0] || ''}
                                 onChange={(e) => setDateA(e.target.value ? new Date(e.target.value) : undefined)}
                                 min={new Date().toISOString().split('T')[0]}
@@ -100,7 +102,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                             <label className="block text-sm font-medium mb-1">Départ</label>
                             <input
                                 type="date"
-                                className="w-full p-3 border rounded-lg text-sm"
+                                className="w-full min-w-0 p-2 border rounded-md text-sm"
                                 value={dateD?.toISOString().split('T')[0] || ''}
                                 onChange={(e) => setDateD(e.target.value ? new Date(e.target.value) : undefined)}
                                 min={dateA?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0]}
@@ -112,7 +114,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                     <div>
                         <label className="block text-sm font-medium mb-1">Voyageurs</label>
                         <select
-                            className="w-full p-3 border rounded-lg text-sm"
+                            className="w-full max-w-full min-w-0 p-2 border rounded-md text-sm"
                             value={voyageurs}
                             onChange={(e) => setVoyageurs(e.target.value)}
                         >
