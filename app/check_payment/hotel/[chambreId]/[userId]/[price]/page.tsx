@@ -1,73 +1,94 @@
+'use client';
+
 import { validerReservationChambre } from "@/app/(action)/reservation.action";
-import { redirect } from 'next/navigation';
-export default async function Page(props: {
-  params: Promise<{ chambreId: string; userId: string; price: string }>;
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const { chambreId, userId, price } = await props.params;
-  const searchParams = await props.searchParams;
+import { useRouter, useSearchParams, useParams } from "next/navigation";
+import { useState } from "react";
 
-  const operationRef = searchParams["paycard-operation-reference"];
-  const c = searchParams.c;
-  const transactionRef = searchParams["transaction-reference"];
-  const dateA = searchParams.dateA;
-  const dateD = searchParams.dateD;
-  const voyageurs = searchParams.voyageurs;
+export default function Page() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const params = useParams();
 
-  const handleReservation = async (formData: FormData) => {
-    "use server";
-    await validerReservationChambre({
-      chambreId: formData.get("chambreId") as string,
-      userId: formData.get("userId") as string,
-      price: formData.get("price") as string,
-   
-      
-      transactionReference: formData.get("transactionRef") as string,
-      dateA: formData.get("dateA") as string,
-      dateD: formData.get("dateD") as string,
-      voyageurs: formData.get("voyageurs") as string,
-    });
-    redirect("/reservations");
+  const chambreId = params.chambreId as string;
+  const userId = params.userId as string;
+  const price = params.price as string;
+
+  const transactionRef = searchParams.get("transaction-reference") || "";
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const operationRef = searchParams.get("paycard-operation-reference") || "";
+  const c = searchParams.get("c") || "";
+  const dateA = searchParams.get("dateA") || "";
+  const dateD = searchParams.get("dateD") || "";
+  const voyageurs = searchParams.get("voyageurs") || "";
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await validerReservationChambre({
+        chambreId,
+        userId,
+        price,
+        transactionReference: transactionRef,
+        dateA,
+        dateD,
+        voyageurs,
+      });
+
+      router.push("/reservations");
+    } catch (err) {
+      console.error("Erreur lors de la réservation:", err);
+      setError("Une erreur est survenue lors de la réservation. Veuillez réessayer.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1>Dernière ligne droite</h1>
-      <p className="text-2xl font-bold mb-4">Valider votre réservation</p>
-      <p>Chambre ID: {chambreId}</p>
-      <p>User ID: {userId}</p>
-      <p>Price: {price}</p>
-      <p>Operation Reference: {operationRef}</p>
-      <p>C: {c}</p>
-      <p>Transaction Reference: {transactionRef}</p>
-      <p>Date arrivée: {dateA}</p>
-      <p>Date départ: {dateD}</p>
-      <p>Voyageurs: {voyageurs}</p>
-      <form
-      
-        action={async (formData: FormData) => {
-          "use server";
-          await handleReservation(formData);
-        }}
-        
-        className="flex flex-col space-y-4 mt-8"
-      >
-        <input type="hidden" name="chambreId" value={chambreId} />
-        <input type="hidden" name="userId" value={userId} />
-        <input type="hidden" name="price" value={price} />
-        
-        <input type="hidden" name="c" value={c} />
-        <input type="hidden" name="transactionRef" value={transactionRef} />
-        <input type="hidden" name="dateA" value={dateA} />
-        <input type="hidden" name="dateD" value={dateD} />
-        <input type="hidden" name="voyageurs" value={voyageurs} />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-        >
-          Valider
-        </button>
-      </form>
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold text-center mb-6">Dernière ligne droite</h1>
+        <p className="text-xl text-center mb-8">Valider votre réservation</p>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
+
+        <div className="mb-6 space-y-2">
+          {
+            /**
+             *           <p><span className="font-semibold">Chambre ID:</span> {chambreId}</p>
+          <p><span className="font-semibold">User ID:</span> {userId}</p>
+             */
+          }
+
+          <p><span className="font-semibold">Prix:</span> {price} GNF</p>
+          <p><span className="font-semibold">Date arrivée:</span> {dateA}</p>
+          <p><span className="font-semibold">Date départ:</span> {dateD}</p>
+          <p><span className="font-semibold">Voyageurs:</span> {voyageurs}</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input type="hidden" name="c" value={c} />
+          <input type="hidden" name="transactionRef" value={transactionRef} />
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {isSubmitting ? 'Traitement en cours...' : 'Confirmer la réservation'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

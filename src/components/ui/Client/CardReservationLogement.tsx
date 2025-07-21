@@ -38,7 +38,7 @@ export function CardReservationLogement({ logement }: logementProps) {
         return diffDays > 0 ? diffDays : 0;
     };
 
-
+const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
     return (
         <>
             <Card className="border-border/50 hover:border-border/80 transition-colors shadow-xl hover:shadow-2xl">
@@ -156,12 +156,12 @@ export function CardReservationLogement({ logement }: logementProps) {
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
-                                {/**
+                                
                                 <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
-                                        `http://localhost:3000/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}` +
+                                        `http://localhost:3000/check_payment/logement/${logement.id}/${session?.user.id}/${totalPrice}` +
                                         `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
                                         `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
                                         `&voyageurs=${encodeURIComponent(voyageurs)}` +
@@ -169,18 +169,24 @@ export function CardReservationLogement({ logement }: logementProps) {
                                     }
                                 />
 
-   */}
-                                <input
+{
+    /**
+     *                                 <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
-                                        `https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}/${logement.price}` +
+                                        `https://kimshotel.net/check_payment/logement/${logement.id}/${session?.user.id}/${totalPrice}` +
                                         `?dateA=${dateA ? encodeURIComponent(dateA.toISOString()) : ''}` +
                                         `&dateD=${dateD ? encodeURIComponent(dateD.toISOString()) : ''}` +
                                         `&voyageurs=${encodeURIComponent(voyageurs)}` +
                                         `&kimshotel=true`
                                     }
                                 />
+     * 
+     */
+}
+   
+
 
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />

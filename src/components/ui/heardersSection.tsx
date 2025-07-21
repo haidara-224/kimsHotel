@@ -21,12 +21,11 @@ export function HeaderSection() {
   const [destination, setDestination] = useState("");
   const [apiLoaded, setApiLoaded] = useState(false);
   const [date, setDate] = useState<string>("");
-  const [, setActiveTab] = useState("hotels");
+  const [activeTab, setActiveTab] = useState("hotels");
   
   const originAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destinationAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const guineaBounds = useRef<google.maps.LatLngBounds | null>(null);
-
 
   const isFormValid = origin.trim() !== "" && destination.trim() !== "" && date.trim() !== "";
 
@@ -73,7 +72,7 @@ export function HeaderSection() {
 
   const onSearch = () => {
     if (isFormValid) {
-      window.location.href = `recherche/${origin}/${destination}/${date}`;
+      window.location.href = `recherche/${origin}/${destination}/${date}?type=${activeTab}`;
     }
   };
 
@@ -93,7 +92,6 @@ export function HeaderSection() {
         language="fr"
         onLoad={initBounds}
       >
-   
         <div style={{ display: 'none' }}>
           <GoogleMap
             mapContainerStyle={{ width: '100%', height: '100px' }}
@@ -102,9 +100,7 @@ export function HeaderSection() {
           />
         </div>
 
-   
-        <section className="relative h-[600px] bg-cover bg-center transition-all duration-1000 pt-[80px]">
-   
+        <section className="relative h-[500px] sm:h-[600px] bg-cover bg-center transition-all duration-1000 pt-[60px] sm:pt-[80px]">
           <div className="absolute inset-0 overflow-hidden">
             <AnimatePresence>
               <motion.div
@@ -119,8 +115,9 @@ export function HeaderSection() {
             </AnimatePresence>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/70" />
           </div>
+          
           <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
-            <div className="text-center max-w-4xl px-4 mb-8">
+            <div className="text-center max-w-4xl px-4 mb-4 sm:mb-8">
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={`title-${currentImage}`}
@@ -128,7 +125,7 @@ export function HeaderSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.8 }}
-                  className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight"
+                  className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-2 sm:mb-4 leading-tight"
                 >
                   Découvrez les meilleurs hébergements en Guinée
                 </motion.h1>
@@ -138,39 +135,40 @@ export function HeaderSection() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.8, delay: 0.3 }}
-                  className="text-lg md:text-xl text-gray-200"
+                  className="text-sm sm:text-lg md:text-xl text-gray-200"
                 >
                   Trouvez l&apos;hôtel ou l&lsquo;appartement parfait pour votre séjour
                 </motion.p>
               </AnimatePresence>
             </div>
+            
             {apiLoaded && (
               <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="w-full max-w-5xl bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden p-6"
+                className="w-full max-w-5xl bg-white/90 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden p-4 sm:p-6"
               >
                 <Tabs 
                   defaultValue="hotels" 
                   className="w-full"
                   onValueChange={setActiveTab}
                 >
-                  <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-lg mb-6">
-                    <TabsTrigger value="hotels" className="flex items-center gap-2">
-                      <Hotel className="w-4 h-4" /> Hôtels
+                  <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-lg mb-4 sm:mb-6">
+                    <TabsTrigger value="hotels" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                      <Hotel className="w-3 h-3 sm:w-4 sm:h-4" /> Hôtels
                     </TabsTrigger>
-                    <TabsTrigger value="appartements" className="flex items-center gap-2">
-                      <Home className="w-4 h-4" /> Appartements
+                    <TabsTrigger value="appartements" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                      <Home className="w-3 h-3 sm:w-4 sm:h-4" /> Appartements
                     </TabsTrigger>
                   </TabsList>
                   
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                      
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
-                          <MapPin className="w-5 h-5" />
+                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                         <Autocomplete
                           onLoad={onOriginLoad}
@@ -182,17 +180,17 @@ export function HeaderSection() {
                         >
                           <Input
                             placeholder="D'où venez-vous ?"
-                            className="pl-10 py-5 text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="pl-9 sm:pl-10 py-3 sm:py-5 text-sm sm:text-base text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                             value={origin}
                             onChange={(e) => setOrigin(e.target.value)}
                           />
                         </Autocomplete>
                       </div>
 
-             
+                      
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
-                          <MapPin className="w-5 h-5" />
+                          <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                         <Autocomplete
                           onLoad={onDestinationLoad}
@@ -205,37 +203,38 @@ export function HeaderSection() {
                         >
                           <Input
                             placeholder="Où allez-vous en Guinée ?"
-                            className="pl-10 py-5 text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="pl-9 sm:pl-10 py-3 sm:py-5 text-sm sm:text-base text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                             value={destination}
                             onChange={(e) => setDestination(e.target.value)}
                           />
                         </Autocomplete>
                       </div>
 
-                  
+                
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
-                          <CalendarDays className="w-5 h-5" />
+                          <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
                         <Input
                           type="date"
                           value={date}
                           onChange={(e) => setDate(e.target.value)}
-                          className="pl-10 py-5 text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                          className="pl-9 sm:pl-10 py-3 sm:py-5 text-sm sm:text-base text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
                       </div>
                     </div>
 
+                  
                     <Button 
                       onClick={onSearch}
                       disabled={!isFormValid}
-                      className={`w-full py-6 text-lg font-semibold shadow-lg transition-all transform hover:scale-[1.02] ${
+                      className={`w-full py-4 sm:py-6 text-sm sm:text-lg font-semibold shadow-lg transition-all ${
                         isFormValid 
                           ? 'bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700' 
                           : 'bg-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      <Search className="w-5 h-5 mr-2" />
+                      <Search className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       Trouver des hébergements
                     </Button>
                   </div>

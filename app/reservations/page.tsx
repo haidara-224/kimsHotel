@@ -10,7 +10,7 @@ export default function Page() {
                 <NavBar />
             </nav>
             <div className="max-w-5xl mx-auto px-4 py-10">
-                <h1 className="text-3xl font-bold text-center mb-10">🛎️ Your Reservations</h1>
+                <h1 className="text-3xl font-bold text-center mb-10">🛎️ Vos Reservations</h1>
                 <Reservationcmpt/>
             </div>
         </div>

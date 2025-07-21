@@ -167,7 +167,9 @@ export default function SignIn() {
                 </svg>
                 Sign in with Google
               </Button>
-              <Button
+              {
+                /**
+                 *               <Button
                 variant="outline"
                 className={cn(
                   "w-full gap-2"
@@ -190,6 +192,7 @@ export default function SignIn() {
                   );
                 }}
               >
+                
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="1em"
@@ -203,6 +206,9 @@ export default function SignIn() {
                 </svg>
                 Sign in with Facebook
               </Button>
+                 */
+              }
+
             </div>
           </div>
         </CardContent>
