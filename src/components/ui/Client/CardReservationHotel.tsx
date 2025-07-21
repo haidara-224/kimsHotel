@@ -1,18 +1,11 @@
 'use client';
 
-import { Separator } from "@/src/components/ui/separator";
-import { Button } from "@/src/components/ui/button";
-import { Badge } from "@/src/components/ui/badge";
-import { Label } from "@/src/components/ui/label";
-import { ArrowRight } from "lucide-react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { Chambre } from "@/types/types";
-import { useEffect, useState } from "react";
-import React from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../dialog";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "@/src/lib/auth-client";
+import { Chambre } from "@/types/types";
 
 interface HotelProps {
     chambre: Chambre | null,
@@ -21,12 +14,13 @@ interface HotelProps {
 }
 
 export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps) {
-    const [dateD, setDateD] = React.useState<Date>()
-    const [dateA, setDateA] = React.useState<Date>()
+    const [dateD, setDateD] = useState<Date>();
+    const [dateA, setDateA] = useState<Date>();
     const { data: session, isPending } = useSession();
     const isAuthenticated = !!session;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const isUnauthenticated = !session && !isPending;
-    const [voyageurs, setVoyageurs] = useState<string>("1");
+    const [voyageurs, setVoyageurs] = useState("1");
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'GNF' }).format(price);
@@ -40,103 +34,103 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
     };
 
     const totalPrice = (chambre?.price ?? 0) * getNumberOfNights();
-    const [, setNights] = useState(0);
 
+    // Fermer la modale quand on clique à l'extérieur
     useEffect(() => {
-        if (dateA && dateD) {
-            const start = new Date(dateA);
-            const end = new Date(dateD);
-            const diffTime = end.getTime() - start.getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            setNights(diffDays >= 0 ? diffDays : 0);
-        } else {
-            setNights(0);
-        }
-    }, [dateA, dateD]);
+        const handleClickOutside = (e: MouseEvent) => {
+            if (open && e.target instanceof HTMLElement) {
+                if (e.target.closest('.modal-content') === null) {
+                    onOpenChange(false);
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [open, onOpenChange]);
+
+    if (!open) return null;
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle className="text-lg sm:text-xl">Réservation - type Chambre: {chambre?.type}</DialogTitle>
-                    <DialogDescription className="text-sm">{chambre?.description}</DialogDescription>
-                </DialogHeader>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="modal-content bg-white rounded-lg shadow-xl max-h-[90vh] overflow-y-auto w-full max-w-md">
+                {/* En-tête */}
+                <div className="p-4 border-b">
+                    <h2 className="text-xl font-bold">Réservation - {chambre?.type}</h2>
+                    <p className="text-sm text-gray-500">{chambre?.description}</p>
+                </div>
 
+                {/* Contenu */}
                 <div className="p-4 space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-2 border-b gap-2">
+                    {/* Prix et disponibilité */}
+                    <div className="flex justify-between items-center pb-2 border-b">
                         <div>
-                            <span className="text-lg sm:text-xl font-bold text-foreground">{formatPrice(chambre?.price ?? 0)}</span>
-                            <span className="text-xs sm:text-sm text-muted-foreground"> par nuit</span>
+                            <span className="text-lg font-bold">{formatPrice(chambre?.price ?? 0)}</span>
+                            <span className="text-sm text-gray-500 ml-1">/nuit</span>
                         </div>
-                        <Badge variant="outline" className="border-emerald-500 text-emerald-500 text-xs sm:text-sm">
-                            {chambre?.disponible ? '⚡ Disponible' : '⛔ Occupée'}
-                        </Badge>
+                        <span className={`px-2 py-1 rounded-full text-xs ${chambre?.disponible ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {chambre?.disponible ? 'Disponible' : 'Occupée'}
+                        </span>
                     </div>
 
+                    {/* Dates */}
                     <div className="space-y-3">
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="space-y-2 w-full">
-                                <Label className="text-muted-foreground text-sm">Arrivée</Label>
-                                <input
-                                    type="date"
-                                    className="w-full border rounded-md px-3 py-2 text-sm"
-                                    value={dateA ? dateA.toISOString().split("T")[0] : ""}
-                                    onChange={(e) => setDateA(e.target.value ? new Date(e.target.value) : undefined)}
-                                    min={new Date().toISOString().split("T")[0]}
-                                />
-                            </div>
-                            <div className="space-y-2 w-full">
-                                <Label className="text-muted-foreground text-sm">Départ</Label>
-                                <input
-                                    type="date"
-                                    className="w-full border rounded-md px-3 py-2 text-sm"
-                                    value={dateD ? dateD.toISOString().split("T")[0] : ""}
-                                    onChange={(e) => setDateD(e.target.value ? new Date(e.target.value) : undefined)}
-                                    min={new Date().toISOString().split("T")[0]}
-                                />
-                            </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Arrivée</label>
+                            <input
+                                type="date"
+                                className="w-full p-2 border rounded-md text-sm"
+                                value={dateA?.toISOString().split('T')[0] || ''}
+                                onChange={(e) => setDateA(e.target.value ? new Date(e.target.value) : undefined)}
+                                min={new Date().toISOString().split('T')[0]}
+                            />
                         </div>
-
-                        <Separator className="bg-border/30" />
-
-                        <div className="space-y-2">
-                            <Label className="text-muted-foreground text-sm">Voyageurs</Label>
-                            <Select onValueChange={(value) => setVoyageurs(value)} defaultValue="1">
-                                <SelectTrigger className="w-full text-sm">
-                                    <SelectValue placeholder={`${voyageurs} voyageur`} />
-                                </SelectTrigger>
-                                <SelectContent className="text-sm">
-                                    {[...Array(10)].map((_, i) => (
-                                        <SelectItem key={i + 1} value={(i + 1).toString()} className="text-sm">
-                                            {i + 1} {i + 1 === 1 ? "voyageur" : "voyageurs"}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Départ</label>
+                            <input
+                                type="date"
+                                className="w-full p-2 border rounded-md text-sm"
+                                value={dateD?.toISOString().split('T')[0] || ''}
+                                onChange={(e) => setDateD(e.target.value ? new Date(e.target.value) : undefined)}
+                                min={dateA?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0]}
+                            />
                         </div>
                     </div>
 
+                    {/* Voyageurs */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Voyageurs</label>
+                        <select
+                            className="w-full p-2 border rounded-md text-sm"
+                            value={voyageurs}
+                            onChange={(e) => setVoyageurs(e.target.value)}
+                        >
+                            {[...Array(10)].map((_, i) => (
+                                <option key={i + 1} value={i + 1}>
+                                    {i + 1} {i + 1 === 1 ? "voyageur" : "voyageurs"}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Bouton de réservation */}
                     {chambre?.disponible && (
-                        <form action="https://mapaycard.com/epay/" method="POST" target="_blank">
+                        <form action="https://mapaycard.com/epay/" method="POST" target="_blank" className="pt-2">
                             <input type="hidden" name="c" value="NTY4Nzk1MTU" />
-                            {
+                                                        {
                                 /**
                                  *  <input
                                     type="hidden"
                                     name="paycard-amount"
-                                    value={(chambre?.price ?? 0) * getNumberOfNights()}
+                                    value={totalPrice}
                                     readOnly
                                 />
                                  */
                             }
-                            <input
-                                type="hidden"
-                                name="paycard-amount"
-                                value="1000"
-                                readOnly
-                            />
+
+                            <input type="hidden" name="paycard-amount" value="1000" readOnly />
                             <input type="hidden" name="paycard-description" value={`reservation de chambre ${chambre.numero_chambre}`} />
-                            {
+                                                        {
                                 /**
                                  *                             <input
                                 type="hidden"
@@ -152,6 +146,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
 
                                  */
                             }
+
                             <input
                                 type="hidden"
                                 name="paycard-callback-url"
@@ -167,51 +162,47 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                             <input type="hidden" name="paycard-auto-redirect" value="off" />
                             <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
 
-                            {isAuthenticated && (
-                                <Button
-                                    className="w-full h-10 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg hover:shadow-rose-500/30 transition-all text-sm sm:text-base"
+                            {isAuthenticated ? (
+                                <button
+                                    type="submit"
                                     disabled={!dateA || !dateD}
+                                    className={`w-full p-3 rounded-md font-medium flex items-center justify-center ${!dateA || !dateD ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white'}`}
                                 >
                                     Réserver maintenant
                                     <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            )}
-
-                            {isUnauthenticated && (
-                                <div className="space-y-2 text-center">
-                                    <p className="text-sm">Veuillez vous connecter d&apos;abord pour réserver</p>
-                                    <Link href="/auth/signin" className="text-sm text-primary underline">Se Connecter</Link>
+                                </button>
+                            ) : (
+                                <div className="text-center space-y-2">
+                                    <p className="text-sm">Veuillez vous connecter pour réserver</p>
+                                    <Link href="/auth/signin" className="text-sm text-blue-600 hover:underline">Se connecter</Link>
                                 </div>
                             )}
                         </form>
                     )}
 
-                    <div className="space-y-3 pt-3">
-                        <div className="flex justify-between text-xs sm:text-sm">
-                            <span className="text-muted-foreground">{formatPrice(chambre?.price ?? 0)} × {getNumberOfNights()} nuits</span>
-                            <span className="font-medium">{formatPrice((chambre?.price ?? 0) * getNumberOfNights())}</span>
+                    {/* Détails du prix */}
+                    <div className="space-y-2 pt-4">
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">{formatPrice(chambre?.price ?? 0)} × {getNumberOfNights()} nuits</span>
+                            <span>{formatPrice((chambre?.price ?? 0) * getNumberOfNights())}</span>
                         </div>
-                        <div className="flex justify-between text-xs sm:text-sm">
-                            <span className="text-muted-foreground">Frais de service</span>
-                            <span className="font-medium">{formatPrice((chambre?.price ?? 0) * getNumberOfNights() * 0.02)}</span>
+                        <div className="flex justify-between text-sm">
+                            <span className="text-gray-600">Frais de service</span>
+                            <span>{formatPrice((chambre?.price ?? 0) * getNumberOfNights() * 0.02)}</span>
+                        </div>
+                        <div className="border-t pt-2 flex justify-between font-bold">
+                            <span>Total</span>
+                            <span>{formatPrice((chambre?.price ?? 0) * getNumberOfNights())}</span>
                         </div>
                     </div>
 
-                    <Separator className="bg-border/30" />
-                    <div className="text-xs sm:text-sm text-muted-foreground italic">
-                        {voyageurs} {voyageurs === "1" ? "voyageur" : "voyageurs"} – {getNumberOfNights()} nuit(s)
-                    </div>
-                    <div className="flex justify-between text-sm sm:text-base">
-                        <span className="font-bold">Total</span>
-                        <span className="font-medium">{formatPrice((chambre?.price ?? 0) * getNumberOfNights())}</span>
-                    </div>
                     {dateA && dateD && (
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                            {getNumberOfNights()} nuit(s) du {format(new Date(dateA), "PPP")} au {format(new Date(dateD), "PPP")}
+                        <p className="text-xs text-gray-500 text-center">
+                            {getNumberOfNights()} nuit(s) du {format(new Date(dateA), "dd/MM/yyyy")} au {format(new Date(dateD), "dd/MM/yyyy")}
                         </p>
                     )}
                 </div>
-            </DialogContent>
-        </Dialog>
+            </div>
+        </div>
     );
 }
