@@ -125,7 +125,7 @@ const totalPrice = (chambre?.price ?? 0) * getNumberOfNights();
                                  *  <input
                                     type="hidden"
                                     name="paycard-amount"
-                                    value={(chambre?.price ?? 0) * getNumberOfNights()}
+                                    value={totalPrice}
                                     readOnly
                                 />
                                  */
