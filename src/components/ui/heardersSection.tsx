@@ -7,6 +7,10 @@ import { Button } from "./button";
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
 import { Search, MapPin, CalendarDays, Hotel, Home } from "lucide-react";
+import { Calendar } from "./calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { format } from "date-fns";
+import { fr } from 'date-fns/locale';
 
 export function HeaderSection() {
   const images = [
@@ -20,14 +24,14 @@ export function HeaderSection() {
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [apiLoaded, setApiLoaded] = useState(false);
-  const [date, setDate] = useState<string>("");
+  const [date, setDate] = useState<Date>();
   const [activeTab, setActiveTab] = useState("hotels");
   
   const originAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destinationAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const guineaBounds = useRef<google.maps.LatLngBounds | null>(null);
 
-  const isFormValid = origin.trim() !== "" && destination.trim() !== "" && date.trim() !== "";
+  const isFormValid = origin.trim() !== "" && destination.trim() !== "" && date !== undefined;
 
   const initBounds = () => {
     if (window.google) {
@@ -71,8 +75,9 @@ export function HeaderSection() {
   };
 
   const onSearch = () => {
-    if (isFormValid) {
-      window.location.href = `recherche/${origin}/${destination}/${date}?type=${activeTab}`;
+    if (isFormValid && date) {
+      const dateStr = format(date, 'yyyy-MM-dd');
+      window.location.href = `recherche/${origin}/${destination}/${dateStr}?type=${activeTab}`;
     }
   };
 
@@ -210,21 +215,34 @@ export function HeaderSection() {
                         </Autocomplete>
                       </div>
 
-                
+                     
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                           <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
-                        <Input
-                          type="date"
-                          value={date}
-                          onChange={(e) => setDate(e.target.value)}
-                          className="pl-9 sm:pl-10 py-3 sm:py-5 text-sm sm:text-base text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                        />
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full pl-9 sm:pl-10 py-3 sm:py-5 h-auto justify-start text-left font-normal text-sm sm:text-base"
+                            >
+                              {date ? format(date, 'PPP', { locale: fr }) : "Sélectionnez une date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={date}
+                              onSelect={setDate}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                              locale={fr}
+                            />
+                          </PopoverContent>
+                        </Popover>
                       </div>
                     </div>
 
-                  
                     <Button 
                       onClick={onSearch}
                       disabled={!isFormValid}
