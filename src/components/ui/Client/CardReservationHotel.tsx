@@ -261,19 +261,20 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                 <input type="hidden" name="c" value="NTY4Nzk1MTU" />
                                 {
                                     /**
-                                     *  <input
+                                     *  
+                                    <input type="hidden" name="paycard-amount" value={totalPrice} />
+                                     */
+                                }
+                                <input
                                         type="hidden"
                                         name="paycard-amount"
                                         value={totalPrice}
                                         readOnly
                                     />
-                                     */
-                                }
-                                <input type="hidden" name="paycard-amount" value={totalPrice} />
+                                
                                 <input type="hidden" name="paycard-description" value={`Réservation chambre ${chambre.numero_chambre}`} />
-                                {
-                                    /**
-                                     *                             <input
+                             
+                                     <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
@@ -285,9 +286,10 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                     }
                                 />
     
-                                     */
-                                }
-                                <input
+                                
+                                {
+                                    /**
+                                     *  <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
@@ -298,6 +300,9 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                         `&kimshotel=true`
                                     }
                                 />
+                                     */
+                                }
+                               
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />
                                 <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
