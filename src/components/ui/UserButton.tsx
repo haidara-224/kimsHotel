@@ -24,9 +24,14 @@ function UserButton() {
                     {session?.user.image ? (
                         <Image
                             src={session.user.image}
-                            
+                            width={40}
+                            height={40}
                             alt="Photo de profil"
-                            
+                            className={cn(
+                                "w-10 h-10 rounded-full border-2",
+                                "border-gray-200 dark:border-gray-700",
+                                "hover:scale-105 transition-transform"
+                            )}
                         />
                     ) : (
                         <div className={cn(
