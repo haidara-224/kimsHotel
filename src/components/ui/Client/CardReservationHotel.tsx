@@ -36,7 +36,6 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
 
     const totalPrice = (chambre?.price ?? 0) * getNumberOfNights();
 
-    // Fermer la modale
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -84,46 +83,86 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                         </span>
                     </div>
 
-                    {/* Date Inputs */}
+                    {/* Date Inputs - Style spécifique pour iOS */}
                     <div className="grid gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1">Arrivée</label>
-                            
-
-                            <input
-                                type="date"
-                                className="w-full min-w-0 p-2 border rounded-md text-sm"
-                                value={dateA?.toISOString().split('T')[0] || ''}
-                                onChange={(e) => setDateA(e.target.value ? new Date(e.target.value) : undefined)}
-                                min={new Date().toISOString().split('T')[0]}
-                            />
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    className="w-full p-3 border rounded-lg text-sm appearance-none bg-white"
+                                    value={dateA?.toISOString().split('T')[0] || ''}
+                                    onChange={(e) => setDateA(e.target.value ? new Date(e.target.value) : undefined)}
+                                    min={new Date().toISOString().split('T')[0]}
+                                />
+                                {/* Icône de calendrier pour iOS */}
+                                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 2V5" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M16 2V5" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M3.5 9.08997H20.5" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M15.6947 13.7H15.7037" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M15.6947 16.7H15.7037" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M11.9955 13.7H12.0045" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M11.9955 16.7H12.0045" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M8.29431 13.7H8.30329" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M8.29431 16.7H8.30329" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1">Départ</label>
-                            <input
-                                type="date"
-                                className="w-full min-w-0 p-2 border rounded-md text-sm"
-                                value={dateD?.toISOString().split('T')[0] || ''}
-                                onChange={(e) => setDateD(e.target.value ? new Date(e.target.value) : undefined)}
-                                min={dateA?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0]}
-                            />
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    className="w-full p-3 border rounded-lg text-sm appearance-none bg-white"
+                                    value={dateD?.toISOString().split('T')[0] || ''}
+                                    onChange={(e) => setDateD(e.target.value ? new Date(e.target.value) : undefined)}
+                                    min={dateA?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0]}
+                                />
+                                {/* Icône de calendrier pour iOS */}
+                                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 2V5" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M16 2V5" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M3.5 9.08997H20.5" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M21 8.5V17C21 20 19.5 22 16 22H8C4.5 22 3 20 3 17V8.5C3 5.5 4.5 3.5 8 3.5H16C19.5 3.5 21 5.5 21 8.5Z" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M15.6947 13.7H15.7037" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M15.6947 16.7H15.7037" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M11.9955 13.7H12.0045" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M11.9955 16.7H12.0045" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M8.29431 13.7H8.30329" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M8.29431 16.7H8.30329" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Guests Selector */}
+                    {/* Guests Selector - Style spécifique pour iOS */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Voyageurs</label>
-                        <select
-                            className="w-full max-w-full min-w-0 p-2 border rounded-md text-sm"
-                            value={voyageurs}
-                            onChange={(e) => setVoyageurs(e.target.value)}
-                        >
-                            {[...Array(10)].map((_, i) => (
-                                <option key={i+1} value={i+1}>
-                                    {i+1} {i+1 === 1 ? "voyageur" : "voyageurs"}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                            <select
+                                className="w-full p-3 border rounded-lg text-sm appearance-none bg-white"
+                                value={voyageurs}
+                                onChange={(e) => setVoyageurs(e.target.value)}
+                            >
+                                {[...Array(10)].map((_, i) => (
+                                    <option key={i+1} value={i+1}>
+                                        {i+1} {i+1 === 1 ? "voyageur" : "voyageurs"}
+                                    </option>
+                                ))}
+                            </select>
+                            {/* Icône de flèche pour iOS */}
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19.9201 8.9502L13.4001 15.4702C12.6301 16.2402 11.3701 16.2402 10.6001 15.4702L4.08008 8.9502" stroke="#4B5563" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Price Summary */}
@@ -155,7 +194,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                         session ? (
                             <form action="https://mapaycard.com/epay/" method="POST" target="_blank">
                                 <input type="hidden" name="c" value="NTY4Nzk1MTU" />
-                                {
+                                 {
                                 /**
                                  *  <input
                                     type="hidden"
@@ -167,9 +206,20 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                             }
                                 <input type="hidden" name="paycard-amount" value={totalPrice} />
                                 <input type="hidden" name="paycard-description" value={`Réservation chambre ${chambre.numero_chambre}`} />
-                                {
+                                <input 
+                                    type="hidden" 
+                                    name="paycard-callback-url" 
+                                    value={
+                                        `http://localhost:3000/check_payment/hotel/${chambre.id}/${session.user.id}/${totalPrice}` +
+                                        `?dateA=${dateA?.toISOString() || ''}` +
+                                        `&dateD=${dateD?.toISOString() || ''}` +
+                                        `&voyageurs=${voyageurs}` +
+                                        `&kimshotel=true`
+                                    } 
+                                />
+                                 {
                                 /**
-                                 *                             <input
+                                 *  <input
                                 type="hidden"
                                 name="paycard-callback-url"
                                 value={
@@ -184,17 +234,6 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                                  */
                             }
 
-                                <input 
-                                    type="hidden" 
-                                    name="paycard-callback-url" 
-                                    value={
-                                        `http://localhost:3000/check_payment/hotel/${chambre.id}/${session.user.id}/${totalPrice}` +
-                                        `?dateA=${dateA?.toISOString() || ''}` +
-                                        `&dateD=${dateD?.toISOString() || ''}` +
-                                        `&voyageurs=${voyageurs}` +
-                                        `&kimshotel=true`
-                                    } 
-                                />
                                 <input type="hidden" name="paycard-redirect-with-get" value="on" />
                                 <input type="hidden" name="paycard-auto-redirect" value="off" />
                                 <input type="hidden" name="order_id" value={`res-${Date.now()}`} />
