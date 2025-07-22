@@ -126,7 +126,7 @@ const { data: session } = useSession();
 								<Label htmlFor="first-name">Nom</Label>
 								<Input
 									id="first-name"
-									placeholder="Haidara"
+									placeholder="Kopp"
 									onChange={(e) => setName(e.target.value)}
 									value={name}
 								/>
@@ -140,7 +140,7 @@ const { data: session } = useSession();
 							<Input
 								id="email"
 								type="email"
-								placeholder="m@example.com"
+								placeholder="haidara@example.com"
 								onChange={(e) => setEmail(e.target.value)}
 								value={email}
 							/>
