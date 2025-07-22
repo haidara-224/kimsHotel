@@ -7,6 +7,7 @@ import { useSession } from "@/src/lib/auth-client";
 import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
 import Image from "next/image";
 import { createHotel } from "@/app/(action)/hotel.action";
+import { CitySelect } from "./citySelect";
 
 interface FormData {
   option: string[];
@@ -55,17 +56,17 @@ export default function HotelCreationForm() {
   const router = useRouter();
   const params = useParams();
   const categoryLogementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? "";
-
+ 
   const [formData, setFormData] = useState<FormData>({
     option: [],
     nom: "",
     description: "",
     adresse: "",
-    ville: "Conakry",
-    etoils:1,
+    ville: "",
+    etoils: 1,
     telephone: "",
     email: "",
-    
+
     capacity: 1,
     hasWifi: false,
     hasTV: false,
@@ -113,16 +114,16 @@ export default function HotelCreationForm() {
     const newOptions = selectedOption.includes(optionId)
       ? selectedOption.filter(id => id !== optionId)
       : [...selectedOption, optionId];
-    
+
     setSelectedOption(newOptions);
     setFormData(prev => ({ ...prev, option: newOptions }));
   };
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>, type: "room" | "hotel") => {
     if (!e.target.files) return;
-    
+
     const files = Array.from(e.target.files);
-    const validFiles = files.filter(file => 
+    const validFiles = files.filter(file =>
       file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
     );
 
@@ -224,7 +225,7 @@ export default function HotelCreationForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateStep()) return;
-    
+
     setIsSubmitting(true);
 
     try {
@@ -240,11 +241,11 @@ export default function HotelCreationForm() {
           formPayload.append(key, String(value));
         }
       });
-      
+
       await createHotel(
         categoryLogementId,
         formData.numero_chambre,
-        formData.option,  
+        formData.option,
         formData.nom,
         formData.description,
         formData.adresse,
@@ -274,32 +275,29 @@ export default function HotelCreationForm() {
     }
   };
 
-  // Styles réutilisables
   const inputStyle = "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all";
   const buttonStyle = "px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50";
   const stepButtonStyle = "w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-md";
 
   return (
     <div className="mx-auto p-4 max-w-4xl bg-white rounded-lg shadow-sm">
-      {/* Barre de progression */}
+
       <div className="flex mb-8 relative">
         <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10 mx-10">
-          <div 
-            className="h-1 bg-blue-500 transition-all duration-300" 
+          <div
+            className="h-1 bg-blue-500 transition-all duration-300"
             style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
           ></div>
         </div>
-        
+
         {steps.map((stepItem) => (
           <div key={stepItem.id} className="flex-1 flex flex-col items-center">
-            <div className={`${stepButtonStyle} ${
-              step >= stepItem.id ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
-            }`}>
+            <div className={`${stepButtonStyle} ${step >= stepItem.id ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+              }`}>
               {stepItem.id}
             </div>
-            <div className={`text-sm mt-2 text-center font-medium ${
-              step >= stepItem.id ? 'text-blue-500' : 'text-gray-500'
-            }`}>
+            <div className={`text-sm mt-2 text-center font-medium ${step >= stepItem.id ? 'text-blue-500' : 'text-gray-500'
+              }`}>
               {stepItem.title}
             </div>
           </div>
@@ -311,7 +309,7 @@ export default function HotelCreationForm() {
         {step === 1 && (
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-800">Informations de l&lsquo;hôtel</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Nom de l&lsquo;hôtel *</Label>
@@ -326,15 +324,14 @@ export default function HotelCreationForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Ville *</Label>
-                <input
-                  type="text"
-                  name="ville"
-                  value={formData.ville}
-                  onChange={handleInputChange}
-                  className={inputStyle}
-                  placeholder="Conakry"
-                />
+                <div className="space-y-2">
+                  <Label>Ville *</Label>
+                  <CitySelect
+                    value={formData.ville}
+                    onChange={(value) => handleSelectChange("ville", value)}
+                  />
+                </div>
+
               </div>
 
               <div className="space-y-2">
@@ -398,9 +395,8 @@ export default function HotelCreationForm() {
                 {option.map((op) => (
                   <div
                     key={op.id}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedOption.includes(op.id) ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
-                    }`}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${selectedOption.includes(op.id) ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
+                      }`}
                     onClick={() => handleSelectOption(op.id)}
                   >
                     <input
@@ -408,7 +404,7 @@ export default function HotelCreationForm() {
                       id={op.id}
                       checked={selectedOption.includes(op.id)}
                       className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                      onChange={() => {}}
+                      onChange={() => { }}
                     />
                     {op.imageUrl && (
                       <Image
@@ -462,9 +458,8 @@ export default function HotelCreationForm() {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-5 h-5 ${
-                          i < formData.etoils ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-                        }`}
+                        className={`w-5 h-5 ${i < formData.etoils ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                          }`}
                       />
                     ))}
                   </div>
@@ -525,7 +520,7 @@ export default function HotelCreationForm() {
             <h2 className="text-xl font-semibold text-gray-800">Configuration des chambres</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
+              <div className="space-y-2">
                 <Label>Numero de Chambre (Unique) *</Label>
                 <div className="flex items-center">
                   <input
@@ -535,9 +530,9 @@ export default function HotelCreationForm() {
                     onChange={handleInputChange}
                     className={inputStyle}
                     placeholder="CHAMBRE 101"
-                    
+
                   />
-                  
+
                 </div>
               </div>
               <div className="space-y-2">
@@ -610,9 +605,8 @@ export default function HotelCreationForm() {
                 ].map(({ id, label, icon, field }) => (
                   <div
                     key={id}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                      formData[field as keyof FormData] ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
-                    }`}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${formData[field as keyof FormData] ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
+                      }`}
                     onClick={() => setFormData(prev => ({ ...prev, [field]: !prev[field as keyof FormData] }))}
                   >
                     <input
@@ -620,7 +614,7 @@ export default function HotelCreationForm() {
                       id={id}
                       checked={Boolean(formData[field as keyof FormData])}
                       className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                      onChange={() => {}}
+                      onChange={() => { }}
                     />
                     <label htmlFor={id} className="flex items-center cursor-pointer">
                       {icon} {label}

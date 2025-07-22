@@ -7,6 +7,7 @@ import { useSession } from "@/src/lib/auth-client";
 import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
 import Image from "next/image";
 import { CreateLogement } from "@/app/(action)/Logement.action";
+import { CitySelect } from "./citySelect";
 
 interface FormData {
   option: string[];
@@ -91,7 +92,9 @@ export default function MultiformStep() {
     const { name, checked } = e.target;
     setFormData(prev => ({ ...prev, [name]: checked }));
   };
-
+const handleSelectChange = (name: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
   const handleSelectOption = (optionId: string) => {
     setSelectedOption(prev => 
       prev.includes(optionId) 
@@ -242,7 +245,7 @@ export default function MultiformStep() {
       setIsSubmitting(false);
     }
   };
-
+ 
   return (
     <div className="mx-auto p-4 md:p-6 max-w-4xl bg-white rounded-lg shadow-md">
       {/* Progress Bar */}
@@ -291,15 +294,10 @@ export default function MultiformStep() {
               </div>
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Ville</label>
-                <input
-                  type="text"
-                  name="ville"
-                  value={formData.ville}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary"
-                  placeholder="Ex: Conakry"
-                  required
-                />
+       <CitySelect 
+    value={formData.ville} 
+    onChange={(value) => handleSelectChange("ville", value)} 
+  />
               </div>
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">Adresse</label>
