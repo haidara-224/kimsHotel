@@ -139,7 +139,7 @@ const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
                                 <input type="hidden" name="c" value="NTY4Nzk1MTU" />
                                 {
                                     /**
-                                     *                                 <input
+                                    <input
                                     type="hidden"
                                     name="paycard-amount"
                                     value={totalPrice}

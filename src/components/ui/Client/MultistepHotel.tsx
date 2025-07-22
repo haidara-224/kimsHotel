@@ -8,6 +8,7 @@ import { getLogementOptionIdName } from "@/app/(action)/LogementOption.action";
 import Image from "next/image";
 import { createHotel } from "@/app/(action)/hotel.action";
 import { CitySelect } from "./citySelect";
+import { cn } from "@/src/lib/utils";
 
 interface FormData {
   option: string[];
@@ -56,7 +57,7 @@ export default function HotelCreationForm() {
   const router = useRouter();
   const params = useParams();
   const categoryLogementId = Array.isArray(params?.id) ? params.id[0] : params?.id ?? "";
- 
+
   const [formData, setFormData] = useState<FormData>({
     option: [],
     nom: "",
@@ -187,7 +188,7 @@ export default function HotelCreationForm() {
       }
     }
 
-    // Validation étape 2
+
     if (step === 2) {
       if (formData.images_hotel.length < 4) {
         toast.error("Minimum 4 photos de l'hôtel requises");
@@ -195,7 +196,7 @@ export default function HotelCreationForm() {
       }
     }
 
-    // Validation étape 3
+
     if (step === 3) {
       if (!formData.type_chambre) {
         toast.error("Le type de chambre est obligatoire");
@@ -275,17 +276,17 @@ export default function HotelCreationForm() {
     }
   };
 
-  const inputStyle = "w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all";
+  const inputStyle = "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
   const buttonStyle = "px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50";
   const stepButtonStyle = "w-10 h-10 rounded-full flex items-center justify-center border-4 border-white shadow-md";
-
+  const labelStyle="block text-sm font-medium text-gray-700 dark:text-gray-300"
   return (
-    <div className="mx-auto p-4 max-w-4xl bg-white rounded-lg shadow-sm">
+    <div className="mx-auto p-4 md:p-6 max-w-4xl bg-white dark:bg-gray-900 rounded-lg shadow-md dark:shadow-gray-800/50">
 
       <div className="flex mb-8 relative">
-        <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 -z-10 mx-10">
+        <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700 -z-10 mx-10">
           <div
-            className="h-1 bg-blue-500 transition-all duration-300"
+            className="h-1 bg-blue-500 dark:bg-blue-400 transition-all duration-300"
             style={{ width: `${((step - 1) / (steps.length - 1)) * 100}%` }}
           ></div>
         </div>
@@ -305,14 +306,13 @@ export default function HotelCreationForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Étape 1 - Informations de base */}
         {step === 1 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-800">Informations de l&lsquo;hôtel</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Informations de l&lsquo;hôtel</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Nom de l&lsquo;hôtel *</Label>
+                <Label className={labelStyle}>Nom de l&lsquo;hôtel *</Label>
                 <input
                   type="text"
                   name="nom"
@@ -325,7 +325,7 @@ export default function HotelCreationForm() {
 
               <div className="space-y-2">
                 <div className="space-y-2">
-                  <Label>Ville *</Label>
+                  <Label className={labelStyle}>Ville *</Label>
                   <CitySelect
                     value={formData.ville}
                     onChange={(value) => handleSelectChange("ville", value)}
@@ -335,7 +335,7 @@ export default function HotelCreationForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Adresse *</Label>
+                <Label className={labelStyle}>Adresse *</Label>
                 <input
                   type="text"
                   name="adresse"
@@ -347,7 +347,7 @@ export default function HotelCreationForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Téléphone *</Label>
+                <Label className={labelStyle}>Téléphone *</Label>
                 <input
                   type="tel"
                   name="telephone"
@@ -359,7 +359,7 @@ export default function HotelCreationForm() {
               </div>
 
               <div className="space-y-2">
-                <Label>Email *</Label>
+                <Label className={labelStyle}>Email *</Label>
                 <input
                   type="email"
                   name="email"
@@ -372,7 +372,7 @@ export default function HotelCreationForm() {
             </div>
 
             <div className="space-y-2">
-              <Label>Description *</Label>
+              <Label className={labelStyle}>Description *</Label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -383,293 +383,384 @@ export default function HotelCreationForm() {
             </div>
           </div>
         )}
-
-        {/* Étape 2 - Équipements */}
         {step === 2 && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-800">Équipements et services</h2>
+  <div className="space-y-6">
+    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Équipements et services</h2>
 
-            <div>
-              <h3 className="text-lg font-medium mb-4">Options disponibles *</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {option.map((op) => (
-                  <div
-                    key={op.id}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${selectedOption.includes(op.id) ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
-                      }`}
-                    onClick={() => handleSelectOption(op.id)}
-                  >
-                    <input
-                      type="checkbox"
-                      id={op.id}
-                      checked={selectedOption.includes(op.id)}
-                      className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                      onChange={() => { }}
-                    />
-                    {op.imageUrl && (
-                      <Image
-                        src={op.imageUrl}
-                        width={32}
-                        height={32}
-                        alt={op.title}
-                        className="mr-3 rounded"
-                      />
-                    )}
-                    <label htmlFor={op.id} className="cursor-pointer">{op.title}</label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-lg font-medium mb-4">Services principaux</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center p-3 border rounded-lg hover:bg-gray-50">
-                    <input
-                      type="checkbox"
-                      id="parking"
-                      name="parking"
-                      checked={formData.parking}
-                      onChange={handleCheckboxChange}
-                      className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                    />
-                    <label htmlFor="parking" className="flex items-center cursor-pointer">
-                      <ParkingCircle className="w-5 h-5 mr-2 text-gray-700" />
-                      Parking sécurisé
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Classement étoiles *</Label>
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    name="etoils"
-                    min="1"
-                    max="5"
-                    value={formData.etoils}
-                    onChange={handleInputChange}
-                    className="w-20 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                  <div className="ml-3 flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${i < formData.etoils ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-                          }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <Label>Photos de l&lsquo;hôtel *</Label>
-              <p className="text-sm text-gray-500 mb-4">Minimum 4 photos de votre établissement</p>
-
-              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500">Cliquez pour télécharger</p>
-                  <p className="text-xs text-gray-500">PNG, JPG (max 5MB)</p>
-                </div>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "hotel")}
-                  className="hidden"
-                />
-              </label>
-
-              {hotelImagePreviews.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-                  {hotelImagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
-                      <Image
-                        src={preview}
-                        alt={`Preview ${index}`}
-                        width={150}
-                        height={150}
-                        className="rounded-lg object-cover w-full h-32"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index, "hotel")}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
+    <div>
+      <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Options disponibles</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {option.map((op) => (
+          <div
+            key={op.id}
+            className={cn(
+              "flex items-center p-3 border rounded-lg cursor-pointer transition-colors",
+              selectedOption.includes(op.id)
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400"
+                : "hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700"
+            )}
+            onClick={() => handleSelectOption(op.id)}
+          >
+            <input
+              type="checkbox"
+              id={op.id}
+              checked={selectedOption.includes(op.id)}
+              className={cn(
+                "mr-3 h-5 w-5 rounded focus:ring-2 focus:ring-blue-500",
+                "text-blue-600 dark:text-blue-500",
+                "border-gray-300 dark:border-gray-600",
+                "bg-white dark:bg-gray-800"
               )}
-            </div>
+              onChange={() => {}}
+            />
+            {op.imageUrl && (
+              <Image
+                src={op.imageUrl}
+                width={32}
+                height={32}
+                alt={op.title}
+                className="mr-3 rounded"
+              />
+            )}
+            <label htmlFor={op.id} className="cursor-pointer text-gray-700 dark:text-gray-300">
+              {op.title}
+            </label>
           </div>
-        )}
+        ))}
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-200">Services principaux</h3>
+        <div className="space-y-3">
+          <div className={cn(
+            "flex items-center p-3 border rounded-lg transition-colors cursor-pointer",
+            "hover:bg-gray-50 dark:hover:bg-gray-800",
+            "border-gray-200 dark:border-gray-700"
+          )}>
+            <input
+              type="checkbox"
+              id="parking"
+              name="parking"
+              checked={formData.parking}
+              onChange={handleCheckboxChange}
+              className={cn(
+                "mr-3 h-5 w-5 rounded focus:ring-2 focus:ring-blue-500",
+                "text-blue-600 dark:text-blue-500",
+                "border-gray-300 dark:border-gray-600",
+                "bg-white dark:bg-gray-800"
+              )}
+            />
+            <label htmlFor="parking" className="flex items-center cursor-pointer">
+              <ParkingCircle className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300" />
+              <span className="text-gray-700 dark:text-gray-300">Parking sécurisé</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-gray-700 dark:text-gray-300">Classement étoiles *</Label>
+        <div className="flex items-center">
+          <input
+            type="number"
+            name="etoils"
+            min="1"
+            max="5"
+            value={formData.etoils}
+            onChange={handleInputChange}
+            className={cn(
+              "w-20 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500",
+              "border-gray-300 dark:border-gray-600",
+              "bg-white dark:bg-gray-800",
+              "text-gray-900 dark:text-white"
+            )}
+          />
+          <div className="ml-3 flex">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                className={cn(
+                  "w-5 h-5",
+                  i < formData.etoils 
+                    ? "text-yellow-400 fill-yellow-400" 
+                    : "text-gray-300 dark:text-gray-500"
+                )}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="space-y-4">
+      <Label className="text-gray-700 dark:text-gray-300">Photos de l&apos;hôtel *</Label>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Minimum 4 photos de votre établissement
+      </p>
+
+      <label className={cn(
+        "flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg",
+        "cursor-pointer transition-colors",
+        "border-gray-300 dark:border-gray-600",
+        "hover:bg-gray-50 dark:hover:bg-gray-800"
+      )}>
+        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+          <svg 
+            className="w-10 h-10 mb-3 text-gray-400" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth="2" 
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ></path>
+          </svg>
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">Cliquez pour télécharger</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG (max 5MB)</p>
+        </div>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={(e) => handleImageUpload(e, "hotel")}
+          className="hidden"
+        />
+      </label>
+
+      {hotelImagePreviews.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+          {hotelImagePreviews.map((preview, index) => (
+            <div key={index} className="relative group">
+              <Image
+                src={preview}
+                alt={`Preview ${index}`}
+                width={150}
+                height={150}
+                className="rounded-lg object-cover w-full h-32"
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(index, "hotel")}
+                className={cn(
+                  "absolute top-2 right-2 rounded-full w-6 h-6",
+                  "flex items-center justify-center transition-opacity",
+                  "bg-red-500 text-white opacity-0 group-hover:opacity-100"
+                )}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
         {/* Étape 3 - Chambres */}
         {step === 3 && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-800">Configuration des chambres</h2>
+  <div className="space-y-6">
+    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">Configuration des chambres</h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Numero de Chambre (Unique) *</Label>
-                <div className="flex items-center">
-                  <input
-                    type="text"
-                    name="numero_chambre"
-                    value={formData.numero_chambre}
-                    onChange={handleInputChange}
-                    className={inputStyle}
-                    placeholder="CHAMBRE 101"
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="space-y-2">
+        <Label className="text-gray-700 dark:text-gray-300">Numero de Chambre (Unique) *</Label>
+        <div className="flex items-center">
+          <input
+            type="text"
+            name="numero_chambre"
+            value={formData.numero_chambre}
+            onChange={handleInputChange}
+            className={cn(
+              "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500",
+              "border-gray-300 dark:border-gray-600",
+              "bg-white dark:bg-gray-800",
+              "text-gray-900 dark:text-white"
+            )}
+            placeholder="CHAMBRE 101"
+          />
+        </div>
+      </div>
 
-                  />
+      <div className="space-y-2">
+        <Label className="text-gray-700 dark:text-gray-300">Type de chambre *</Label>
+        <select
+          name="type_chambre"
+          value={formData.type_chambre}
+          onChange={(e) => handleSelectChange("type_chambre", e.target.value)}
+          className={cn(
+            "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500",
+            "border-gray-300 dark:border-gray-600",
+            "bg-white dark:bg-gray-800",
+            "text-gray-900 dark:text-white"
+          )}
+        >
+          <option value="SIMPLE">Simple</option>
+          <option value="DOUBLE">Double</option>
+          <option value="SUITE">Suite</option>
+        </select>
+      </div>
 
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Type de chambre *</Label>
-                <select
-                  name="type_chambre"
-                  value={formData.type_chambre}
-                  onChange={(e) => handleSelectChange("type_chambre", e.target.value)}
-                  className={inputStyle}
-                >
-                  <option value="SIMPLE">Simple</option>
-                  <option value="DOUBLE">Double</option>
-                  <option value="SUITE">Suite</option>
-                </select>
-              </div>
+      <div className="space-y-2">
+        <Label className="text-gray-700 dark:text-gray-300">Prix par nuit (GNF) *</Label>
+        <div className="flex items-center">
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+            className={cn(
+              "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500",
+              "border-gray-300 dark:border-gray-600",
+              "bg-white dark:bg-gray-800",
+              "text-gray-900 dark:text-white"
+            )}
+            placeholder="500000"
+            min="10000"
+          />
+          <span className="ml-2 whitespace-nowrap text-gray-700 dark:text-gray-300">GNF/nuit</span>
+        </div>
+      </div>
 
-              <div className="space-y-2">
-                <Label>Prix par nuit (GNF) *</Label>
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className={inputStyle}
-                    placeholder="500000"
-                    min="10000"
-                  />
-                  <span className="ml-2 whitespace-nowrap">GNF/nuit</span>
-                </div>
-              </div>
+      <div className="space-y-2">
+        <Label className="text-gray-700 dark:text-gray-300">Capacité (personnes) *</Label>
+        <input
+          type="number"
+          name="capacity"
+          value={formData.capacity}
+          onChange={handleInputChange}
+          className={cn(
+            "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500",
+            "border-gray-300 dark:border-gray-600",
+            "bg-white dark:bg-gray-800",
+            "text-gray-900 dark:text-white"
+          )}
+          min="1"
+        />
+      </div>
 
-              <div className="space-y-2">
-                <Label>Capacité (personnes) *</Label>
-                <input
-                  type="number"
-                  name="capacity"
-                  value={formData.capacity}
-                  onChange={handleInputChange}
-                  className={inputStyle}
-                  min="1"
-                />
-              </div>
+      <div className="space-y-2">
+        <Label className="text-gray-700 dark:text-gray-300">Surface (m²) *</Label>
+        <div className="flex items-center">
+          <input
+            type="number"
+            name="surface"
+            value={formData.surface}
+            onChange={handleInputChange}
+            className={cn(
+              "w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500",
+              "border-gray-300 dark:border-gray-600",
+              "bg-white dark:bg-gray-800",
+              "text-gray-900 dark:text-white"
+            )}
+            min="9"
+          />
+          <span className="ml-2 text-gray-700 dark:text-gray-300">m²</span>
+        </div>
+      </div>
+    </div>
 
-              <div className="space-y-2">
-                <Label>Surface (m²) *</Label>
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    name="surface"
-                    value={formData.surface}
-                    onChange={handleInputChange}
-                    className={inputStyle}
-                    min="9"
-                  />
-                  <span className="ml-2">m²</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-medium mb-4">Équipements de la chambre</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {[
-                  { id: "wifi", label: "WiFi", icon: <Wifi className="w-5 h-5 mr-2" />, field: "hasWifi" },
-                  { id: "clim", label: "Climatisation", icon: <Snowflake className="w-5 h-5 mr-2" />, field: "hasClim" },
-                  { id: "tv", label: "Télévision", icon: <Tv className="w-5 h-5 mr-2" />, field: "hasTV" },
-                  { id: "kitchen", label: "Cuisine", icon: <Utensils className="w-5 h-5 mr-2" />, field: "hasKitchen" },
-                  { id: "extraBed", label: "Lit supplémentaire", icon: <Bed className="w-5 h-5 mr-2" />, field: "extraBed" },
-                ].map(({ id, label, icon, field }) => (
-                  <div
-                    key={id}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${formData[field as keyof FormData] ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
-                      }`}
-                    onClick={() => setFormData(prev => ({ ...prev, [field]: !prev[field as keyof FormData] }))}
-                  >
-                    <input
-                      type="checkbox"
-                      id={id}
-                      checked={Boolean(formData[field as keyof FormData])}
-                      className="mr-3 h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-                      onChange={() => { }}
-                    />
-                    <label htmlFor={id} className="flex items-center cursor-pointer">
-                      {icon} {label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <Label>Photos de la chambre *</Label>
-              <p className="text-sm text-gray-500 mb-4">Minimum 4 photos de votre chambre</p>
-
-              <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500">Cliquez pour télécharger</p>
-                  <p className="text-xs text-gray-500">PNG, JPG (max 5MB)</p>
-                </div>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, "room")}
-                  className="hidden"
-                />
-              </label>
-
-              {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
-                  {imagePreviews.map((preview, index) => (
-                    <div key={index} className="relative group">
-                      <Image
-                        src={preview}
-                        alt={`Preview ${index}`}
-                        width={150}
-                        height={150}
-                        className="rounded-lg object-cover w-full h-32"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(index, "room")}
-                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
+    <div>
+      <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-gray-200">Équipements de la chambre</h3>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {[
+          { id: "wifi", label: "WiFi", icon: <Wifi className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300" />, field: "hasWifi" },
+          { id: "clim", label: "Climatisation", icon: <Snowflake className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300" />, field: "hasClim" },
+          { id: "tv", label: "Télévision", icon: <Tv className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300" />, field: "hasTV" },
+          { id: "kitchen", label: "Cuisine", icon: <Utensils className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300" />, field: "hasKitchen" },
+          { id: "extraBed", label: "Lit supplémentaire", icon: <Bed className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300" />, field: "extraBed" },
+        ].map(({ id, label, icon, field }) => (
+          <div
+            key={id}
+            className={cn(
+              "flex items-center p-3 border rounded-lg cursor-pointer transition-colors",
+              formData[field as keyof FormData]
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400"
+                : "hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700"
+            )}
+            onClick={() => setFormData(prev => ({ ...prev, [field]: !prev[field as keyof FormData] }))}
+          >
+            <input
+              type="checkbox"
+              id={id}
+              checked={Boolean(formData[field as keyof FormData])}
+              className={cn(
+                "mr-3 h-5 w-5 rounded focus:ring-2 focus:ring-blue-500",
+                "text-blue-600 dark:text-blue-500",
+                "border-gray-300 dark:border-gray-600",
+                "bg-white dark:bg-gray-800"
               )}
-            </div>
+              onChange={() => {}}
+            />
+            <label htmlFor={id} className="flex items-center cursor-pointer text-gray-700 dark:text-gray-300">
+              {icon} {label}
+            </label>
           </div>
-        )}
+        ))}
+      </div>
+    </div>
+
+    <div className="space-y-4">
+      <Label className="text-gray-700 dark:text-gray-300">Photos de la chambre *</Label>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Minimum 4 photos de votre chambre</p>
+
+      <label className={cn(
+        "flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg",
+        "cursor-pointer transition-colors",
+        "border-gray-300 dark:border-gray-600",
+        "hover:bg-gray-50 dark:hover:bg-gray-800"
+      )}>
+        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+          <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">Cliquez pour télécharger</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG (max 5MB)</p>
+        </div>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={(e) => handleImageUpload(e, "room")}
+          className="hidden"
+        />
+      </label>
+
+      {imagePreviews.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+          {imagePreviews.map((preview, index) => (
+            <div key={index} className="relative group rounded-lg overflow-hidden">
+              <Image
+                src={preview}
+                alt={`Preview ${index}`}
+                width={150}
+                height={150}
+                className="rounded-lg object-cover w-full h-32"
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(index, "room")}
+                className={cn(
+                  "absolute top-2 right-2 rounded-full w-6 h-6",
+                  "flex items-center justify-center transition-opacity",
+                  "bg-red-500 text-white opacity-0 group-hover:opacity-100"
+                )}
+              >
+                ×
+              </button>
+              <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
         {/* Navigation */}
         <div className="flex justify-between pt-8 border-t border-gray-200">
