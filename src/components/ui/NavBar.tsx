@@ -59,13 +59,13 @@ export function NavBar() {
           <div className="hidden md:flex items-center space-x-4">
 
             {isUnauthenticated && (
-              <Link href="/auth/signin" className="w-full text-left">
+              <Link href="/auth/signin" className="w-full text-left dark:text-blue-700">
                 Se Connecter
               </Link>
             )}
 
             {isAuthenticated && (
-              <button onClick={() => signOut()} className="w-full text-left">
+              <button onClick={() => signOut()} className="w-full text-left dark:text-blue-700">
                 Se Déconnecter
               </button>
             )}
@@ -133,13 +133,13 @@ export function NavBar() {
 
 
               {isUnauthenticated && (
-                <Link href="/auth/signin" className="w-full text-left">
+                <Link href="/auth/signin" className="w-full text-left dark:text-blue-500">
                   Se Connecter
                 </Link>
               )}
 
               {isAuthenticated && (
-                <button onClick={() => signOut()} className="w-full text-left">
+                <button onClick={() => signOut()} className="w-full text-left dark:text-blue-500">
                   Se Déconnecter
                 </button>
               )}
@@ -148,6 +148,11 @@ export function NavBar() {
 
               <UserNav />
               <ModeToggle />
+              {
+                isAuthenticated && (
+                  <UserButton />
+                )
+              }
             </div>
           </motion.div>
         )}
