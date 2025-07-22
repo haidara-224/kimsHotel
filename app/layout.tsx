@@ -28,6 +28,7 @@ export const metadata:Metadata = {
   icons: {
     icon: '/logoBlanc.png',
   },
+  viewport: "width=device-width, initial-scale=1, viewport-fit=cover"
 };
 
 
