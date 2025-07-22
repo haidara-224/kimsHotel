@@ -28,7 +28,7 @@ function UserButton() {
                             height={40}
                             alt="Photo de profil"
                             className={cn(
-                                "w-32 h-32 rounded-full border-2",
+                                "w-14 h-14 rounded-full border-2",
                                 "border-gray-200 dark:border-gray-700",
                                 "hover:scale-105 transition-transform"
                             )}
