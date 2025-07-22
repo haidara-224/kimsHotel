@@ -142,7 +142,7 @@ const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
                                      *                                 <input
                                     type="hidden"
                                     name="paycard-amount"
-                                    value={(logement.price ?? 0) * getNumberOfNights()}
+                                    value={totalPrice}
                                     readOnly
                                 />
                                      * 
@@ -152,7 +152,7 @@ const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
                                 <input
                                     type="hidden"
                                     name="paycard-amount"
-                                    value="1000"
+                                    value={totalPrice}
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
