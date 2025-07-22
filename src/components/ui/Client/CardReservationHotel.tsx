@@ -83,13 +83,14 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
    useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (!modalRef.current) return;
-            
-            // Vérifier si le clic est à l'intérieur d'un Popover
+            const target = e.target as HTMLElement;
+        
+                 if (modalRef.current && modalRef.current.contains(target)) return;
+        if (target.closest("[data-radix-popper-content-wrapper]")) return;
             const isInsidePopover = 
                 (popoverArrivalRef.current?.contains(e.target as Node)) ||
                 (popoverDepartureRef.current?.contains(e.target as Node));
             
-            // Vérifier si le clic est sur le trigger du Select
             const isSelectTrigger = selectTriggerRef.current?.contains(e.target as Node);
             
             if (!isInsidePopover && !isSelectTrigger && !modalRef.current.contains(e.target as Node)) {
@@ -213,7 +214,7 @@ export function CardReservationHotel({ chambre, open, onOpenChange }: HotelProps
                         >
                             <SelectValue placeholder="Nombre de voyageurs" />
                         </SelectTrigger>
-                        {/* Ajout de onClick et stopPropagation sur SelectContent */}
+                      
                         <SelectContent onClick={stopPropagation}>
                             {[...Array(10)].map((_, i) => (
                                 <SelectItem 
