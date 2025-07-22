@@ -105,8 +105,7 @@ export function HeaderSection() {
           />
         </div>
 
-        <section className="relative h-[500px] sm:h-[600px] bg-cover bg-center transition-all duration-1000 pt-[60px] sm:pt-[80px]">
-          <div className="absolute inset-0 overflow-hidden">
+        <section className="relative h-[500px]  sm:h-[600px] bg-cover bg-center transition-all duration-1000 pt-[100px] sm:pt-[120px] md:pt-[150px]">  <div className="absolute inset-0 overflow-hidden">
             <AnimatePresence>
               <motion.div
                 key={currentImage}
@@ -122,7 +121,8 @@ export function HeaderSection() {
           </div>
           
           <div className="relative z-10 h-full flex flex-col items-center justify-center px-4">
-            <div className="text-center max-w-4xl px-4 mb-4 sm:mb-8">
+            <div className="text-center max-w-4xl px-4 mb-8 sm:mb-12">
+
               <AnimatePresence mode="wait">
                 <motion.h1
                   key={`title-${currentImage}`}
@@ -159,7 +159,8 @@ export function HeaderSection() {
                   className="w-full"
                   onValueChange={setActiveTab}
                 >
-                  <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-lg mb-4 sm:mb-6">
+                  <TabsList className="grid grid-cols-2 bg-gray-100 p-1 rounded-lg mb-6 sm:mb-8">
+
                     <TabsTrigger value="hotels" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
                       <Hotel className="w-3 h-3 sm:w-4 sm:h-4" /> Hôtels
                     </TabsTrigger>
@@ -208,7 +209,7 @@ export function HeaderSection() {
                         >
                           <Input
                             placeholder="Où allez-vous en Guinée ?"
-                            className="pl-9 sm:pl-10 py-3 sm:py-5 text-sm sm:text-base text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="pl-9 sm:pl-10 py-3  sm:py-5 text-sm sm:text-base text-gray-700 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                             value={destination}
                             onChange={(e) => setDestination(e.target.value)}
                           />
@@ -216,7 +217,7 @@ export function HeaderSection() {
                       </div>
 
                      
-                      <div className="relative">
+                      <div className="relative ">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
                           <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5" />
                         </div>
@@ -236,6 +237,7 @@ export function HeaderSection() {
                               onSelect={setDate}
                               disabled={(date) => date < new Date()}
                               initialFocus
+                              
                               locale={fr}
                             />
                           </PopoverContent>
