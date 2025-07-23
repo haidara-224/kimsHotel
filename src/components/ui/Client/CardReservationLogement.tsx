@@ -156,8 +156,9 @@ const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
                                     readOnly
                                 />
                                 <input type="hidden" name="paycard-description" value={`reservation de chambre ${logement.nom}`} />
-                                
-                                <input
+                                {
+                                    /**
+                                     *  <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
@@ -168,10 +169,12 @@ const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
                                         `&kimshotel=true`
                                     }
                                 />
+                                     */
+                                }
+                               
 
-{
-    /**
-     *                                 <input
+
+                                     <input
                                     type="hidden"
                                     name="paycard-callback-url"
                                     value={
@@ -182,9 +185,7 @@ const totalPrice = (logement?.price ?? 0) * getNumberOfNights();
                                         `&kimshotel=true`
                                     }
                                 />
-     * 
-     */
-}
+  
    
 
 
