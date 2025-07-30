@@ -105,7 +105,7 @@ export function HeaderSection() {
           />
         </div>
 
-        <section className="relative h-[500px]  sm:h-[600px] bg-cover bg-center transition-all duration-1000 pt-[100px] sm:pt-[120px] md:pt-[150px]">  <div className="absolute inset-0 overflow-hidden">
+        <section className="relative min-h-[600px] bg-gray-100 pt-32">  <div className="absolute inset-0 overflow-hidden">
             <AnimatePresence>
               <motion.div
                 key={currentImage}
